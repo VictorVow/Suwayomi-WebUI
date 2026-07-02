@@ -64,6 +64,7 @@ const { ExtensionInfo } = loadable(
     lazyLoadFallback,
 );
 const { Updates } = loadable(() => import('@/features/updates/screens/Updates.tsx'), lazyLoadFallback);
+const { Recommended } = loadable(() => import('@/features/recommended/screens/Recommended.tsx'), lazyLoadFallback);
 const { History } = loadable(() => import('@/features/history/screens/History.tsx'), lazyLoadFallback);
 const { LibrarySettings } = loadable(() => import('@/features/library/screens/LibrarySettings.tsx'), lazyLoadFallback);
 const { DownloadSettings } = loadable(
@@ -353,6 +354,7 @@ const MainApp = () => {
                             <Route index element={<Manga />} />
                         </Route>
                         <Route path={AppRoutes.library.match} element={<Library />} />
+                        <Route path={AppRoutes.recommended.match} element={<Recommended />} />
                         <Route path={AppRoutes.updates.match} element={<Updates />} />
                         {!hideHistory && <Route path={AppRoutes.history.match} element={<History />} />}
                         <Route path={AppRoutes.browse.match} element={<Browse />} />

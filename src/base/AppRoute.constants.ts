@@ -184,6 +184,10 @@ export const AppRoutes = {
                 ...UrlUtil.createQueryParam(search),
             }),
     },
+    recommended: {
+        match: 'recommended',
+        path: '/recommended',
+    },
     updates: {
         match: 'updates',
         path: '/updates',

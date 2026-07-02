@@ -8,6 +8,8 @@
 
 import CollectionsBookmarkIcon from '@mui/icons-material/CollectionsBookmark';
 import CollectionsOutlinedBookmarkIcon from '@mui/icons-material/CollectionsBookmarkOutlined';
+import RecommendIcon from '@mui/icons-material/Recommend';
+import RecommendOutlinedIcon from '@mui/icons-material/RecommendOutlined';
 import NewReleasesIcon from '@mui/icons-material/NewReleases';
 import NewReleasesOutlinedIcon from '@mui/icons-material/NewReleasesOutlined';
 import HistoryIcon from '@mui/icons-material/History';
@@ -36,6 +38,14 @@ const NAVIGATION_BAR_BASE_ITEMS = [
         title: msg`Library`,
         SelectedIconComponent: CollectionsBookmarkIcon,
         IconComponent: CollectionsOutlinedBookmarkIcon,
+        show: 'both',
+        moreGroup: NavBarItemMoreGroup.GENERAL,
+    },
+    {
+        path: AppRoutes.recommended.path,
+        title: msg`Recommended`,
+        SelectedIconComponent: RecommendIcon,
+        IconComponent: RecommendOutlinedIcon,
         show: 'both',
         moreGroup: NavBarItemMoreGroup.GENERAL,
     },

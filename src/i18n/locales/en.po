@@ -416,6 +416,7 @@ msgstr "Age rating"
 #: src/features/category/components/CategoriesInclusionSetting.tsx
 #: src/features/chapter/components/actions/ChaptersDownloadActionMenuItems.tsx
 #: src/features/global-search/screens/SearchAll.tsx
+#: src/features/recommended/AniList.ts
 msgid "All"
 msgstr "All"
 
@@ -444,6 +445,10 @@ msgstr "AniList - Recommendations"
 #: src/features/tracker/components/MangaRelated.tsx
 msgid "AniList - Relations"
 msgstr "AniList - Relations"
+
+#: src/features/recommended/AniList.ts
+msgid "Anime"
+msgstr "Anime"
 
 #: src/features/settings/screens/Appearance.tsx
 #: src/features/settings/screens/Settings.tsx
@@ -848,6 +853,10 @@ msgstr "Check out"
 #: src/features/app-updates/components/VersionInfo.tsx
 msgid "Checking for update"
 msgstr "Checking for update"
+
+#: src/features/recommended/AniList.ts
+msgid "China"
+msgstr "China"
 
 #: src/features/settings/screens/ServerSettings.tsx
 msgid "Choose the order in which chapters are displayed."
@@ -2068,6 +2077,10 @@ msgstr "item"
 msgid "Items per page"
 msgstr "Items per page"
 
+#: src/features/recommended/AniList.ts
+msgid "Japan"
+msgstr "Japan"
+
 #: src/features/settings/screens/ServerSettings.tsx
 msgid "JWT access token expiry"
 msgstr "JWT access token expiry"
@@ -2099,6 +2112,10 @@ msgstr "Keybinds"
 #: src/features/reader/settings/layout/components/ReaderSettingTapZoneLayout.tsx
 msgid "Kindle"
 msgstr "Kindle"
+
+#: src/features/recommended/AniList.ts
+msgid "Korea"
+msgstr "Korea"
 
 #: src/features/settings/components/koreaderSync/KoreaderSyncSettings.tsx
 msgid "KOReader Sync"
@@ -2290,6 +2307,7 @@ msgstr ""
 #: src/features/manga/Manga.constants.ts
 #: src/features/manga/screens/Manga.tsx
 #: src/features/reader/settings/behaviour/components/ReaderSettingExitMode.tsx
+#: src/features/recommended/AniList.ts
 #: src/features/tracker/Tracker.constants.ts
 msgid "Manga"
 msgstr "Manga"
@@ -2303,11 +2321,13 @@ msgid "Manga thumbnail as background"
 msgstr "Manga thumbnail as background"
 
 #: src/features/manga/Manga.constants.ts
+#: src/features/recommended/AniList.ts
 #: src/features/tracker/Tracker.constants.ts
 msgid "Manhua"
 msgstr "Manhua"
 
 #: src/features/manga/Manga.constants.ts
+#: src/features/recommended/AniList.ts
 #: src/features/tracker/Tracker.constants.ts
 msgid "Manhwa"
 msgstr "Manhwa"
@@ -2467,9 +2487,17 @@ msgstr "Modern"
 msgid "More"
 msgstr "More"
 
+#: src/features/recommended/AniList.ts
+msgid "Most Favourite"
+msgstr "Most Favourite"
+
 #: src/features/theme/Themes.ts
 msgid "Mountain Sunset"
 msgstr "Mountain Sunset"
+
+#: src/features/recommended/AniList.ts
+msgid "Movies"
+msgstr "Movies"
 
 #: src/base/utils/Languages.ts
 #: src/features/extension/Extensions.constants.ts
@@ -2515,6 +2543,10 @@ msgstr "Next chapter"
 #: src/features/reader/overlay/navigation/desktop/components/ReaderNavBarDesktopPageNavigation.tsx
 msgid "Next page"
 msgstr "Next page"
+
+#: src/features/recommended/AniList.ts
+msgid "Next Season"
+msgstr "Next Season"
 
 #: src/features/reader/viewer/components/ReaderTransitionPage.tsx
 msgid "Next:"
@@ -2581,6 +2613,7 @@ msgstr "Not yet published"
 msgid "Not yet released"
 msgstr "Not yet released"
 
+#: src/features/recommended/screens/Recommended.tsx
 #: src/features/tracker/components/MangaRelated.tsx
 msgid "Nothing found"
 msgstr "Nothing found"
@@ -2686,6 +2719,10 @@ msgstr "Open in browser"
 msgid "Open in WebView"
 msgstr "Open in WebView"
 
+#: src/features/recommended/screens/Recommended.tsx
+msgid "Open on AniList"
+msgstr "Open on AniList"
+
 #: src/features/reader/settings/behaviour/components/ReaderSettingExitMode.tsx
 msgid "Open page on exit"
 msgstr "Open page on exit"
@@ -2760,6 +2797,7 @@ msgstr "Pin source"
 msgid "Pinned"
 msgstr "Pinned"
 
+#: src/features/recommended/AniList.ts
 #: src/features/source/browse/screens/SourceMangas.tsx
 msgid "Popular"
 msgstr "Popular"
@@ -2802,6 +2840,10 @@ msgstr "Previous chapter"
 #: src/features/reader/overlay/navigation/desktop/components/ReaderNavBarDesktopPageNavigation.tsx
 msgid "Previous page"
 msgstr "Previous page"
+
+#: src/features/recommended/AniList.ts
+msgid "Previous Season"
+msgstr "Previous Season"
 
 #: src/features/reader/viewer/components/ReaderTransitionPage.tsx
 msgid "Previous:"
@@ -2874,6 +2916,11 @@ msgstr "Recently added"
 #: src/features/library/components/LibraryOptionsPanel.tsx
 msgid "Recently read"
 msgstr "Recently read"
+
+#: src/features/navigation-bar/NavigationBar.constants.ts
+#: src/features/recommended/screens/Recommended.tsx
+msgid "Recommended"
+msgstr "Recommended"
 
 #: src/features/reader/hotkeys/settings/components/RecordHotkey.tsx
 msgid "Record keybind"
@@ -3662,6 +3709,10 @@ msgstr "This icon will be shown on the system that is running the server"
 msgid "This is the latest version"
 msgstr "This is the latest version"
 
+#: src/features/recommended/AniList.ts
+msgid "This Season"
+msgstr "This Season"
+
 #: src/features/source/browse/components/SourceOptions.tsx
 msgid "This will delete the saved search \"{savedSearch}\""
 msgstr "This will delete the saved search \"{savedSearch}\""
@@ -3701,6 +3752,10 @@ msgstr "Toggle stretch image"
 #: src/features/reader/settings/general/components/ReaderSettingSafeAreaInset.tsx
 msgid "Top"
 msgstr "Top"
+
+#: src/features/recommended/AniList.ts
+msgid "Top Rated"
+msgstr "Top Rated"
 
 #: src/features/library/components/LibraryOptionsPanel.tsx
 msgid "Total chapters"
@@ -3749,6 +3804,10 @@ msgstr "Tracking"
 msgid "Tree Frog Green"
 msgstr "Tree Frog Green"
 
+#: src/features/recommended/AniList.ts
+msgid "Trending"
+msgstr "Trending"
+
 #: src/features/settings/screens/ServerSettings.tsx
 #: src/features/tracker/components/cards/TrackerMangaCard.tsx
 msgid "Type"
@@ -3779,6 +3838,7 @@ msgstr "UI Login"
 #: src/features/reader/screens/Reader.tsx
 #: src/features/reader/settings/screens/GlobalReaderSettings.tsx
 #: src/features/reader/viewer/ReaderChapterViewer.tsx
+#: src/features/recommended/screens/Recommended.tsx
 #: src/features/settings/screens/About.tsx
 #: src/features/settings/screens/Appearance.tsx
 #: src/features/settings/screens/ImageProcessingSetting.tsx
