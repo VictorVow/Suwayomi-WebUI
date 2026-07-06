@@ -34,6 +34,38 @@ export interface NavbarItem {
     useBadge?: () => { count: number; title: string };
 }
 
+/**
+ * A not-yet-implemented navigation item rendered inside a section as a disabled
+ * placeholder. It has no route and does not navigate anywhere.
+ */
+export interface NavbarPlaceholderItem {
+    id: string;
+    title: MessageDescriptor;
+    SelectedIconComponent: OverridableComponent<SvgIconTypeMap<object, 'svg'>>;
+    IconComponent: OverridableComponent<SvgIconTypeMap<object, 'svg'>>;
+}
+
+/**
+ * A collapsible section header in the desktop sidebar. It is not a page itself,
+ * it only groups (and can show/hide) its child items.
+ */
+export interface NavbarSection {
+    id: string;
+    title: MessageDescriptor;
+    SelectedIconComponent: OverridableComponent<SvgIconTypeMap<object, 'svg'>>;
+    IconComponent: OverridableComponent<SvgIconTypeMap<object, 'svg'>>;
+    /** real, navigable items */
+    items?: NavbarItem[];
+    /** placeholder (not-yet-implemented) items */
+    placeholders?: NavbarPlaceholderItem[];
+}
+
+/**
+ * An ordered entry in the desktop sidebar: either a standalone navigable item
+ * (rendered outside of any section) or a collapsible section.
+ */
+export type NavbarEntry = { kind: 'item'; item: NavbarItem } | { kind: 'section'; section: NavbarSection };
+
 export type NavbarContextType = {
     // AppBar title
     title: string | React.ReactNode;

@@ -446,6 +446,7 @@ msgstr "AniList - Recommendations"
 msgid "AniList - Relations"
 msgstr "AniList - Relations"
 
+#: src/features/navigation-bar/NavigationBar.constants.ts
 #: src/features/recommended/AniList.ts
 msgid "Anime"
 msgstr "Anime"
@@ -2306,6 +2307,7 @@ msgstr ""
 #: src/features/browse/screens/BrowseSettings.tsx
 #: src/features/manga/Manga.constants.ts
 #: src/features/manga/screens/Manga.tsx
+#: src/features/navigation-bar/NavigationBar.constants.ts
 #: src/features/reader/settings/behaviour/components/ReaderSettingExitMode.tsx
 #: src/features/recommended/AniList.ts
 #: src/features/tracker/Tracker.constants.ts
@@ -2618,6 +2620,7 @@ msgstr "Not yet released"
 msgid "Nothing found"
 msgstr "Nothing found"
 
+#: src/features/navigation-bar/NavigationBar.constants.ts
 #: src/features/tracker/Tracker.constants.ts
 msgid "Novel"
 msgstr "Novel"

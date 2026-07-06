@@ -30,12 +30,16 @@ export const NavigationBarItem = ({
     useBadge,
     slots,
     forceCollapsed,
-}: NavbarItem & {
-    slots?: {
-        listItemLink?: Partial<ComponentProps<typeof ListItemLink>>;
-    };
-    forceCollapsed?: boolean;
-}) => {
+    disabled,
+}: Omit<NavbarItem, 'path' | 'show' | 'moreGroup'> &
+    Partial<Pick<NavbarItem, 'path' | 'show' | 'moreGroup'>> & {
+        slots?: {
+            listItemLink?: Partial<ComponentProps<typeof ListItemLink>>;
+        };
+        forceCollapsed?: boolean;
+        /** Renders a non-navigating, dimmed placeholder (used for not-yet-implemented items). */
+        disabled?: boolean;
+    }) => {
     const { t } = useLingui();
     const location = useLocation();
     const { isCollapsed: isCollapsedContext } = useNavBarContext();
@@ -44,7 +48,8 @@ export const NavigationBarItem = ({
 
     const isCollapsed = forceCollapsed ?? isCollapsedContext;
 
-    const isActive = location.pathname.startsWith(path);
+    const isDisabled = disabled || !path;
+    const isActive = !isDisabled && !!path && location.pathname.startsWith(path);
     const Icon = isActive ? SelectedIconComponent : IconComponent;
 
     const { listItemProps, listItemIconProps } = useMemo(
@@ -55,6 +60,63 @@ export const NavigationBarItem = ({
         [isCollapsed],
     );
 
+    const content = (
+        <CustomTooltip
+            title={
+                <>
+                    {t(title)}
+                    <br />
+                    {badgeInfo?.title}
+                </>
+            }
+            placement="right"
+        >
+            <ListItem sx={{ ...listItemProps, ...(isDisabled && { opacity: 0.5 }) }}>
+                <ListItemIcon sx={listItemIconProps}>
+                    <Badge badgeContent={badgeInfo?.count} color="primary">
+                        <Icon
+                            sx={{
+                                color: isActive ? 'primary.dark' : undefined,
+                                ...theme.applyStyles('dark', {
+                                    color: isActive ? 'primary.light' : undefined,
+                                }),
+                            }}
+                        />
+                    </Badge>
+                </ListItemIcon>
+
+                <ListItemText
+                    primary={
+                        <TypographyMaxLines
+                            lines={1}
+                            variant={isCollapsed ? 'caption' : undefined}
+                            sx={{
+                                color: isActive ? 'primary.dark' : undefined,
+                                ...theme.applyStyles('dark', {
+                                    color: isActive ? 'primary.light' : undefined,
+                                }),
+                            }}
+                        >
+                            {t(title)}
+                        </TypographyMaxLines>
+                    }
+                    secondary={
+                        !isCollapsed && (
+                            <Typography variant="caption" color="textSecondary">
+                                {badgeInfo?.title}
+                            </Typography>
+                        )
+                    }
+                    sx={{ maxWidth: '100%', m: 0, display: 'flex', flexDirection: 'column' }}
+                />
+            </ListItem>
+        </CustomTooltip>
+    );
+
+    if (isDisabled || !path) {
+        return content;
+    }
+
     return (
         <ListItemLink
             {...slots?.listItemLink}
@@ -62,56 +124,7 @@ export const NavigationBarItem = ({
             sx={{ p: 0, m: 0, ...slots?.listItemLink?.sx }}
             to={path}
         >
-            <CustomTooltip
-                title={
-                    <>
-                        {t(title)}
-                        <br />
-                        {badgeInfo?.title}
-                    </>
-                }
-                placement="right"
-            >
-                <ListItem sx={listItemProps}>
-                    <ListItemIcon sx={listItemIconProps}>
-                        <Badge badgeContent={badgeInfo?.count} color="primary">
-                            <Icon
-                                sx={{
-                                    color: isActive ? 'primary.dark' : undefined,
-                                    ...theme.applyStyles('dark', {
-                                        color: isActive ? 'primary.light' : undefined,
-                                    }),
-                                }}
-                            />
-                        </Badge>
-                    </ListItemIcon>
-
-                    <ListItemText
-                        primary={
-                            <TypographyMaxLines
-                                lines={1}
-                                variant={isCollapsed ? 'caption' : undefined}
-                                sx={{
-                                    color: isActive ? 'primary.dark' : undefined,
-                                    ...theme.applyStyles('dark', {
-                                        color: isActive ? 'primary.light' : undefined,
-                                    }),
-                                }}
-                            >
-                                {t(title)}
-                            </TypographyMaxLines>
-                        }
-                        secondary={
-                            !isCollapsed && (
-                                <Typography variant="caption" color="textSecondary">
-                                    {badgeInfo?.title}
-                                </Typography>
-                            )
-                        }
-                        sx={{ maxWidth: '100%', m: 0, display: 'flex', flexDirection: 'column' }}
-                    />
-                </ListItem>
-            </CustomTooltip>
+            {content}
         </ListItemLink>
     );
 };

@@ -21,9 +21,20 @@ import GetAppOutlinedIcon from '@mui/icons-material/GetAppOutlined';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import SettingsIcon from '@mui/icons-material/Settings';
 import InfoIcon from '@mui/icons-material/Info';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+import MenuBookOutlinedIcon from '@mui/icons-material/MenuBookOutlined';
+import MovieIcon from '@mui/icons-material/Movie';
+import MovieOutlinedIcon from '@mui/icons-material/MovieOutlined';
+import AutoStoriesIcon from '@mui/icons-material/AutoStories';
+import AutoStoriesOutlinedIcon from '@mui/icons-material/AutoStoriesOutlined';
 import { useLingui } from '@lingui/react/macro';
 import { msg, plural } from '@lingui/core/macro';
-import type { NavbarItem } from '@/features/navigation-bar/NavigationBar.types.ts';
+import type {
+    NavbarEntry,
+    NavbarItem,
+    NavbarPlaceholderItem,
+    NavbarSection,
+} from '@/features/navigation-bar/NavigationBar.types.ts';
 import { NavBarItemMoreGroup } from '@/features/navigation-bar/NavigationBar.types.ts';
 import { AppRoutes } from '@/base/AppRoute.constants.ts';
 import { requestManager } from '@/lib/requests/RequestManager.ts';
@@ -162,3 +173,83 @@ export const NAVIGATION_BAR_ITEMS = [
     ...NAVIGATION_BAR_DESKTOP_ITEMS,
     ...NAVIGATION_BAR_MOBILE_ITEMS,
 ] as const satisfies NavbarItem[];
+
+// Named references to the individual items, used to compose the desktop sidebar sections below.
+const [LIBRARY_ITEM, RECOMMENDED_ITEM, UPDATES_ITEM, HISTORY_ITEM, BROWSE_ITEM] = NAVIGATION_BAR_BASE_ITEMS;
+const [DOWNLOADS_ITEM, SETTINGS_ITEM, ABOUT_ITEM] = NAVIGATION_BAR_DESKTOP_ITEMS;
+
+/**
+ * Placeholder child items shared by the not-yet-implemented "Anime" and "Novel"
+ * sections. They mirror the Manga content items but do not navigate anywhere.
+ */
+const mediaPlaceholderItems = (idPrefix: string): NavbarPlaceholderItem[] => [
+    {
+        id: `${idPrefix}-library`,
+        title: msg`Library`,
+        SelectedIconComponent: CollectionsBookmarkIcon,
+        IconComponent: CollectionsOutlinedBookmarkIcon,
+    },
+    {
+        id: `${idPrefix}-updates`,
+        title: msg`Updates`,
+        SelectedIconComponent: NewReleasesIcon,
+        IconComponent: NewReleasesOutlinedIcon,
+    },
+    {
+        id: `${idPrefix}-history`,
+        title: msg`History`,
+        SelectedIconComponent: HistoryIcon,
+        IconComponent: HistoryOutlinedIcon,
+    },
+    {
+        id: `${idPrefix}-browse`,
+        title: msg`Browse`,
+        SelectedIconComponent: ExploreIcon,
+        IconComponent: ExploreOutlinedIcon,
+    },
+    {
+        id: `${idPrefix}-downloads`,
+        title: msg`Downloads`,
+        SelectedIconComponent: GetAppIcon,
+        IconComponent: GetAppOutlinedIcon,
+    },
+];
+
+const MANGA_SECTION: NavbarSection = {
+    id: 'manga',
+    title: msg`Manga`,
+    SelectedIconComponent: MenuBookIcon,
+    IconComponent: MenuBookOutlinedIcon,
+    items: [LIBRARY_ITEM, UPDATES_ITEM, HISTORY_ITEM, BROWSE_ITEM, DOWNLOADS_ITEM, SETTINGS_ITEM],
+};
+
+const ANIME_SECTION: NavbarSection = {
+    id: 'anime',
+    title: msg`Anime`,
+    SelectedIconComponent: MovieIcon,
+    IconComponent: MovieOutlinedIcon,
+    placeholders: mediaPlaceholderItems('anime'),
+};
+
+const NOVEL_SECTION: NavbarSection = {
+    id: 'novel',
+    title: msg`Novel`,
+    SelectedIconComponent: AutoStoriesIcon,
+    IconComponent: AutoStoriesOutlinedIcon,
+    placeholders: mediaPlaceholderItems('novel'),
+};
+
+/**
+ * Ordered layout of the desktop sidebar:
+ *  - Recommended (standalone, at the very top)
+ *  - Manga (collapsible section holding every real item except About)
+ *  - About (standalone, always visible)
+ *  - Anime / Novel (collapsible placeholder sections)
+ */
+export const DESKTOP_NAV_ENTRIES: NavbarEntry[] = [
+    { kind: 'item', item: RECOMMENDED_ITEM },
+    { kind: 'section', section: MANGA_SECTION },
+    { kind: 'item', item: ABOUT_ITEM },
+    { kind: 'section', section: ANIME_SECTION },
+    { kind: 'section', section: NOVEL_SECTION },
+];

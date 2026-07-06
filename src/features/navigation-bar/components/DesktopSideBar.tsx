@@ -13,13 +13,16 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import Divider from '@mui/material/Divider';
 import { styled } from '@mui/material/styles';
-import { useCallback, useRef } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 import Box from '@mui/material/Box';
 import { useGetOptionForDirection } from '@/features/theme/services/ThemeCreator.ts';
 import { useNavBarContext } from '@/features/navigation-bar/NavbarContext.tsx';
 import { useResizeObserver } from '@/base/hooks/useResizeObserver.tsx';
 import type { NavbarItem } from '@/features/navigation-bar/NavigationBar.types.ts';
+import type { StaticAppRoute } from '@/base/AppRoute.constants.ts';
 import { NavigationBarItem } from '@/features/navigation-bar/components/NavigationBarItem.tsx';
+import { NavigationBarSection } from '@/features/navigation-bar/components/NavigationBarSection.tsx';
+import { DESKTOP_NAV_ENTRIES } from '@/features/navigation-bar/NavigationBar.constants.ts';
 
 const DrawerHeader = styled('div')(({ theme }) => ({
     display: 'flex',
@@ -38,6 +41,11 @@ const MAX_WIDTH_EXTENDED = 400;
 export const DesktopSideBar = ({ navBarItems }: { navBarItems: NavbarItem[] }) => {
     const { isCollapsed, setIsCollapsed, navBarWidth, setNavBarWidth } = useNavBarContext();
     const getOptionForDirection = useGetOptionForDirection();
+
+    // The set of paths currently allowed to show (respects device / hideHistory filtering
+    // done in DefaultNavBar). Section/standalone items are only rendered when visible here.
+    const visiblePaths = useMemo(() => new Set(navBarItems.map((item) => item.path)), [navBarItems]);
+    const isVisiblePath = useCallback((path: StaticAppRoute) => visiblePaths.has(path), [visiblePaths]);
 
     const ref = useRef<HTMLDivElement | null>(null);
     useResizeObserver(
@@ -75,9 +83,23 @@ export const DesktopSideBar = ({ navBarItems }: { navBarItems: NavbarItem[] }) =
                 </DrawerHeader>
                 <Divider />
                 <List sx={{ p: 1 }} dense={isCollapsed}>
-                    {navBarItems.map((navBarItem) => (
-                        <NavigationBarItem key={navBarItem.path} {...navBarItem} />
-                    ))}
+                    {DESKTOP_NAV_ENTRIES.map((entry) => {
+                        if (entry.kind === 'section') {
+                            return (
+                                <NavigationBarSection
+                                    key={entry.section.id}
+                                    section={entry.section}
+                                    isVisiblePath={isVisiblePath}
+                                />
+                            );
+                        }
+
+                        if (!isVisiblePath(entry.item.path)) {
+                            return null;
+                        }
+
+                        return <NavigationBarItem key={entry.item.path} {...entry.item} />;
+                    })}
                 </List>
             </Box>
         </Drawer>
