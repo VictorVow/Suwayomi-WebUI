@@ -45,11 +45,23 @@ export interface NovelExtension {
     repo?: string | null;
 }
 
-/** A novel entry (series) as returned when browsing a source or the library. */
-export interface NovelEntry {
-    id: string;
-    sourceId: string;
-    title: string;
+/** A chapter row for the novel Updates / History feeds. */
+export interface NovelChapterRow {
+    chapterId: number;
+    chapterName: string;
+    mangaId: number;
+    mangaTitle: string;
     thumbnailUrl?: string | null;
-    inLibrary: boolean;
+}
+
+/** A queued/active novel chapter download. */
+export interface NovelDownloadRow {
+    chapterId: number;
+    chapterName: string;
+    mangaId: number;
+    mangaTitle: string;
+    /** 0..1 download progress. */
+    progress: number;
+    /** Downloader state for this item (e.g. QUEUED, DOWNLOADING). */
+    state: string;
 }

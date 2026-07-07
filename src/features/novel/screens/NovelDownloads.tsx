@@ -9,7 +9,7 @@
 import { useLingui } from '@lingui/react/macro';
 import { useAppTitle } from '@/features/navigation-bar/hooks/useAppTitle.ts';
 import { useNovelDownloadQueue } from '@/features/novel/services/NovelApi.ts';
-import { NovelEntryGrid } from '@/features/novel/components/NovelEntryGrid.tsx';
+import { NovelDownloadList } from '@/features/novel/components/NovelDownloadList.tsx';
 
 export function NovelDownloads() {
     const { t } = useLingui();
@@ -18,6 +18,6 @@ export function NovelDownloads() {
     const { data, loading, available } = useNovelDownloadQueue();
 
     return (
-        <NovelEntryGrid entries={data} loading={loading} available={available} emptyMessage={t`No novel downloads`} />
+        <NovelDownloadList rows={data} loading={loading} available={available} emptyMessage={t`No novel downloads`} />
     );
 }

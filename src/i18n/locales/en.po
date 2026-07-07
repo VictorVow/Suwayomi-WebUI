@@ -1649,6 +1649,10 @@ msgstr "Failed to connect to KOReader Sync server."
 msgid "Failed to disconnect from KOReader Sync server."
 msgstr "Failed to disconnect from KOReader Sync server."
 
+#: src/features/novel/screens/NovelLibrary.tsx
+msgid "Failed to load the novel library"
+msgstr "Failed to load the novel library"
+
 #: src/features/backup/screens/Backup.tsx
 #: src/features/browse/extensions/Extensions.tsx
 #: src/features/browse/screens/BrowseSettings.tsx

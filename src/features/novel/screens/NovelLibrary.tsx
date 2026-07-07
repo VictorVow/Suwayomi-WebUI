@@ -8,21 +8,26 @@
 
 import { useLingui } from '@lingui/react/macro';
 import { useAppTitle } from '@/features/navigation-bar/hooks/useAppTitle.ts';
+import { BaseMangaGrid } from '@/features/manga/components/BaseMangaGrid.tsx';
 import { useNovelLibrary } from '@/features/novel/services/NovelApi.ts';
-import { NovelEntryGrid } from '@/features/novel/components/NovelEntryGrid.tsx';
+
+const noop = () => {};
 
 export function NovelLibrary() {
     const { t } = useLingui();
     useAppTitle(t`Novel Library`);
 
-    const { data, loading, available } = useNovelLibrary();
+    const { data: mangas, loading, error, refetch } = useNovelLibrary();
 
     return (
-        <NovelEntryGrid
-            entries={data}
-            loading={loading}
-            available={available}
-            emptyMessage={t`Your novel library is empty`}
+        <BaseMangaGrid
+            mangas={mangas}
+            hasNextPage={false}
+            loadMore={noop}
+            isLoading={loading}
+            message={error ? t`Failed to load the novel library` : t`Your novel library is empty`}
+            messageExtra={error?.message}
+            retry={error ? () => refetch() : undefined}
         />
     );
 }

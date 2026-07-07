@@ -9,7 +9,7 @@
 import { useLingui } from '@lingui/react/macro';
 import { useAppTitle } from '@/features/navigation-bar/hooks/useAppTitle.ts';
 import { useNovelHistory } from '@/features/novel/services/NovelApi.ts';
-import { NovelEntryGrid } from '@/features/novel/components/NovelEntryGrid.tsx';
+import { NovelChapterList } from '@/features/novel/components/NovelChapterList.tsx';
 
 export function NovelHistory() {
     const { t } = useLingui();
@@ -18,8 +18,8 @@ export function NovelHistory() {
     const { data, loading, available } = useNovelHistory();
 
     return (
-        <NovelEntryGrid
-            entries={data}
+        <NovelChapterList
+            rows={data}
             loading={loading}
             available={available}
             emptyMessage={t`No novel reading history`}

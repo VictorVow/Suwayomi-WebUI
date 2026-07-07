@@ -8,7 +8,10 @@
 
 import { requestManager } from '@/lib/requests/RequestManager.ts';
 import { STABLE_EMPTY_ARRAY } from '@/base/Base.constants.ts';
-import type { NovelEntry, NovelExtension, NovelSource } from '@/features/novel/Novel.types.ts';
+import { GET_MANGAS_LIBRARY } from '@/lib/graphql/manga/MangaQuery.ts';
+import { Mangas } from '@/features/manga/services/Mangas.ts';
+import type { GetMangasLibraryQuery, GetMangasLibraryQueryVariables } from '@/lib/graphql/generated/graphql.ts';
+import type { NovelChapterRow, NovelDownloadRow, NovelExtension, NovelSource } from '@/features/novel/Novel.types.ts';
 
 /*
  * =============================================================================
@@ -90,30 +93,85 @@ export const useNovelExtensionList = (): NovelQueryResult<NovelExtension[]> => {
 };
 
 /*
- * The library / updates / history / downloads views below are novel-scoped
- * slices of the user's manga library (novels are manga rows with a negative
- * source id). They are not wired to their manga queries yet — doing so needs a
- * source-id filter threaded through those list screens — so they report empty.
- * TODO(novel): back these with the manga library/updates/history/download
- * queries filtered by `isNovelSourceId(manga.source.id)`.
+ * The library / updates / history / downloads views are novel-scoped slices of
+ * the user's manga data (novels are manga rows with a negative source id).
+ * Miruyomi-Server has no source predicate on the chapter/download queries, so we
+ * reuse the existing manga queries and filter client-side by `isNovelSourceId`.
+ * The updates/history feeds are paginated on the server; we filter the currently
+ * loaded window, so their contents track however many pages the shared hook has
+ * fetched.
  */
 
-const emptyEntries = (): NovelQueryResult<NovelEntry[]> => ({
-    data: STABLE_EMPTY_ARRAY,
-    loading: false,
-    error: undefined,
-    available: true,
-    refetch: () => {},
+type LibraryMangaNode = GetMangasLibraryQuery['mangas']['nodes'][number];
+
+type UpdateOrHistoryChapter = {
+    id: number;
+    name: string;
+    manga: {
+        id: number;
+        title: string;
+        sourceId: string;
+        thumbnailUrl?: string | null;
+        thumbnailUrlLastFetched?: string | null;
+    };
+};
+
+const chapterToRow = (chapter: UpdateOrHistoryChapter): NovelChapterRow => ({
+    chapterId: chapter.id,
+    chapterName: chapter.name,
+    mangaId: chapter.manga.id,
+    mangaTitle: chapter.manga.title,
+    thumbnailUrl: Mangas.getThumbnailUrl(chapter.manga),
 });
 
-/** The user's novel library entries. */
-export const useNovelLibrary = (): NovelQueryResult<NovelEntry[]> => emptyEntries();
+/** The user's library, filtered to novels. Returns full manga nodes for BaseMangaGrid. */
+export const useNovelLibrary = (): NovelQueryResult<LibraryMangaNode[]> => {
+    const { data, loading, error, refetch } = requestManager.useGetMangas<
+        GetMangasLibraryQuery,
+        GetMangasLibraryQueryVariables
+    >(GET_MANGAS_LIBRARY, { condition: { inLibrary: true } });
+
+    const mangas = (data?.mangas.nodes ?? STABLE_EMPTY_ARRAY).filter((manga) => isNovelSourceId(manga.sourceId));
+
+    return { data: mangas, loading, error, available: !error, refetch: () => refetch?.() };
+};
 
 /** Recent chapter updates across the novel library. */
-export const useNovelUpdates = (): NovelQueryResult<NovelEntry[]> => emptyEntries();
+export const useNovelUpdates = (): NovelQueryResult<NovelChapterRow[]> => {
+    const { data, loading, error, refetch } = requestManager.useGetRecentlyUpdatedChapters();
+
+    const rows = (data?.chapters.nodes ?? STABLE_EMPTY_ARRAY)
+        .filter((chapter) => isNovelSourceId(chapter.manga.sourceId))
+        .map(chapterToRow);
+
+    return { data: rows, loading, error, available: !error, refetch: () => refetch?.() };
+};
 
 /** Reading history for novels. */
-export const useNovelHistory = (): NovelQueryResult<NovelEntry[]> => emptyEntries();
+export const useNovelHistory = (): NovelQueryResult<NovelChapterRow[]> => {
+    const { data, loading, error, refetch } = requestManager.useGetRecentlyReadChapters();
+
+    const rows = (data?.chapters.nodes ?? STABLE_EMPTY_ARRAY)
+        .filter((chapter) => isNovelSourceId(chapter.manga.sourceId))
+        .map(chapterToRow);
+
+    return { data: rows, loading, error, available: !error, refetch: () => refetch?.() };
+};
 
 /** Active + queued novel chapter downloads. */
-export const useNovelDownloadQueue = (): NovelQueryResult<NovelEntry[]> => emptyEntries();
+export const useNovelDownloadQueue = (): NovelQueryResult<NovelDownloadRow[]> => {
+    const { data, loading, error, refetch } = requestManager.useGetDownloadStatus();
+
+    const rows = (data?.downloadStatus?.queue ?? STABLE_EMPTY_ARRAY)
+        .filter((item) => isNovelSourceId(item.manga.sourceId))
+        .map((item) => ({
+            chapterId: item.chapter.id,
+            chapterName: item.chapter.name,
+            mangaId: item.manga.id,
+            mangaTitle: item.manga.title,
+            progress: item.progress,
+            state: String(item.state),
+        }));
+
+    return { data: rows, loading, error, available: !error, refetch: () => refetch?.() };
+};

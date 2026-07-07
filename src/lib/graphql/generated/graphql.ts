@@ -988,7 +988,7 @@ export type DownloadTypeFieldsFragment = {
     state: Types.DownloadState;
     tries: number;
     chapter: { __typename: 'ChapterType'; id: number; name: string; sourceOrder: number; isDownloaded: boolean };
-    manga: { __typename: 'MangaType'; id: number; title: string; downloadCount: number };
+    manga: { __typename: 'MangaType'; id: number; title: string; sourceId: string; downloadCount: number };
 };
 
 export type DownloadStatusFieldsFragment = {
@@ -1000,7 +1000,7 @@ export type DownloadStatusFieldsFragment = {
         state: Types.DownloadState;
         tries: number;
         chapter: { __typename: 'ChapterType'; id: number; name: string; sourceOrder: number; isDownloaded: boolean };
-        manga: { __typename: 'MangaType'; id: number; title: string; downloadCount: number };
+        manga: { __typename: 'MangaType'; id: number; title: string; sourceId: string; downloadCount: number };
     }>;
 };
 
@@ -1024,7 +1024,7 @@ export type DownloadUpdatesFieldsFragment = {
                 sourceOrder: number;
                 isDownloaded: boolean;
             };
-            manga: { __typename: 'MangaType'; id: number; title: string; downloadCount: number };
+            manga: { __typename: 'MangaType'; id: number; title: string; sourceId: string; downloadCount: number };
         };
     }>;
 };
@@ -1052,7 +1052,7 @@ export type ClearDownloaderMutation = {
                     sourceOrder: number;
                     isDownloaded: boolean;
                 };
-                manga: { __typename: 'MangaType'; id: number; title: string; downloadCount: number };
+                manga: { __typename: 'MangaType'; id: number; title: string; sourceId: string; downloadCount: number };
             }>;
         };
     } | null;
@@ -1115,7 +1115,7 @@ export type DequeueChapterDownloadMutation = {
                     sourceOrder: number;
                     isDownloaded: boolean;
                 };
-                manga: { __typename: 'MangaType'; id: number; title: string; downloadCount: number };
+                manga: { __typename: 'MangaType'; id: number; title: string; sourceId: string; downloadCount: number };
             }>;
         };
     } | null;
@@ -1144,7 +1144,7 @@ export type DequeueChapterDownloadsMutation = {
                     sourceOrder: number;
                     isDownloaded: boolean;
                 };
-                manga: { __typename: 'MangaType'; id: number; title: string; downloadCount: number };
+                manga: { __typename: 'MangaType'; id: number; title: string; sourceId: string; downloadCount: number };
             }>;
         };
     } | null;
@@ -1173,7 +1173,7 @@ export type EnqueueChapterDownloadMutation = {
                     sourceOrder: number;
                     isDownloaded: boolean;
                 };
-                manga: { __typename: 'MangaType'; id: number; title: string; downloadCount: number };
+                manga: { __typename: 'MangaType'; id: number; title: string; sourceId: string; downloadCount: number };
             }>;
         };
     } | null;
@@ -1202,7 +1202,7 @@ export type EnqueueChapterDownloadsMutation = {
                     sourceOrder: number;
                     isDownloaded: boolean;
                 };
-                manga: { __typename: 'MangaType'; id: number; title: string; downloadCount: number };
+                manga: { __typename: 'MangaType'; id: number; title: string; sourceId: string; downloadCount: number };
             }>;
         };
     } | null;
@@ -1231,7 +1231,7 @@ export type ReorderChapterDownloadMutation = {
                     sourceOrder: number;
                     isDownloaded: boolean;
                 };
-                manga: { __typename: 'MangaType'; id: number; title: string; downloadCount: number };
+                manga: { __typename: 'MangaType'; id: number; title: string; sourceId: string; downloadCount: number };
             }>;
         };
     } | null;
@@ -1280,7 +1280,7 @@ export type GetDownloadStatusQuery = {
                 sourceOrder: number;
                 isDownloaded: boolean;
             };
-            manga: { __typename: 'MangaType'; id: number; title: string; downloadCount: number };
+            manga: { __typename: 'MangaType'; id: number; title: string; sourceId: string; downloadCount: number };
         }>;
     };
 };
@@ -1311,7 +1311,7 @@ export type DownloadStatusSubscription = {
                     sourceOrder: number;
                     isDownloaded: boolean;
                 };
-                manga: { __typename: 'MangaType'; id: number; title: string; downloadCount: number };
+                manga: { __typename: 'MangaType'; id: number; title: string; sourceId: string; downloadCount: number };
             };
         }>;
     };

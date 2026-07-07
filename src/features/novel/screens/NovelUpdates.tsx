@@ -9,7 +9,7 @@
 import { useLingui } from '@lingui/react/macro';
 import { useAppTitle } from '@/features/navigation-bar/hooks/useAppTitle.ts';
 import { useNovelUpdates } from '@/features/novel/services/NovelApi.ts';
-import { NovelEntryGrid } from '@/features/novel/components/NovelEntryGrid.tsx';
+import { NovelChapterList } from '@/features/novel/components/NovelChapterList.tsx';
 
 export function NovelUpdates() {
     const { t } = useLingui();
@@ -17,5 +17,5 @@ export function NovelUpdates() {
 
     const { data, loading, available } = useNovelUpdates();
 
-    return <NovelEntryGrid entries={data} loading={loading} available={available} emptyMessage={t`No novel updates`} />;
+    return <NovelChapterList rows={data} loading={loading} available={available} emptyMessage={t`No novel updates`} />;
 }

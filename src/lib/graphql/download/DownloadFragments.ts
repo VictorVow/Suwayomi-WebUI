@@ -20,6 +20,7 @@ export const DOWNLOAD_TYPE_FIELDS = gql`
         manga {
             id
             title
+            sourceId
             downloadCount
         }
 
