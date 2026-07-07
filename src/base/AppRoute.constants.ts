@@ -304,6 +304,11 @@ export const AppRoutes = {
             `/anime/${mangaId}/chapter/${chapterSourceOrder}`,
         state: (state: RouteStateReader) => ({ ...state }),
     },
+    novelReader: {
+        match: '/novel/:mangaId/chapter/:chapterSourceOrder/*',
+        path: (mangaId: MangaIdInfo['id'], chapterSourceOrder: ChapterSourceOrderInfo['sourceOrder']) =>
+            `/novel/${mangaId}/chapter/${chapterSourceOrder}`,
+    },
     more: {
         match: '/more',
         path: '/more',

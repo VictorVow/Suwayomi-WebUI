@@ -108,6 +108,7 @@ type LibraryMangaNode = GetMangasLibraryQuery['mangas']['nodes'][number];
 type UpdateOrHistoryChapter = {
     id: number;
     name: string;
+    sourceOrder: number;
     manga: {
         id: number;
         title: string;
@@ -120,6 +121,7 @@ type UpdateOrHistoryChapter = {
 const chapterToRow = (chapter: UpdateOrHistoryChapter): NovelChapterRow => ({
     chapterId: chapter.id,
     chapterName: chapter.name,
+    chapterSourceOrder: chapter.sourceOrder,
     mangaId: chapter.manga.id,
     mangaTitle: chapter.manga.title,
     thumbnailUrl: Mangas.getThumbnailUrl(chapter.manga),

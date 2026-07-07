@@ -18,6 +18,9 @@ import { useLingui } from '@lingui/react/macro';
 import { CustomTooltip } from '@/base/components/CustomTooltip.tsx';
 import { requestManager } from '@/lib/requests/RequestManager.ts';
 import { ChapterList } from '@/features/chapter/components/ChapterList.tsx';
+import { ChapterRouteContext } from '@/features/chapter/components/ChapterRouteContext.ts';
+import { Chapters } from '@/features/chapter/services/Chapters.ts';
+import { isNovelSourceId } from '@/features/novel/services/NovelApi.ts';
 import { useRefreshManga } from '@/features/manga/hooks/useRefreshManga.ts';
 import { MangaDetails } from '@/features/manga/components/details/MangaDetails.tsx';
 import { MangaToolbarMenu } from '@/features/manga/components/MangaToolbarMenu.tsx';
@@ -103,8 +106,12 @@ export const Manga: React.FC = () => {
         <Box sx={{ display: { md: 'flex' }, overflow: 'hidden' }}>
             {isLoading && <LoadingPlaceholder />}
 
-            {manga && <MangaDetails manga={manga} mode={mode} />}
-            {manga && <ChapterList manga={manga} isRefreshing={refreshing} />}
+            <ChapterRouteContext.Provider
+                value={manga && isNovelSourceId(manga.sourceId) ? Chapters.getNovelReaderUrl : Chapters.getReaderUrl}
+            >
+                {manga && <MangaDetails manga={manga} mode={mode} />}
+                {manga && <ChapterList manga={manga} isRefreshing={refreshing} />}
+            </ChapterRouteContext.Provider>
         </Box>
     );
 };

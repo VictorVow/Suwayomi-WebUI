@@ -117,6 +117,14 @@ export class Chapters {
         return AppRoutes.player.path(chapter.mangaId, chapter.sourceOrder);
     }
 
+    /**
+     * The novel text reader route for a chapter. Mirrors {@link getReaderUrl}
+     * but targets the full-screen text reader at `/novel/:mangaId/chapter/:n`.
+     */
+    static getNovelReaderUrl<Chapter extends ChapterMangaInfo & ChapterSourceOrderInfo>(chapter: Chapter): string {
+        return AppRoutes.novelReader.path(chapter.mangaId, chapter.sourceOrder);
+    }
+
     static isDownloading(id: number): boolean {
         const activeDownloadStates = [DownloadState.Downloading, DownloadState.Queued];
         const downloadStatus = Chapters.getDownloadStatusFromCache(id);

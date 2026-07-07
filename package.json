@@ -56,6 +56,7 @@
         "awaitable-component": "1.0.0",
         "csstype": "3.2.3",
         "dayjs": "1.11.21",
+        "dompurify": "3.4.11",
         "fast-average-color": "9.5.2",
         "file-selector": "2.1.2",
         "graphql": "16.14.0",

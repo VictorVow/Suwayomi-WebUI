@@ -50,6 +50,7 @@ export interface NovelExtension {
 export interface NovelChapterRow {
     chapterId: number;
     chapterName: string;
+    chapterSourceOrder: number;
     mangaId: number;
     mangaTitle: string;
     thumbnailUrl?: string | null;

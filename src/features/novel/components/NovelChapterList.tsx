@@ -18,8 +18,7 @@ import { NovelUnavailableView } from '@/features/novel/components/NovelUnavailab
 
 /**
  * Renders a novel Updates / History feed as a list of chapter rows. Each row
- * links to the novel's detail page (the chapter list) rather than straight into
- * the reader, since the reader cannot yet render novel text.
+ * links straight into the novel text reader at that chapter.
  */
 export const NovelChapterList = ({
     rows,
@@ -43,7 +42,7 @@ export const NovelChapterList = ({
     return (
         <List>
             {rows.map((row) => (
-                <ListItemLink key={row.chapterId} to={AppRoutes.manga.path(row.mangaId)}>
+                <ListItemLink key={row.chapterId} to={AppRoutes.novelReader.path(row.mangaId, row.chapterSourceOrder)}>
                     <ListItemAvatar>
                         <Avatar variant="rounded" src={row.thumbnailUrl ?? undefined} alt={row.mangaTitle} />
                     </ListItemAvatar>

@@ -68,6 +68,7 @@ const { NovelLibrary } = loadable(() => import('@/features/novel/screens/NovelLi
 const { NovelUpdates } = loadable(() => import('@/features/novel/screens/NovelUpdates.tsx'), lazyLoadFallback);
 const { NovelHistory } = loadable(() => import('@/features/novel/screens/NovelHistory.tsx'), lazyLoadFallback);
 const { NovelDownloads } = loadable(() => import('@/features/novel/screens/NovelDownloads.tsx'), lazyLoadFallback);
+const { NovelReader } = loadable(() => import('@/features/novel/reader/screens/NovelReader.tsx'), lazyLoadFallback);
 const { AnimeLibrary } = loadable(() => import('@/features/anime/screens/AnimeLibrary.tsx'), lazyLoadFallback);
 const { AnimeUpdates } = loadable(() => import('@/features/anime/screens/AnimeUpdates.tsx'), lazyLoadFallback);
 const { AnimeHistory } = loadable(() => import('@/features/anime/screens/AnimeHistory.tsx'), lazyLoadFallback);
@@ -444,6 +445,16 @@ const PlayerApp = () => (
     </ErrorBoundary>
 );
 
+const NovelReaderApp = () => (
+    <ErrorBoundary>
+        <Routes>
+            <Route element={<PrivateRoutes />}>
+                <Route path={AppRoutes.matchAll.match} element={<NovelReader />} />
+            </Route>
+        </Routes>
+    </ErrorBoundary>
+);
+
 export const App: React.FC = () => (
     <AppContext>
         <ScrollToTop />
@@ -469,6 +480,7 @@ export const App: React.FC = () => (
                         <Route path={AppRoutes.matchAll.match} element={<MainApp />} />
                         <Route path={AppRoutes.reader.match} element={<ReaderApp />} />
                         <Route path={AppRoutes.player.match} element={<PlayerApp />} />
+                        <Route path={AppRoutes.novelReader.match} element={<NovelReaderApp />} />
                     </Routes>
                 </Box>
                 <MigrationFABIndicator />

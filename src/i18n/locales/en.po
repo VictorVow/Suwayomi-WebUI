@@ -661,6 +661,10 @@ msgstr "Black"
 msgid "Blue"
 msgstr "Blue"
 
+#: src/features/novel/reader/components/NovelReaderOverlay.tsx
+msgid "Bookmark chapter"
+msgstr "Bookmark chapter"
+
 #: src/features/chapter/Chapter.constants.ts
 msgid "Bookmark selected"
 msgstr "Bookmark selected"
@@ -848,6 +852,7 @@ msgstr "Channel"
 msgid "Chapter"
 msgstr "Chapter"
 
+#: src/features/novel/reader/screens/NovelReader.tsx
 #: src/features/reader/screens/Reader.tsx
 msgid "Chapter does not exist"
 msgstr "Chapter does not exist"
@@ -932,8 +937,13 @@ msgstr "Client data"
 #: src/base/components/feedback/SnackbarWithDescription.tsx
 #: src/features/app-updates/components/VersionUpdateInfoDialog.tsx
 #: src/features/migration/components/migration-entry/MigrationDestinationEntry.tsx
+#: src/features/novel/reader/components/NovelReaderOverlay.tsx
 msgid "Close"
 msgstr "Close"
+
+#: src/features/novel/reader/components/NovelReaderSearch.tsx
+msgid "Close search"
+msgstr "Close search"
 
 #: src/features/settings/screens/ServerSettings.tsx
 msgid "Cloudflare bypass"
@@ -1302,6 +1312,7 @@ msgstr "Cycle reading direction"
 msgid "Cycle reading mode"
 msgstr "Cycle reading mode"
 
+#: src/features/novel/reader/components/NovelReaderOverlay.tsx
 #: src/features/settings/screens/Appearance.tsx
 msgid "Dark"
 msgstr "Dark"
@@ -1326,6 +1337,10 @@ msgstr "Day"
 #: src/features/reader/hotkeys/settings/components/ReaderSettingHotkey.tsx
 msgid "Decrease auto scroll speed"
 msgstr "Decrease auto scroll speed"
+
+#: src/features/novel/reader/components/NovelReaderOverlay.tsx
+msgid "Decrease font size"
+msgstr "Decrease font size"
 
 #: src/base/components/buttons/SelectButton.tsx
 #: src/base/components/buttons/ValueRotationButton.tsx
@@ -2048,6 +2063,10 @@ msgstr "Include: {includedCategoriesText}"
 msgid "Increase auto scroll speed"
 msgstr "Increase auto scroll speed"
 
+#: src/features/novel/reader/components/NovelReaderOverlay.tsx
+msgid "Increase font size"
+msgstr "Increase font size"
+
 #: src/features/settings/screens/ServerSettings.tsx
 #: src/features/settings/screens/WebUISettings.tsx
 msgid "Inform about available update"
@@ -2274,6 +2293,7 @@ msgstr "Library entries"
 msgid "Licensed"
 msgstr "Licensed"
 
+#: src/features/novel/reader/components/NovelReaderOverlay.tsx
 #: src/features/settings/screens/Appearance.tsx
 msgid "Light"
 msgstr "Light"
@@ -2585,6 +2605,10 @@ msgstr "MyAnimeList - Recommendations"
 msgid "MyAnimeList - Related Entries"
 msgstr "MyAnimeList - Related Entries"
 
+#: src/features/novel/reader/components/NovelReaderSearch.tsx
+msgid "n/a"
+msgstr "n/a"
+
 #: src/features/settings/components/images/KeyValueItem.tsx
 #: src/features/theme/components/CreateThemeDialog.tsx
 msgid "Name"
@@ -2603,6 +2627,7 @@ msgstr "New category"
 msgid "Next"
 msgstr "Next"
 
+#: src/features/novel/reader/components/NovelReaderOverlay.tsx
 #: src/features/reader/hotkeys/settings/components/ReaderSettingHotkey.tsx
 #: src/features/reader/overlay/navigation/desktop/components/ReaderNavBarDesktopChapterNavigation.tsx
 msgid "Next chapter"
@@ -2611,6 +2636,10 @@ msgstr "Next chapter"
 #: src/features/anime/player/components/PlayerOverlay.tsx
 msgid "Next episode"
 msgstr "Next episode"
+
+#: src/features/novel/reader/components/NovelReaderSearch.tsx
+msgid "Next match"
+msgstr "Next match"
 
 #: src/features/reader/hotkeys/settings/components/ReaderSettingHotkey.tsx
 #: src/features/reader/overlay/navigation/desktop/components/ReaderNavBarDesktopPageNavigation.tsx
@@ -2991,6 +3020,7 @@ msgstr "Preview"
 msgid "Previous"
 msgstr "Previous"
 
+#: src/features/novel/reader/components/NovelReaderOverlay.tsx
 #: src/features/reader/hotkeys/settings/components/ReaderSettingHotkey.tsx
 #: src/features/reader/overlay/navigation/desktop/components/ReaderNavBarDesktopChapterNavigation.tsx
 msgid "Previous chapter"
@@ -2999,6 +3029,10 @@ msgstr "Previous chapter"
 #: src/features/anime/player/components/PlayerOverlay.tsx
 msgid "Previous episode"
 msgstr "Previous episode"
+
+#: src/features/novel/reader/components/NovelReaderSearch.tsx
+msgid "Previous match"
+msgstr "Previous match"
 
 #: src/features/reader/hotkeys/settings/components/ReaderSettingHotkey.tsx
 #: src/features/reader/overlay/navigation/desktop/components/ReaderNavBarDesktopPageNavigation.tsx
@@ -3318,6 +3352,11 @@ msgstr ""
 "Search for a ID via \"id:<ID>\" (e.g. \"id:13\")\n"
 "Limit search to your lists via \"my:<Title>\" (e.g. \"my:One Piece\")"
 
+#: src/features/novel/reader/components/NovelReaderOverlay.tsx
+#: src/features/novel/reader/components/NovelReaderSearch.tsx
+msgid "Search in chapter"
+msgstr "Search in chapter"
+
 #: src/features/migration/components/MigrationBulkSearchOptionsDialog.tsx
 msgid "Search options"
 msgstr "Search options"
@@ -3395,6 +3434,7 @@ msgstr "Select pinned sources"
 msgid "Selected"
 msgstr "Selected"
 
+#: src/features/novel/reader/components/NovelReaderOverlay.tsx
 #: src/features/reader/filters/settings/components/ReaderSettingSepia.tsx
 msgid "Sepia"
 msgstr "Sepia"
@@ -3760,6 +3800,11 @@ msgstr "Sync will not be triggered if the progress difference is within this tol
 msgid "System"
 msgstr "System"
 
+#: src/features/novel/reader/components/NovelReaderOverlay.tsx
+#: src/features/novel/reader/components/NovelReaderToc.tsx
+msgid "Table of Contents"
+msgstr "Table of Contents"
+
 #: src/features/library/components/LibraryOptionsPanel.tsx
 msgid "Tabs"
 msgstr "Tabs"
@@ -4000,6 +4045,10 @@ msgstr "Type"
 msgid "UI Login"
 msgstr "UI Login"
 
+#: src/features/novel/reader/screens/NovelReader.tsx
+msgid "Unable to load chapter text"
+msgstr "Unable to load chapter text"
+
 #: src/features/backup/screens/Backup.tsx
 #: src/features/browse/extensions/Extensions.tsx
 #: src/features/browse/screens/BrowseSettings.tsx
@@ -4018,6 +4067,7 @@ msgstr "UI Login"
 #: src/features/manga/hooks/useManageMangaLibraryState.tsx
 #: src/features/migration/screens/MigrationSelectMangas.tsx
 #: src/features/migration/screens/MigrationSelectSource.tsx
+#: src/features/novel/reader/screens/NovelReader.tsx
 #: src/features/reader/screens/Reader.tsx
 #: src/features/reader/settings/screens/GlobalReaderSettings.tsx
 #: src/features/reader/viewer/ReaderChapterViewer.tsx
