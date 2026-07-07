@@ -215,6 +215,16 @@ const ReactRouterSetter = () => {
     return null;
 };
 
+/**
+ * Redirects a legacy (pre-`/manga` slug) path to its new location while
+ * preserving any query string and hash, so old bookmarks and deep links keep
+ * working (e.g. `/browse?tab=extensions` -> `/manga/browse?tab=extensions`).
+ */
+const LegacyRedirect = ({ to }: { to: string }) => {
+    const { search, hash } = useLocation();
+    return <Navigate to={`${to}${search}${hash}`} replace />;
+};
+
 const ResumeMigration = () => {
     useEffect(() => {
         if (!MigrationManager.isActive()) {
@@ -363,7 +373,13 @@ const MainApp = () => {
                         <Route path={AppRoutes.updates.match} element={<Updates />} />
                         {!hideHistory && <Route path={AppRoutes.history.match} element={<History />} />}
                         <Route path={AppRoutes.browse.match} element={<Browse />} />
-                        <Route path={AppRoutes.browse.match} element={<Browse />} />
+
+                        {/* Legacy redirects: old top-level paths -> new /manga/* slugs */}
+                        <Route path="library" element={<LegacyRedirect to={AppRoutes.library.path()} />} />
+                        <Route path="updates" element={<LegacyRedirect to={AppRoutes.updates.path} />} />
+                        <Route path="history" element={<LegacyRedirect to={AppRoutes.history.path} />} />
+                        <Route path="browse" element={<LegacyRedirect to={AppRoutes.browse.path()} />} />
+                        <Route path="downloads" element={<LegacyRedirect to={AppRoutes.downloads.path} />} />
                         <Route path={AppRoutes.migrate.match}>
                             <Route index element={<Migration />} />
                             <Route path={AppRoutes.migrate.children.singleMangaSearch.match} element={<SearchAll />} />

@@ -162,8 +162,8 @@ export const AppRoutes = {
         },
     },
     downloads: {
-        match: 'downloads',
-        path: '/downloads',
+        match: 'manga/downloads',
+        path: '/manga/downloads',
     },
     manga: {
         match: 'manga/:id',
@@ -177,9 +177,9 @@ export const AppRoutes = {
         },
     },
     library: {
-        match: 'library',
+        match: 'manga/library',
         path: (tab?: string, search?: string) =>
-            UrlUtil.addParams('/library', {
+            UrlUtil.addParams('/manga/library', {
                 ...UrlUtil.createTabParam(tab),
                 ...UrlUtil.createQueryParam(search),
             }),
@@ -189,21 +189,21 @@ export const AppRoutes = {
         path: '/recommended',
     },
     updates: {
-        match: 'updates',
-        path: '/updates',
+        match: 'manga/updates',
+        path: '/manga/updates',
     },
     history: {
-        match: 'history',
-        path: '/history',
+        match: 'manga/history',
+        path: '/manga/history',
     },
     recent: {
         match: 'recent',
         path: '/recent',
     },
     browse: {
-        match: 'browse',
+        match: 'manga/browse',
         path: (tab?: BrowseTab) =>
-            UrlUtil.addParams('/browse', {
+            UrlUtil.addParams('/manga/browse', {
                 [SearchParam.TAB]: tab,
             }),
     },
