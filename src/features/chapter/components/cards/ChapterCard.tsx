@@ -23,6 +23,7 @@ import { CustomTooltip } from '@/base/components/CustomTooltip.tsx';
 import { getDateString } from '@/base/utils/DateHelper.ts';
 import { DownloadStateIndicator } from '@/base/components/downloads/DownloadStateIndicator.tsx';
 import { ChapterActionMenuItems } from '@/features/chapter/components/actions/ChapterActionMenuItems.tsx';
+import { useChapterRoute } from '@/features/chapter/components/ChapterRouteContext.ts';
 import { Menu } from '@/base/components/menu/Menu.tsx';
 import { Chapters } from '@/features/chapter/services/Chapters.ts';
 import { applyStyles } from '@/base/utils/ApplyStyles.ts';
@@ -78,6 +79,7 @@ export const ChapterCard = memo((props: IProps) => {
     const { t } = useLingui();
     const theme = useTheme();
     const preventMobileContextMenu = MediaQuery.usePreventMobileContextMenu();
+    const getChapterUrl = useChapterRoute();
 
     const menuButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -131,7 +133,7 @@ export const ChapterCard = memo((props: IProps) => {
                     >
                         <CardActionArea
                             component={Link}
-                            to={Chapters.getReaderUrl(chapter)}
+                            to={getChapterUrl(chapter)}
                             onContextMenu={preventMobileContextMenu}
                             sx={MediaQuery.preventMobileContextMenuSx()}
                             style={{

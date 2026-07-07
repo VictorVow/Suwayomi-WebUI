@@ -7,9 +7,13 @@ export type Scalars = {
     Boolean: { input: boolean; output: boolean };
     Int: { input: number; output: number };
     Float: { input: number; output: number };
+    /** A location in a connection that can be used for resuming pagination. */
     Cursor: { input: string; output: string };
+    /** An ISO-8601 encoded duration string */
     Duration: { input: string; output: string };
+    /** A 64-bit signed integer as a String */
     LongString: { input: string; output: string };
+    /** A file part in a multipart request */
     Upload: { input: unknown; output: unknown };
 };
 
@@ -772,6 +776,7 @@ export type ExtensionType = {
     isInstalled: Scalars['Boolean']['output'];
     isNsfw: Scalars['Boolean']['output'];
     isObsolete: Scalars['Boolean']['output'];
+    kind: SourceKind;
     lang: Scalars['String']['output'];
     name: Scalars['String']['output'];
     pkgName: Scalars['String']['output'];
@@ -1180,6 +1185,18 @@ export type MangaOrderInput = {
     byType?: InputMaybe<SortOrder>;
 };
 
+export type MangaRelatedInput = {
+    mangaId: Scalars['Int']['input'];
+};
+
+export type MangaRelatedPayload = {
+    __typename?: 'MangaRelatedPayload';
+    anilistRecommendations: Array<TrackRelatedMangaType>;
+    anilistRelations: Array<TrackRelatedMangaType>;
+    myanimelistRecommendations: Array<TrackRelatedMangaType>;
+    myanimelistRelations: Array<TrackRelatedMangaType>;
+};
+
 export enum MangaStatus {
     Cancelled = 'CANCELLED',
     Completed = 'COMPLETED',
@@ -1363,6 +1380,7 @@ export type Mutation = {
     setSourceMeta?: Maybe<SetSourceMetaPayload>;
     setSourceMetas?: Maybe<SetSourceMetasPayload>;
     startDownloader?: Maybe<StartDownloaderPayload>;
+    startSync: StartSyncPayload;
     stopDownloader?: Maybe<StopDownloaderPayload>;
     trackProgress?: Maybe<TrackProgressPayload>;
     unbindTrack: UnbindTrackPayload;
@@ -1598,6 +1616,10 @@ export type MutationStartDownloaderArgs = {
     input: StartDownloaderInput;
 };
 
+export type MutationStartSyncArgs = {
+    input: StartSyncInput;
+};
+
 export type MutationStopDownloaderArgs = {
     input: StopDownloaderInput;
 };
@@ -1788,6 +1810,7 @@ export type PartialSettingsType = Settings & {
     jwtAudience?: Maybe<Scalars['String']['output']>;
     jwtRefreshExpiry?: Maybe<Scalars['Duration']['output']>;
     jwtTokenExpiry?: Maybe<Scalars['Duration']['output']>;
+    kcefEnabled?: Maybe<Scalars['Boolean']['output']>;
     koreaderSyncChecksumMethod?: Maybe<KoreaderSyncChecksumMethod>;
     /** @deprecated Moved to preference store. Is supposed to be random and gets auto generated, replace with MOVE TO PREFERENCES */
     koreaderSyncDeviceId?: Maybe<Scalars['String']['output']>;
@@ -1814,6 +1837,7 @@ export type PartialSettingsType = Settings & {
     opdsMarkAsReadOnDownload?: Maybe<Scalars['Boolean']['output']>;
     opdsShowOnlyDownloadedChapters?: Maybe<Scalars['Boolean']['output']>;
     opdsShowOnlyUnreadChapters?: Maybe<Scalars['Boolean']['output']>;
+    opdsSkipChapterMetadataFeed?: Maybe<Scalars['Boolean']['output']>;
     opdsUseBinaryFileSizes?: Maybe<Scalars['Boolean']['output']>;
     port?: Maybe<Scalars['Int']['output']>;
     serveConversions?: Maybe<Array<SettingsDownloadConversionType>>;
@@ -1823,6 +1847,15 @@ export type PartialSettingsType = Settings & {
     socksProxyPort?: Maybe<Scalars['String']['output']>;
     socksProxyUsername?: Maybe<Scalars['String']['output']>;
     socksProxyVersion?: Maybe<Scalars['Int']['output']>;
+    syncDataCategories?: Maybe<Scalars['Boolean']['output']>;
+    syncDataChapters?: Maybe<Scalars['Boolean']['output']>;
+    syncDataHistory?: Maybe<Scalars['Boolean']['output']>;
+    syncDataManga?: Maybe<Scalars['Boolean']['output']>;
+    syncDataTracking?: Maybe<Scalars['Boolean']['output']>;
+    syncInterval?: Maybe<Scalars['Duration']['output']>;
+    syncYomiApiKey?: Maybe<Scalars['String']['output']>;
+    syncYomiEnabled?: Maybe<Scalars['Boolean']['output']>;
+    syncYomiHost?: Maybe<Scalars['String']['output']>;
     systemTrayEnabled?: Maybe<Scalars['Boolean']['output']>;
     updateMangas?: Maybe<Scalars['Boolean']['output']>;
     useHikariConnectionPool?: Maybe<Scalars['Boolean']['output']>;
@@ -1876,6 +1909,7 @@ export type PartialSettingsTypeInput = {
     jwtAudience?: InputMaybe<Scalars['String']['input']>;
     jwtRefreshExpiry?: InputMaybe<Scalars['Duration']['input']>;
     jwtTokenExpiry?: InputMaybe<Scalars['Duration']['input']>;
+    kcefEnabled?: InputMaybe<Scalars['Boolean']['input']>;
     koreaderSyncChecksumMethod?: InputMaybe<KoreaderSyncChecksumMethod>;
     koreaderSyncPercentageTolerance?: InputMaybe<Scalars['Float']['input']>;
     koreaderSyncStrategyBackward?: InputMaybe<KoreaderSyncConflictStrategy>;
@@ -1892,6 +1926,7 @@ export type PartialSettingsTypeInput = {
     opdsMarkAsReadOnDownload?: InputMaybe<Scalars['Boolean']['input']>;
     opdsShowOnlyDownloadedChapters?: InputMaybe<Scalars['Boolean']['input']>;
     opdsShowOnlyUnreadChapters?: InputMaybe<Scalars['Boolean']['input']>;
+    opdsSkipChapterMetadataFeed?: InputMaybe<Scalars['Boolean']['input']>;
     opdsUseBinaryFileSizes?: InputMaybe<Scalars['Boolean']['input']>;
     port?: InputMaybe<Scalars['Int']['input']>;
     serveConversions?: InputMaybe<Array<SettingsDownloadConversionTypeInput>>;
@@ -1901,6 +1936,15 @@ export type PartialSettingsTypeInput = {
     socksProxyPort?: InputMaybe<Scalars['String']['input']>;
     socksProxyUsername?: InputMaybe<Scalars['String']['input']>;
     socksProxyVersion?: InputMaybe<Scalars['Int']['input']>;
+    syncDataCategories?: InputMaybe<Scalars['Boolean']['input']>;
+    syncDataChapters?: InputMaybe<Scalars['Boolean']['input']>;
+    syncDataHistory?: InputMaybe<Scalars['Boolean']['input']>;
+    syncDataManga?: InputMaybe<Scalars['Boolean']['input']>;
+    syncDataTracking?: InputMaybe<Scalars['Boolean']['input']>;
+    syncInterval?: InputMaybe<Scalars['Duration']['input']>;
+    syncYomiApiKey?: InputMaybe<Scalars['String']['input']>;
+    syncYomiEnabled?: InputMaybe<Scalars['Boolean']['input']>;
+    syncYomiHost?: InputMaybe<Scalars['String']['input']>;
     systemTrayEnabled?: InputMaybe<Scalars['Boolean']['input']>;
     updateMangas?: InputMaybe<Scalars['Boolean']['input']>;
     useHikariConnectionPool?: InputMaybe<Scalars['Boolean']['input']>;
@@ -1956,9 +2000,11 @@ export type Query = {
     extensions: ExtensionNodeList;
     getWebUIUpdateStatus: WebUiUpdateStatus;
     koSyncStatus: KoSyncStatusPayload;
+    lastSyncStatus?: Maybe<SyncStatus>;
     lastUpdateTimestamp: LastUpdateTimestampPayload;
     libraryUpdateStatus: LibraryUpdateStatus;
     manga: MangaType;
+    mangaRelated: MangaRelatedPayload;
     mangas: MangaNodeList;
     meta: GlobalMetaType;
     metas: GlobalMetaNodeList;
@@ -2023,6 +2069,10 @@ export type QueryExtensionsArgs = {
 
 export type QueryMangaArgs = {
     id: Scalars['Int']['input'];
+};
+
+export type QueryMangaRelatedArgs = {
+    input: MangaRelatedInput;
 };
 
 export type QueryMangasArgs = {
@@ -2374,6 +2424,7 @@ export type Settings = {
     jwtAudience?: Maybe<Scalars['String']['output']>;
     jwtRefreshExpiry?: Maybe<Scalars['Duration']['output']>;
     jwtTokenExpiry?: Maybe<Scalars['Duration']['output']>;
+    kcefEnabled?: Maybe<Scalars['Boolean']['output']>;
     koreaderSyncChecksumMethod?: Maybe<KoreaderSyncChecksumMethod>;
     /** @deprecated Moved to preference store. Is supposed to be random and gets auto generated, replace with MOVE TO PREFERENCES */
     koreaderSyncDeviceId?: Maybe<Scalars['String']['output']>;
@@ -2400,6 +2451,7 @@ export type Settings = {
     opdsMarkAsReadOnDownload?: Maybe<Scalars['Boolean']['output']>;
     opdsShowOnlyDownloadedChapters?: Maybe<Scalars['Boolean']['output']>;
     opdsShowOnlyUnreadChapters?: Maybe<Scalars['Boolean']['output']>;
+    opdsSkipChapterMetadataFeed?: Maybe<Scalars['Boolean']['output']>;
     opdsUseBinaryFileSizes?: Maybe<Scalars['Boolean']['output']>;
     port?: Maybe<Scalars['Int']['output']>;
     serveConversions?: Maybe<Array<SettingsDownloadConversion>>;
@@ -2409,6 +2461,15 @@ export type Settings = {
     socksProxyPort?: Maybe<Scalars['String']['output']>;
     socksProxyUsername?: Maybe<Scalars['String']['output']>;
     socksProxyVersion?: Maybe<Scalars['Int']['output']>;
+    syncDataCategories?: Maybe<Scalars['Boolean']['output']>;
+    syncDataChapters?: Maybe<Scalars['Boolean']['output']>;
+    syncDataHistory?: Maybe<Scalars['Boolean']['output']>;
+    syncDataManga?: Maybe<Scalars['Boolean']['output']>;
+    syncDataTracking?: Maybe<Scalars['Boolean']['output']>;
+    syncInterval?: Maybe<Scalars['Duration']['output']>;
+    syncYomiApiKey?: Maybe<Scalars['String']['output']>;
+    syncYomiEnabled?: Maybe<Scalars['Boolean']['output']>;
+    syncYomiHost?: Maybe<Scalars['String']['output']>;
     systemTrayEnabled?: Maybe<Scalars['Boolean']['output']>;
     updateMangas?: Maybe<Scalars['Boolean']['output']>;
     useHikariConnectionPool?: Maybe<Scalars['Boolean']['output']>;
@@ -2517,6 +2578,7 @@ export type SettingsType = Settings & {
     jwtAudience: Scalars['String']['output'];
     jwtRefreshExpiry: Scalars['Duration']['output'];
     jwtTokenExpiry: Scalars['Duration']['output'];
+    kcefEnabled: Scalars['Boolean']['output'];
     koreaderSyncChecksumMethod: KoreaderSyncChecksumMethod;
     /** @deprecated Moved to preference store. Is supposed to be random and gets auto generated, replace with MOVE TO PREFERENCES */
     koreaderSyncDeviceId: Scalars['String']['output'];
@@ -2543,6 +2605,7 @@ export type SettingsType = Settings & {
     opdsMarkAsReadOnDownload: Scalars['Boolean']['output'];
     opdsShowOnlyDownloadedChapters: Scalars['Boolean']['output'];
     opdsShowOnlyUnreadChapters: Scalars['Boolean']['output'];
+    opdsSkipChapterMetadataFeed: Scalars['Boolean']['output'];
     opdsUseBinaryFileSizes: Scalars['Boolean']['output'];
     port: Scalars['Int']['output'];
     serveConversions: Array<SettingsDownloadConversionType>;
@@ -2552,6 +2615,15 @@ export type SettingsType = Settings & {
     socksProxyPort: Scalars['String']['output'];
     socksProxyUsername: Scalars['String']['output'];
     socksProxyVersion: Scalars['Int']['output'];
+    syncDataCategories: Scalars['Boolean']['output'];
+    syncDataChapters: Scalars['Boolean']['output'];
+    syncDataHistory: Scalars['Boolean']['output'];
+    syncDataManga: Scalars['Boolean']['output'];
+    syncDataTracking: Scalars['Boolean']['output'];
+    syncInterval: Scalars['Duration']['output'];
+    syncYomiApiKey: Scalars['String']['output'];
+    syncYomiEnabled: Scalars['Boolean']['output'];
+    syncYomiHost: Scalars['String']['output'];
     systemTrayEnabled: Scalars['Boolean']['output'];
     updateMangas: Scalars['Boolean']['output'];
     useHikariConnectionPool: Scalars['Boolean']['output'];
@@ -2611,6 +2683,11 @@ export type SourceFilterInput = {
     or?: InputMaybe<Array<SourceFilterInput>>;
 };
 
+export enum SourceKind {
+    Anime = 'ANIME',
+    Manga = 'MANGA',
+}
+
 export type SourceMetaType = MetaType & {
     __typename?: 'SourceMetaType';
     key: Scalars['String']['output'];
@@ -2663,6 +2740,7 @@ export type SourceType = {
     id: Scalars['LongString']['output'];
     isConfigurable: Scalars['Boolean']['output'];
     isNsfw: Scalars['Boolean']['output'];
+    kind: SourceKind;
     lang: Scalars['String']['output'];
     manga: MangaNodeList;
     meta: Array<SourceMetaType>;
@@ -2680,6 +2758,22 @@ export type StartDownloaderPayload = {
     clientMutationId?: Maybe<Scalars['String']['output']>;
     downloadStatus: DownloadStatus;
 };
+
+export type StartSyncInput = {
+    clientMutationId?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type StartSyncPayload = {
+    __typename?: 'StartSyncPayload';
+    clientMutationId?: Maybe<Scalars['String']['output']>;
+    result: StartSyncResult;
+};
+
+export enum StartSyncResult {
+    Success = 'SUCCESS',
+    SyncDisabled = 'SYNC_DISABLED',
+    SyncInProgress = 'SYNC_IN_PROGRESS',
+}
 
 export type StopDownloaderInput = {
     clientMutationId?: InputMaybe<Scalars['String']['input']>;
@@ -2773,6 +2867,7 @@ export type Subscription = {
     downloadChanged: DownloadStatus;
     downloadStatusChanged: DownloadUpdates;
     libraryUpdateStatusChanged: UpdaterUpdates;
+    syncStatusChanged: SyncStatus;
     /** @deprecated Replaced with updates, replace with updates(input) */
     updateStatusChanged: UpdateStatus;
     webUIUpdateStatusChange: WebUiUpdateStatus;
@@ -2801,6 +2896,26 @@ export type SyncConflictInfoType = {
     __typename?: 'SyncConflictInfoType';
     deviceName: Scalars['String']['output'];
     remotePage: Scalars['Int']['output'];
+};
+
+export enum SyncState {
+    CreatingBackup = 'CREATING_BACKUP',
+    Downloading = 'DOWNLOADING',
+    Error = 'ERROR',
+    Merging = 'MERGING',
+    Restoring = 'RESTORING',
+    Started = 'STARTED',
+    Success = 'SUCCESS',
+    Uploading = 'UPLOADING',
+}
+
+export type SyncStatus = {
+    __typename?: 'SyncStatus';
+    backupRestoreId?: Maybe<Scalars['String']['output']>;
+    endDate?: Maybe<Scalars['LongString']['output']>;
+    errorMessage?: Maybe<Scalars['String']['output']>;
+    startDate: Scalars['LongString']['output'];
+    state: SyncState;
 };
 
 export type TextFilter = {
@@ -2909,6 +3024,15 @@ export type TrackRecordType = {
     totalChapters: Scalars['Int']['output'];
     tracker: TrackerType;
     trackerId: Scalars['Int']['output'];
+};
+
+export type TrackRelatedMangaType = {
+    __typename?: 'TrackRelatedMangaType';
+    coverUrl: Scalars['String']['output'];
+    relationType?: Maybe<Scalars['String']['output']>;
+    remoteId: Scalars['LongString']['output'];
+    title: Scalars['String']['output'];
+    trackingUrl: Scalars['String']['output'];
 };
 
 export type TrackSearchType = {

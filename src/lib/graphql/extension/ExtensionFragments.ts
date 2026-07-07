@@ -21,5 +21,6 @@ export const EXTENSION_LIST_FIELDS = gql`
         isInstalled
         isObsolete
         hasUpdate
+        kind
     }
 `;

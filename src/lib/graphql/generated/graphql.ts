@@ -352,6 +352,7 @@ export type GetCategoryMangasQuery = {
                     displayName: string;
                     lang: string;
                     iconUrl: string;
+                    kind: Types.SourceKind;
                 } | null;
                 trackRecords: {
                     __typename: 'TrackRecordNodeList';
@@ -1330,6 +1331,7 @@ export type ExtensionListFieldsFragment = {
     isInstalled: boolean;
     isObsolete: boolean;
     hasUpdate: boolean;
+    kind: Types.SourceKind;
 };
 
 export type GetExtensionsFetchMutationVariables = Exact<{
@@ -1353,6 +1355,7 @@ export type GetExtensionsFetchMutation = {
             isInstalled: boolean;
             isObsolete: boolean;
             hasUpdate: boolean;
+            kind: Types.SourceKind;
         }>;
     } | null;
 };
@@ -1378,6 +1381,7 @@ export type UpdateExtensionMutation = {
             isInstalled: boolean;
             isObsolete: boolean;
             hasUpdate: boolean;
+            kind: Types.SourceKind;
         } | null;
     } | null;
 };
@@ -1403,6 +1407,7 @@ export type UpdateExtensionsMutation = {
             isInstalled: boolean;
             isObsolete: boolean;
             hasUpdate: boolean;
+            kind: Types.SourceKind;
         }>;
     } | null;
 };
@@ -1428,6 +1433,7 @@ export type InstallExternalExtensionMutation = {
             isInstalled: boolean;
             isObsolete: boolean;
             hasUpdate: boolean;
+            kind: Types.SourceKind;
         };
     } | null;
 };
@@ -1451,6 +1457,7 @@ export type GetExtensionQuery = {
         isInstalled: boolean;
         isObsolete: boolean;
         hasUpdate: boolean;
+        kind: Types.SourceKind;
     };
 };
 
@@ -1483,6 +1490,7 @@ export type GetExtensionsQuery = {
             isInstalled: boolean;
             isObsolete: boolean;
             hasUpdate: boolean;
+            kind: Types.SourceKind;
         }>;
         pageInfo: {
             __typename: 'PageInfo';
@@ -1621,6 +1629,7 @@ export type MangaReaderFieldsFragment = {
         displayName: string;
         lang: string;
         iconUrl: string;
+        kind: Types.SourceKind;
     } | null;
     meta: Array<{ __typename: 'MangaMetaType'; mangaId: number; key: string; value: string }>;
     chapters: { __typename: 'ChapterNodeList'; totalCount: number };
@@ -1655,6 +1664,7 @@ export type MangaLibraryFieldsFragment = {
         displayName: string;
         lang: string;
         iconUrl: string;
+        kind: Types.SourceKind;
     } | null;
     trackRecords: {
         __typename: 'TrackRecordNodeList';
@@ -1737,6 +1747,7 @@ export type MangaScreenFieldsFragment = {
         displayName: string;
         lang: string;
         iconUrl: string;
+        kind: Types.SourceKind;
     } | null;
     trackRecords: {
         __typename: 'TrackRecordNodeList';
@@ -1815,6 +1826,7 @@ export type GetMangaFetchMutation = {
                 displayName: string;
                 lang: string;
                 iconUrl: string;
+                kind: Types.SourceKind;
             } | null;
             trackRecords: {
                 __typename: 'TrackRecordNodeList';
@@ -1902,6 +1914,7 @@ export type RefreshMangaMutation = {
                 displayName: string;
                 lang: string;
                 iconUrl: string;
+                kind: Types.SourceKind;
             } | null;
             trackRecords: {
                 __typename: 'TrackRecordNodeList';
@@ -2171,6 +2184,7 @@ export type GetMangaScreenQuery = {
             displayName: string;
             lang: string;
             iconUrl: string;
+            kind: Types.SourceKind;
         } | null;
         trackRecords: {
             __typename: 'TrackRecordNodeList';
@@ -2219,6 +2233,7 @@ export type GetMangaReaderQuery = {
             displayName: string;
             lang: string;
             iconUrl: string;
+            kind: Types.SourceKind;
         } | null;
         meta: Array<{ __typename: 'MangaMetaType'; mangaId: number; key: string; value: string }>;
         chapters: { __typename: 'ChapterNodeList'; totalCount: number };
@@ -2399,6 +2414,7 @@ export type GetMangasLibraryQuery = {
                 displayName: string;
                 lang: string;
                 iconUrl: string;
+                kind: Types.SourceKind;
             } | null;
             trackRecords: {
                 __typename: 'TrackRecordNodeList';
@@ -3149,6 +3165,7 @@ export type SourceBaseFieldsFragment = {
     displayName: string;
     lang: string;
     iconUrl: string;
+    kind: Types.SourceKind;
 };
 
 export type SourceListFieldsFragment = {
@@ -3161,6 +3178,7 @@ export type SourceListFieldsFragment = {
     id: string;
     name: string;
     displayName: string;
+    kind: Types.SourceKind;
     meta: Array<{ __typename: 'SourceMetaType'; sourceId: string; key: string; value: string }>;
     extension: { __typename: 'ExtensionType'; pkgName: string; repo: string | null };
 };
@@ -3175,6 +3193,7 @@ export type SourceBrowseFieldsFragment = {
     displayName: string;
     lang: string;
     iconUrl: string;
+    kind: Types.SourceKind;
     meta: Array<{ __typename: 'SourceMetaType'; sourceId: string; key: string; value: string }>;
     filters: Array<
         | { __typename: 'CheckBoxFilter'; name: string; type: 'CheckBoxFilter'; CheckBoxFilterDefault: boolean }
@@ -3243,6 +3262,7 @@ export type SourceSettingFieldsFragment = {
     displayName: string;
     lang: string;
     iconUrl: string;
+    kind: Types.SourceKind;
     preferences: Array<
         | {
               __typename: 'CheckBoxPreference';
@@ -3383,6 +3403,7 @@ export type UpdateSourcePreferencesMutation = {
             displayName: string;
             lang: string;
             iconUrl: string;
+            kind: Types.SourceKind;
             preferences: Array<
                 | {
                       __typename: 'CheckBoxPreference';
@@ -3490,6 +3511,7 @@ export type GetSourceBrowseQuery = {
         displayName: string;
         lang: string;
         iconUrl: string;
+        kind: Types.SourceKind;
         meta: Array<{ __typename: 'SourceMetaType'; sourceId: string; key: string; value: string }>;
         filters: Array<
             | { __typename: 'CheckBoxFilter'; name: string; type: 'CheckBoxFilter'; CheckBoxFilterDefault: boolean }
@@ -3574,6 +3596,7 @@ export type GetSourceSettingsQuery = {
         displayName: string;
         lang: string;
         iconUrl: string;
+        kind: Types.SourceKind;
         preferences: Array<
             | {
                   __typename: 'CheckBoxPreference';
@@ -3639,7 +3662,15 @@ export type GetSourceMigratableQueryVariables = Exact<{
 
 export type GetSourceMigratableQuery = {
     __typename: 'Query';
-    source: { __typename: 'SourceType'; id: string; name: string; displayName: string; lang: string; iconUrl: string };
+    source: {
+        __typename: 'SourceType';
+        id: string;
+        name: string;
+        displayName: string;
+        lang: string;
+        iconUrl: string;
+        kind: Types.SourceKind;
+    };
 };
 
 export type GetSourcesListQueryVariables = Exact<{ [key: string]: never }>;
@@ -3658,6 +3689,7 @@ export type GetSourcesListQuery = {
             id: string;
             name: string;
             displayName: string;
+            kind: Types.SourceKind;
             meta: Array<{ __typename: 'SourceMetaType'; sourceId: string; key: string; value: string }>;
             extension: { __typename: 'ExtensionType'; pkgName: string; repo: string | null };
         }>;
@@ -3680,6 +3712,7 @@ export type GetMigratableSourcesQuery = {
                 displayName: string;
                 lang: string;
                 iconUrl: string;
+                kind: Types.SourceKind;
             } | null;
         }>;
     };

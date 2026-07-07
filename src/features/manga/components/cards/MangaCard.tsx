@@ -20,6 +20,7 @@ import { MangaBadges } from '@/features/manga/components/MangaBadges.tsx';
 import { GridLayout } from '@/base/Base.types.ts';
 import { AppRoutes } from '@/base/AppRoute.constants.ts';
 import { useMetadataServerSettings } from '@/features/settings/services/ServerSettingsMetadata.ts';
+import { useMangaRoute } from '@/features/manga/components/MangaRouteContext.ts';
 import { makeToast } from '@/base/utils/Toast.ts';
 import { t } from '@lingui/core/macro';
 import { useParams } from 'react-router-dom';
@@ -34,12 +35,12 @@ import { assertIsDefined } from '@/base/Asserts.ts';
 import { usePress } from '@/base/hooks/usePress.ts';
 import { Confirmation } from '@/base/AppAwaitableComponent.ts';
 
-const getMangaLinkTo = (mode: MangaCardMode, mangaId: number): string => {
+const getMangaLinkTo = (mode: MangaCardMode, mangaId: number, baseUrl: (id: number) => string): string => {
     switch (mode) {
         case 'default':
         case 'source':
         case 'duplicate':
-            return AppRoutes.manga.path(mangaId);
+            return baseUrl(mangaId);
         case 'migrate.select.single':
         case 'migrate.select.bulk':
             return '';
@@ -69,7 +70,8 @@ export const MangaCard = memo((props: MangaCardProps) => {
 
     const { updateLibraryState, isInLibrary } = useManageMangaLibraryState(manga, mode === 'source');
 
-    const mangaLinkTo = getMangaLinkTo(mode, manga.id);
+    const getMangaRouteUrl = useMangaRoute();
+    const mangaLinkTo = getMangaLinkTo(mode, manga.id, getMangaRouteUrl);
 
     const handleClick = useCallback(
         (event: React.MouseEvent | React.TouchEvent, openMenu?: () => void) => {

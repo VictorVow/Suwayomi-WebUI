@@ -370,6 +370,10 @@ msgstr "Active setting ({title})"
 msgid "Add"
 msgstr "Add"
 
+#: src/features/anime/components/AnimeUnavailableView.tsx
+msgid "Add an Aniyomi extension repository under Settings → Browse, then install an anime source from the Extensions tab."
+msgstr "Add an Aniyomi extension repository under Settings → Browse, then install an anime source from the Extensions tab."
+
 #: src/features/novel/components/NovelUnavailableView.tsx
 msgid "Add an LNReader plugin repository under Settings → Browse, then install a novel source from the Extensions tab."
 msgstr "Add an LNReader plugin repository under Settings → Browse, then install a novel source from the Extensions tab."
@@ -450,10 +454,27 @@ msgstr "AniList - Recommendations"
 msgid "AniList - Relations"
 msgstr "AniList - Relations"
 
+#: src/features/anime/screens/Anime.tsx
 #: src/features/navigation-bar/NavigationBar.constants.ts
 #: src/features/recommended/AniList.ts
 msgid "Anime"
 msgstr "Anime"
+
+#: src/features/anime/screens/AnimeDownloads.tsx
+msgid "Anime Downloads"
+msgstr "Anime Downloads"
+
+#: src/features/anime/screens/AnimeHistory.tsx
+msgid "Anime History"
+msgstr "Anime History"
+
+#: src/features/anime/screens/AnimeLibrary.tsx
+msgid "Anime Library"
+msgstr "Anime Library"
+
+#: src/features/anime/screens/AnimeUpdates.tsx
+msgid "Anime Updates"
+msgstr "Anime Updates"
 
 #: src/features/settings/screens/Appearance.tsx
 #: src/features/settings/screens/Settings.tsx
@@ -484,6 +505,10 @@ msgstr "Artist"
 #: src/features/settings/screens/ServerSettings.tsx
 msgid "Ascending"
 msgstr "Ascending"
+
+#: src/features/anime/player/components/PlayerOverlay.tsx
+msgid "Audio"
+msgstr "Audio"
 
 #: src/features/settings/screens/ServerSettings.tsx
 msgid "Authentication"
@@ -676,6 +701,10 @@ msgstr "Bright Pink"
 #: src/features/settings/screens/Settings.tsx
 msgid "Browse"
 msgstr "Browse"
+
+#: src/features/anime/screens/AnimeBrowse.tsx
+msgid "Browse anime"
+msgstr "Browse anime"
 
 #: src/features/novel/screens/NovelBrowse.tsx
 msgid "Browse novels"
@@ -1058,6 +1087,10 @@ msgstr "Could not find source. Check your installed extensions."
 #: src/features/browse/extensions/Extensions.tsx
 msgid "Could not install the extension"
 msgstr "Could not install the extension"
+
+#: src/features/anime/screens/Anime.tsx
+msgid "Could not load anime"
+msgstr "Could not load anime"
 
 #: src/features/category/screens/CategorySettings.tsx
 #: src/features/manga/hooks/useManageMangaLibraryState.tsx
@@ -1585,6 +1618,10 @@ msgstr "Entry \"{0} ({1}; {sourceTitle} ({2}))\" in invalid state \"{3}\""
 msgid "Entry \"{id}\" not found"
 msgstr "Entry \"{id}\" not found"
 
+#: src/features/anime/player/screens/Player.tsx
+msgid "Episode not found"
+msgstr "Episode not found"
+
 #: src/base/components/downloads/DownloadStateIndicator.tsx
 #: src/base/components/feedback/SnackbarWithDescription.tsx
 msgid "Error"
@@ -1624,6 +1661,7 @@ msgstr "Exit to manga page"
 msgid "Exit to previous page"
 msgstr "Exit to previous page"
 
+#: src/features/anime/screens/AnimeBrowse.tsx
 #: src/features/browse/screens/Browse.tsx
 #: src/features/novel/screens/NovelBrowse.tsx
 msgid "Extension"
@@ -1648,6 +1686,10 @@ msgstr "Failed to connect to KOReader Sync server."
 #: src/features/settings/components/koreaderSync/KoreaderSyncSettings.tsx
 msgid "Failed to disconnect from KOReader Sync server."
 msgstr "Failed to disconnect from KOReader Sync server."
+
+#: src/features/anime/screens/AnimeLibrary.tsx
+msgid "Failed to load the anime library"
+msgstr "Failed to load the anime library"
 
 #: src/features/novel/screens/NovelLibrary.tsx
 msgid "Failed to load the novel library"
@@ -1798,9 +1840,17 @@ msgstr "Forest Dew"
 msgid "Forget manga categories"
 msgstr "Forget manga categories"
 
+#: src/features/anime/player/components/PlayerOverlay.tsx
+msgid "Forward 10 seconds"
+msgstr "Forward 10 seconds"
+
 #: src/features/downloads/components/DeleteChaptersWhileReadingSetting.tsx
 msgid "Fourth to last read chapter"
 msgstr "Fourth to last read chapter"
+
+#: src/features/anime/player/components/PlayerOverlay.tsx
+msgid "Fullscreen"
+msgstr "Fullscreen"
 
 #: src/features/library/screens/LibrarySettings.tsx
 #: src/features/reader/settings/ReaderSettings.constants.tsx
@@ -2523,6 +2573,10 @@ msgstr "Multi"
 msgid "Multiply"
 msgstr "Multiply"
 
+#: src/features/anime/player/components/PlayerOverlay.tsx
+msgid "Mute"
+msgstr "Mute"
+
 #: src/features/tracker/components/MangaRelated.tsx
 msgid "MyAnimeList - Recommendations"
 msgstr "MyAnimeList - Recommendations"
@@ -2554,6 +2608,10 @@ msgstr "Next"
 msgid "Next chapter"
 msgstr "Next chapter"
 
+#: src/features/anime/player/components/PlayerOverlay.tsx
+msgid "Next episode"
+msgstr "Next episode"
+
 #: src/features/reader/hotkeys/settings/components/ReaderSettingHotkey.tsx
 #: src/features/reader/overlay/navigation/desktop/components/ReaderNavBarDesktopPageNavigation.tsx
 msgid "Next page"
@@ -2567,6 +2625,30 @@ msgstr "Next Season"
 msgid "Next:"
 msgstr "Next:"
 
+#: src/features/anime/screens/AnimeDownloads.tsx
+msgid "No anime downloads"
+msgstr "No anime downloads"
+
+#: src/features/anime/components/AnimeExtensionsTab.tsx
+msgid "No anime extensions"
+msgstr "No anime extensions"
+
+#: src/features/anime/components/AnimeSourcesTab.tsx
+msgid "No anime sources"
+msgstr "No anime sources"
+
+#: src/features/anime/screens/AnimeUpdates.tsx
+msgid "No anime updates"
+msgstr "No anime updates"
+
+#: src/features/anime/screens/AnimeHistory.tsx
+msgid "No anime watching history"
+msgstr "No anime watching history"
+
+#: src/features/anime/components/AnimeUnavailableView.tsx
+msgid "No anime yet"
+msgstr "No anime yet"
+
 #: src/features/chapter/components/ChapterList.tsx
 msgid "No chapters found"
 msgstr "No chapters found"
@@ -2579,6 +2661,7 @@ msgstr "No chapters matching filter"
 msgid "No downloads"
 msgstr "No downloads"
 
+#: src/features/anime/components/AnimeExtensionsTab.tsx
 #: src/features/novel/components/NovelExtensionsTab.tsx
 msgid "No extensions found"
 msgstr "No extensions found"
@@ -2631,6 +2714,7 @@ msgstr "No pages found"
 msgid "No sources available to migrate to"
 msgstr "No sources available to migrate to"
 
+#: src/features/anime/components/AnimeSourcesTab.tsx
 #: src/features/novel/components/NovelSourcesTab.tsx
 msgid "No sources found"
 msgstr "No sources found"
@@ -2710,6 +2794,10 @@ msgstr "Obsolete"
 #: src/features/tracker/Tracker.constants.ts
 msgid "OEL"
 msgstr "OEL"
+
+#: src/features/anime/player/components/PlayerOverlay.tsx
+msgid "Off"
+msgstr "Off"
 
 #: src/features/reader/overlay/navigation/desktop/quick-settings/components/ReaderNavBarDesktopOffsetDoubleSpread.tsx
 #: src/features/reader/settings/behaviour/ReaderBehaviourSettings.tsx
@@ -2861,6 +2949,14 @@ msgstr "Pin source"
 msgid "Pinned"
 msgstr "Pinned"
 
+#: src/features/anime/player/components/PlayerOverlay.tsx
+msgid "Play/Pause"
+msgstr "Play/Pause"
+
+#: src/features/anime/player/screens/Player.tsx
+msgid "Playback error"
+msgstr "Playback error"
+
 #: src/features/recommended/AniList.ts
 #: src/features/source/browse/screens/SourceMangas.tsx
 msgid "Popular"
@@ -2899,6 +2995,10 @@ msgstr "Previous"
 #: src/features/reader/overlay/navigation/desktop/components/ReaderNavBarDesktopChapterNavigation.tsx
 msgid "Previous chapter"
 msgstr "Previous chapter"
+
+#: src/features/anime/player/components/PlayerOverlay.tsx
+msgid "Previous episode"
+msgstr "Previous episode"
 
 #: src/features/reader/hotkeys/settings/components/ReaderSettingHotkey.tsx
 #: src/features/reader/overlay/navigation/desktop/components/ReaderNavBarDesktopPageNavigation.tsx
@@ -2941,6 +3041,10 @@ msgstr "Pure black dark mode"
 #: src/features/reader/settings/layout/components/ReaderSettingPageGap.tsx
 msgid "px"
 msgstr "px"
+
+#: src/features/anime/player/components/PlayerOverlay.tsx
+msgid "Quality"
+msgstr "Quality"
 
 #: src/base/components/downloads/DownloadStateIndicator.tsx
 msgid "Queued"
@@ -3105,6 +3209,10 @@ msgstr "Retry"
 #: src/features/reader/overlay/navigation/desktop/components/ReaderNavBarDesktopActions.tsx
 msgid "Retry errored pages"
 msgstr "Retry errored pages"
+
+#: src/features/anime/player/components/PlayerOverlay.tsx
+msgid "Rewind 10 seconds"
+msgstr "Rewind 10 seconds"
 
 #: src/features/reader/overlay/progress-bar/settings/components/ReaderSettingProgressBarPosition.tsx
 #: src/features/reader/settings/general/components/ReaderSettingSafeAreaInset.tsx
@@ -3346,6 +3454,9 @@ msgid "Setting can not be changed while the reader is opened"
 msgstr "Setting can not be changed while the reader is opened"
 
 #: src/base/components/inputs/LanguageSelect.tsx
+#: src/features/anime/components/AnimeExtensionsTab.tsx
+#: src/features/anime/components/AnimeSourcesTab.tsx
+#: src/features/anime/player/components/PlayerOverlay.tsx
 #: src/features/backup/Backup.constants.ts
 #: src/features/browse/extensions/components/ExtensionCard.tsx
 #: src/features/browse/extensions/Extensions.tsx
@@ -3519,6 +3630,7 @@ msgstr ""
 msgid "Sort"
 msgstr "Sort"
 
+#: src/features/anime/screens/AnimeBrowse.tsx
 #: src/features/browse/screens/Browse.tsx
 #: src/features/browse/screens/BrowseSettings.tsx
 #: src/features/manga/components/details/MangaDetails.tsx
@@ -3611,6 +3723,10 @@ msgstr "Stretch small pages"
 #: src/features/source/browse/components/SourceOptions.tsx
 msgid "Submit"
 msgstr "Submit"
+
+#: src/features/anime/player/components/PlayerOverlay.tsx
+msgid "Subtitles"
+msgstr "Subtitles"
 
 #: src/base/components/feedback/SnackbarWithDescription.tsx
 msgid "Success"
@@ -3927,6 +4043,10 @@ msgstr "Unable to load data"
 msgid "Unable to load sources"
 msgstr "Unable to load sources"
 
+#: src/features/anime/player/screens/Player.tsx
+msgid "Unable to load video"
+msgstr "Unable to load video"
+
 #: src/features/migration/MigrationManager.ts
 #: src/features/settings/screens/ServerSettings.tsx
 msgid "Understood"
@@ -4200,6 +4320,10 @@ msgstr "You have not read any series yet."
 #: src/features/browse/extensions/Extensions.tsx
 msgid "You have to add a extension repository to be able to install extensions"
 msgstr "You have to add a extension repository to be able to install extensions"
+
+#: src/features/anime/screens/AnimeLibrary.tsx
+msgid "Your anime library is empty"
+msgstr "Your anime library is empty"
 
 #: src/features/settings/Settings.constants.ts
 msgid "Your browser will prompt you to enter credentials with a dialog."

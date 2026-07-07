@@ -233,6 +233,41 @@ export const AppRoutes = {
             },
         },
     },
+    // Anime routes mirror the flat Manga structure (anime has a detail page +
+    // a full-screen player, so it cannot use Novel's parent-with-children form).
+    animeLibrary: {
+        match: 'anime/library',
+        path: '/anime/library',
+    },
+    animeUpdates: {
+        match: 'anime/updates',
+        path: '/anime/updates',
+    },
+    animeHistory: {
+        match: 'anime/history',
+        path: '/anime/history',
+    },
+    animeBrowse: {
+        match: 'anime/browse',
+        path: '/anime/browse',
+    },
+    animeDownloads: {
+        match: 'anime/downloads',
+        path: '/anime/downloads',
+    },
+    anime: {
+        match: 'anime/:id',
+        path: (mangaId: MangaIdInfo['id']) => `/anime/${mangaId}`,
+        children: {
+            // Registered as `null` in the router; the real player is the
+            // top-level `player` route below (outside MainApp, like `reader`).
+            player: {
+                match: 'chapter/:chapterNum',
+                path: (mangaId: MangaIdInfo['id'], chapterNum: ChapterSourceOrderInfo['sourceOrder']) =>
+                    `/anime/${mangaId}/chapter/${chapterNum}`,
+            },
+        },
+    },
     migrate: {
         match: 'migrate/*',
         path: '/migrate',
@@ -261,6 +296,12 @@ export const AppRoutes = {
         match: '/manga/:mangaId/chapter/:chapterSourceOrder/*',
         path: (mangaId: MangaIdInfo['id'], chapterSourceOrder: ChapterSourceOrderInfo['sourceOrder']) =>
             `/manga/${mangaId}/chapter/${chapterSourceOrder}`,
+        state: (state: RouteStateReader) => ({ ...state }),
+    },
+    player: {
+        match: '/anime/:mangaId/chapter/:chapterSourceOrder/*',
+        path: (mangaId: MangaIdInfo['id'], chapterSourceOrder: ChapterSourceOrderInfo['sourceOrder']) =>
+            `/anime/${mangaId}/chapter/${chapterSourceOrder}`,
         state: (state: RouteStateReader) => ({ ...state }),
     },
     more: {

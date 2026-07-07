@@ -68,6 +68,13 @@ const { NovelLibrary } = loadable(() => import('@/features/novel/screens/NovelLi
 const { NovelUpdates } = loadable(() => import('@/features/novel/screens/NovelUpdates.tsx'), lazyLoadFallback);
 const { NovelHistory } = loadable(() => import('@/features/novel/screens/NovelHistory.tsx'), lazyLoadFallback);
 const { NovelDownloads } = loadable(() => import('@/features/novel/screens/NovelDownloads.tsx'), lazyLoadFallback);
+const { AnimeLibrary } = loadable(() => import('@/features/anime/screens/AnimeLibrary.tsx'), lazyLoadFallback);
+const { AnimeUpdates } = loadable(() => import('@/features/anime/screens/AnimeUpdates.tsx'), lazyLoadFallback);
+const { AnimeHistory } = loadable(() => import('@/features/anime/screens/AnimeHistory.tsx'), lazyLoadFallback);
+const { AnimeDownloads } = loadable(() => import('@/features/anime/screens/AnimeDownloads.tsx'), lazyLoadFallback);
+const { AnimeBrowse } = loadable(() => import('@/features/anime/screens/AnimeBrowse.tsx'), lazyLoadFallback);
+const { Anime } = loadable(() => import('@/features/anime/screens/Anime.tsx'), lazyLoadFallback);
+const { Player } = loadable(() => import('@/features/anime/player/screens/Player.tsx'), lazyLoadFallback);
 const { Updates } = loadable(() => import('@/features/updates/screens/Updates.tsx'), lazyLoadFallback);
 const { Recommended } = loadable(() => import('@/features/recommended/screens/Recommended.tsx'), lazyLoadFallback);
 const { History } = loadable(() => import('@/features/history/screens/History.tsx'), lazyLoadFallback);
@@ -399,6 +406,17 @@ const MainApp = () => {
                             <Route path={AppRoutes.novel.children.downloads.match} element={<NovelDownloads />} />
                             <Route path={AppRoutes.novel.children.browse.match} element={<NovelBrowse />} />
                         </Route>
+
+                        {/* Anime Routes (flat, mirroring the manga structure) */}
+                        <Route path={AppRoutes.animeLibrary.match} element={<AnimeLibrary />} />
+                        <Route path={AppRoutes.animeUpdates.match} element={<AnimeUpdates />} />
+                        {!hideHistory && <Route path={AppRoutes.animeHistory.match} element={<AnimeHistory />} />}
+                        <Route path={AppRoutes.animeBrowse.match} element={<AnimeBrowse />} />
+                        <Route path={AppRoutes.animeDownloads.match} element={<AnimeDownloads />} />
+                        <Route path={AppRoutes.anime.match}>
+                            <Route path={AppRoutes.anime.children.player.match} element={null} />
+                            <Route index element={<Anime />} />
+                        </Route>
                     </Route>
                 </Routes>
             </ErrorBoundary>
@@ -411,6 +429,16 @@ const ReaderApp = () => (
         <Routes>
             <Route element={<PrivateRoutes />}>
                 <Route path={AppRoutes.matchAll.match} element={<Reader />} />
+            </Route>
+        </Routes>
+    </ErrorBoundary>
+);
+
+const PlayerApp = () => (
+    <ErrorBoundary>
+        <Routes>
+            <Route element={<PrivateRoutes />}>
+                <Route path={AppRoutes.matchAll.match} element={<Player />} />
             </Route>
         </Routes>
     </ErrorBoundary>
@@ -440,6 +468,7 @@ export const App: React.FC = () => (
                     <Routes>
                         <Route path={AppRoutes.matchAll.match} element={<MainApp />} />
                         <Route path={AppRoutes.reader.match} element={<ReaderApp />} />
+                        <Route path={AppRoutes.player.match} element={<PlayerApp />} />
                     </Routes>
                 </Box>
                 <MigrationFABIndicator />

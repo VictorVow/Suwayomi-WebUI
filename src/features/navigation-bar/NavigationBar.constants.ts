@@ -29,12 +29,7 @@ import AutoStoriesIcon from '@mui/icons-material/AutoStories';
 import AutoStoriesOutlinedIcon from '@mui/icons-material/AutoStoriesOutlined';
 import { useLingui } from '@lingui/react/macro';
 import { msg, plural } from '@lingui/core/macro';
-import type {
-    NavbarEntry,
-    NavbarItem,
-    NavbarPlaceholderItem,
-    NavbarSection,
-} from '@/features/navigation-bar/NavigationBar.types.ts';
+import type { NavbarEntry, NavbarItem, NavbarSection } from '@/features/navigation-bar/NavigationBar.types.ts';
 import { NavBarItemMoreGroup } from '@/features/navigation-bar/NavigationBar.types.ts';
 import { AppRoutes } from '@/base/AppRoute.constants.ts';
 import { requestManager } from '@/lib/requests/RequestManager.ts';
@@ -217,53 +212,66 @@ export const NAVIGATION_BAR_NOVEL_ITEMS = [
     },
 ] as const satisfies RestrictedNavBarItem<'desktop'>[];
 
+/**
+ * Real, navigable items for the "Anime" section. They mirror the Manga content
+ * items but point at the `/anime/*` routes backed by
+ * `src/features/anime/services/AnimeApi.ts`. Declared here (and included in
+ * NAVIGATION_BAR_ITEMS) so the desktop sidebar treats their paths as visible.
+ */
+export const NAVIGATION_BAR_ANIME_ITEMS = [
+    {
+        path: AppRoutes.animeLibrary.path,
+        title: msg`Library`,
+        SelectedIconComponent: CollectionsBookmarkIcon,
+        IconComponent: CollectionsOutlinedBookmarkIcon,
+        show: 'desktop',
+        moreGroup: NavBarItemMoreGroup.HIDDEN_ITEM,
+    },
+    {
+        path: AppRoutes.animeUpdates.path,
+        title: msg`Updates`,
+        SelectedIconComponent: NewReleasesIcon,
+        IconComponent: NewReleasesOutlinedIcon,
+        show: 'desktop',
+        moreGroup: NavBarItemMoreGroup.HIDDEN_ITEM,
+    },
+    {
+        path: AppRoutes.animeHistory.path,
+        title: msg`History`,
+        SelectedIconComponent: HistoryIcon,
+        IconComponent: HistoryOutlinedIcon,
+        show: 'desktop',
+        moreGroup: NavBarItemMoreGroup.HIDDEN_ITEM,
+    },
+    {
+        path: AppRoutes.animeBrowse.path,
+        title: msg`Browse`,
+        SelectedIconComponent: ExploreIcon,
+        IconComponent: ExploreOutlinedIcon,
+        show: 'desktop',
+        moreGroup: NavBarItemMoreGroup.HIDDEN_ITEM,
+    },
+    {
+        path: AppRoutes.animeDownloads.path,
+        title: msg`Downloads`,
+        SelectedIconComponent: GetAppIcon,
+        IconComponent: GetAppOutlinedIcon,
+        show: 'desktop',
+        moreGroup: NavBarItemMoreGroup.HIDDEN_ITEM,
+    },
+] as const satisfies RestrictedNavBarItem<'desktop'>[];
+
 export const NAVIGATION_BAR_ITEMS = [
     ...NAVIGATION_BAR_BASE_ITEMS,
     ...NAVIGATION_BAR_DESKTOP_ITEMS,
     ...NAVIGATION_BAR_MOBILE_ITEMS,
     ...NAVIGATION_BAR_NOVEL_ITEMS,
+    ...NAVIGATION_BAR_ANIME_ITEMS,
 ] as const satisfies NavbarItem[];
 
 // Named references to the individual items, used to compose the desktop sidebar sections below.
 const [LIBRARY_ITEM, RECOMMENDED_ITEM, UPDATES_ITEM, HISTORY_ITEM, BROWSE_ITEM] = NAVIGATION_BAR_BASE_ITEMS;
 const [DOWNLOADS_ITEM, SETTINGS_ITEM, ABOUT_ITEM] = NAVIGATION_BAR_DESKTOP_ITEMS;
-
-/**
- * Placeholder child items shared by the not-yet-implemented "Anime" and "Novel"
- * sections. They mirror the Manga content items but do not navigate anywhere.
- */
-const mediaPlaceholderItems = (idPrefix: string): NavbarPlaceholderItem[] => [
-    {
-        id: `${idPrefix}-library`,
-        title: msg`Library`,
-        SelectedIconComponent: CollectionsBookmarkIcon,
-        IconComponent: CollectionsOutlinedBookmarkIcon,
-    },
-    {
-        id: `${idPrefix}-updates`,
-        title: msg`Updates`,
-        SelectedIconComponent: NewReleasesIcon,
-        IconComponent: NewReleasesOutlinedIcon,
-    },
-    {
-        id: `${idPrefix}-history`,
-        title: msg`History`,
-        SelectedIconComponent: HistoryIcon,
-        IconComponent: HistoryOutlinedIcon,
-    },
-    {
-        id: `${idPrefix}-browse`,
-        title: msg`Browse`,
-        SelectedIconComponent: ExploreIcon,
-        IconComponent: ExploreOutlinedIcon,
-    },
-    {
-        id: `${idPrefix}-downloads`,
-        title: msg`Downloads`,
-        SelectedIconComponent: GetAppIcon,
-        IconComponent: GetAppOutlinedIcon,
-    },
-];
 
 const MANGA_SECTION: NavbarSection = {
     id: 'manga',
@@ -278,7 +286,7 @@ const ANIME_SECTION: NavbarSection = {
     title: msg`Anime`,
     SelectedIconComponent: MovieIcon,
     IconComponent: MovieOutlinedIcon,
-    placeholders: mediaPlaceholderItems('anime'),
+    items: [...NAVIGATION_BAR_ANIME_ITEMS],
 };
 
 const NOVEL_SECTION: NavbarSection = {

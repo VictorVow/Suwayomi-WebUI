@@ -109,6 +109,14 @@ export class Chapters {
         return AppRoutes.reader.path(chapter.mangaId, chapter.sourceOrder);
     }
 
+    /**
+     * The anime player route for a chapter (episode). Mirrors {@link getReaderUrl}
+     * but targets the full-screen video player at `/anime/:mangaId/chapter/:n`.
+     */
+    static getPlayerUrl<Chapter extends ChapterMangaInfo & ChapterSourceOrderInfo>(chapter: Chapter): string {
+        return AppRoutes.player.path(chapter.mangaId, chapter.sourceOrder);
+    }
+
     static isDownloading(id: number): boolean {
         const activeDownloadStates = [DownloadState.Downloading, DownloadState.Queued];
         const downloadStatus = Chapters.getDownloadStatusFromCache(id);
