@@ -673,6 +673,10 @@ msgstr "Bright Pink"
 msgid "Browse"
 msgstr "Browse"
 
+#: src/features/novel/screens/NovelBrowse.tsx
+msgid "Browse novels"
+msgstr "Browse novels"
+
 #: src/features/settings/Settings.constants.ts
 msgid "Browser"
 msgstr "Browser"
@@ -1617,6 +1621,7 @@ msgid "Exit to previous page"
 msgstr "Exit to previous page"
 
 #: src/features/browse/screens/Browse.tsx
+#: src/features/novel/screens/NovelBrowse.tsx
 msgid "Extension"
 msgstr "Extension"
 
@@ -2215,6 +2220,10 @@ msgstr "Licensed"
 msgid "Light"
 msgstr "Light"
 
+#: src/features/novel/components/NovelUnavailableView.tsx
+msgid "Light novels aren't available yet"
+msgstr "Light novels aren't available yet"
+
 #: src/features/reader/settings/ReaderSettings.constants.tsx
 msgid "Lighten"
 msgstr "Lighten"
@@ -2582,6 +2591,30 @@ msgstr "No manga matches this filter"
 msgid "No match found"
 msgstr "No match found"
 
+#: src/features/novel/screens/NovelDownloads.tsx
+msgid "No novel downloads"
+msgstr "No novel downloads"
+
+#: src/features/novel/components/NovelExtensionsTab.tsx
+msgid "No novel extensions"
+msgstr "No novel extensions"
+
+#: src/features/novel/screens/NovelHistory.tsx
+msgid "No novel reading history"
+msgstr "No novel reading history"
+
+#: src/features/novel/components/NovelSourcesTab.tsx
+msgid "No novel sources"
+msgstr "No novel sources"
+
+#: src/features/novel/screens/NovelUpdates.tsx
+msgid "No novel updates"
+msgstr "No novel updates"
+
+#: src/features/novel/screens/NovelSourceBrowse.tsx
+msgid "No novels found for this source"
+msgstr "No novels found for this source"
+
 #: src/features/reader/viewer/ReaderChapterViewer.tsx
 msgid "No pages found"
 msgstr "No pages found"
@@ -2624,6 +2657,34 @@ msgstr "Nothing found"
 #: src/features/tracker/Tracker.constants.ts
 msgid "Novel"
 msgstr "Novel"
+
+#: src/features/novel/screens/NovelDownloads.tsx
+msgid "Novel Downloads"
+msgstr "Novel Downloads"
+
+#: src/features/novel/screens/NovelExtensionInfo.tsx
+msgid "Novel Extension"
+msgstr "Novel Extension"
+
+#: src/features/novel/screens/NovelExtensionInfo.tsx
+msgid "Novel extension details unavailable"
+msgstr "Novel extension details unavailable"
+
+#: src/features/novel/screens/NovelHistory.tsx
+msgid "Novel History"
+msgstr "Novel History"
+
+#: src/features/novel/screens/NovelLibrary.tsx
+msgid "Novel Library"
+msgstr "Novel Library"
+
+#: src/features/novel/screens/NovelSourceBrowse.tsx
+msgid "Novel Source"
+msgstr "Novel Source"
+
+#: src/features/novel/screens/NovelUpdates.tsx
+msgid "Novel Updates"
+msgstr "Novel Updates"
 
 #: src/features/browse/screens/BrowseSettings.tsx
 msgid "NSFW (18+) sources"
@@ -3459,6 +3520,7 @@ msgstr "Sort"
 #: src/features/browse/screens/Browse.tsx
 #: src/features/browse/screens/BrowseSettings.tsx
 #: src/features/manga/components/details/MangaDetails.tsx
+#: src/features/novel/screens/NovelBrowse.tsx
 #: src/features/source/browse/screens/SourceMangas.tsx
 msgid "Source"
 msgstr "Source"
@@ -4148,3 +4210,7 @@ msgstr "Your library is empty"
 #: src/features/settings/Settings.constants.ts
 msgid "Your library will be accessible. Use this only on private networks or when otherwise securing access."
 msgstr "Your library will be accessible. Use this only on private networks or when otherwise securing access."
+
+#: src/features/novel/screens/NovelLibrary.tsx
+msgid "Your novel library is empty"
+msgstr "Your novel library is empty"

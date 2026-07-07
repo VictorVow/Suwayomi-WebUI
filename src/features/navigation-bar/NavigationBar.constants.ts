@@ -168,10 +168,60 @@ export const NAVIGATION_BAR_MOBILE_ITEMS = [
     },
 ] as const satisfies RestrictedNavBarItem<'mobile'>[];
 
+/**
+ * Real, navigable items for the "Novel" section. They mirror the Manga content
+ * items but point at the `/novel/*` routes backed by
+ * `src/features/novel/services/NovelApi.ts`. Declared here (and included in
+ * NAVIGATION_BAR_ITEMS) so the desktop sidebar treats their paths as visible.
+ */
+export const NAVIGATION_BAR_NOVEL_ITEMS = [
+    {
+        path: AppRoutes.novel.children.library.path,
+        title: msg`Library`,
+        SelectedIconComponent: CollectionsBookmarkIcon,
+        IconComponent: CollectionsOutlinedBookmarkIcon,
+        show: 'desktop',
+        moreGroup: NavBarItemMoreGroup.HIDDEN_ITEM,
+    },
+    {
+        path: AppRoutes.novel.children.updates.path,
+        title: msg`Updates`,
+        SelectedIconComponent: NewReleasesIcon,
+        IconComponent: NewReleasesOutlinedIcon,
+        show: 'desktop',
+        moreGroup: NavBarItemMoreGroup.HIDDEN_ITEM,
+    },
+    {
+        path: AppRoutes.novel.children.history.path,
+        title: msg`History`,
+        SelectedIconComponent: HistoryIcon,
+        IconComponent: HistoryOutlinedIcon,
+        show: 'desktop',
+        moreGroup: NavBarItemMoreGroup.HIDDEN_ITEM,
+    },
+    {
+        path: AppRoutes.novel.children.browse.path,
+        title: msg`Browse`,
+        SelectedIconComponent: ExploreIcon,
+        IconComponent: ExploreOutlinedIcon,
+        show: 'desktop',
+        moreGroup: NavBarItemMoreGroup.HIDDEN_ITEM,
+    },
+    {
+        path: AppRoutes.novel.children.downloads.path,
+        title: msg`Downloads`,
+        SelectedIconComponent: GetAppIcon,
+        IconComponent: GetAppOutlinedIcon,
+        show: 'desktop',
+        moreGroup: NavBarItemMoreGroup.HIDDEN_ITEM,
+    },
+] as const satisfies RestrictedNavBarItem<'desktop'>[];
+
 export const NAVIGATION_BAR_ITEMS = [
     ...NAVIGATION_BAR_BASE_ITEMS,
     ...NAVIGATION_BAR_DESKTOP_ITEMS,
     ...NAVIGATION_BAR_MOBILE_ITEMS,
+    ...NAVIGATION_BAR_NOVEL_ITEMS,
 ] as const satisfies NavbarItem[];
 
 // Named references to the individual items, used to compose the desktop sidebar sections below.
@@ -236,7 +286,7 @@ const NOVEL_SECTION: NavbarSection = {
     title: msg`Novel`,
     SelectedIconComponent: AutoStoriesIcon,
     IconComponent: AutoStoriesOutlinedIcon,
-    placeholders: mediaPlaceholderItems('novel'),
+    items: [...NAVIGATION_BAR_NOVEL_ITEMS],
 };
 
 /**

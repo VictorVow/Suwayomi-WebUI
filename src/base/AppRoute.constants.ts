@@ -207,6 +207,52 @@ export const AppRoutes = {
                 [SearchParam.TAB]: tab,
             }),
     },
+    novel: {
+        match: 'novel',
+        path: '/novel',
+        children: {
+            library: {
+                match: 'library',
+                path: '/novel/library',
+            },
+            updates: {
+                match: 'updates',
+                path: '/novel/updates',
+            },
+            history: {
+                match: 'history',
+                path: '/novel/history',
+            },
+            browse: {
+                match: 'browse',
+                path: '/novel/browse',
+            },
+            downloads: {
+                match: 'downloads',
+                path: '/novel/downloads',
+            },
+            sources: {
+                match: 'sources',
+                path: '/novel/sources',
+                children: {
+                    browse: {
+                        match: ':sourceId',
+                        path: (sourceId: SourceIdInfo['id']) => `/novel/sources/${sourceId}`,
+                    },
+                },
+            },
+            extension: {
+                match: 'extension',
+                path: '/novel/extension',
+                children: {
+                    info: {
+                        match: ':pkgName',
+                        path: (pkgName: string) => `/novel/extension/${pkgName}`,
+                    },
+                },
+            },
+        },
+    },
     migrate: {
         match: 'migrate/*',
         path: '/migrate',
