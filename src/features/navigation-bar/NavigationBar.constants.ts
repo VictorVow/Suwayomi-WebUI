@@ -270,7 +270,7 @@ const MANGA_SECTION: NavbarSection = {
     title: msg`Manga`,
     SelectedIconComponent: MenuBookIcon,
     IconComponent: MenuBookOutlinedIcon,
-    items: [LIBRARY_ITEM, UPDATES_ITEM, HISTORY_ITEM, BROWSE_ITEM, DOWNLOADS_ITEM, SETTINGS_ITEM],
+    items: [LIBRARY_ITEM, UPDATES_ITEM, HISTORY_ITEM, BROWSE_ITEM, DOWNLOADS_ITEM],
 };
 
 const ANIME_SECTION: NavbarSection = {
@@ -292,9 +292,10 @@ const NOVEL_SECTION: NavbarSection = {
 /**
  * Ordered layout of the desktop sidebar:
  *  - Recommended (standalone, at the very top)
- *  - Manga (collapsible section holding every real item except About)
+ *  - Manga (collapsible section holding every real item except Settings/About)
  *  - About (standalone, always visible)
  *  - Anime / Novel (collapsible placeholder sections)
+ *  - Settings (standalone, pinned to the very bottom)
  */
 export const DESKTOP_NAV_ENTRIES: NavbarEntry[] = [
     { kind: 'item', item: RECOMMENDED_ITEM },
@@ -302,4 +303,5 @@ export const DESKTOP_NAV_ENTRIES: NavbarEntry[] = [
     { kind: 'item', item: ABOUT_ITEM },
     { kind: 'section', section: ANIME_SECTION },
     { kind: 'section', section: NOVEL_SECTION },
+    { kind: 'item', item: SETTINGS_ITEM },
 ];
