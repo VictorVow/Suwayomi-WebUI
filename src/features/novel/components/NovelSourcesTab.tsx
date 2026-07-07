@@ -6,20 +6,52 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
+import { useMemo } from 'react';
 import List from '@mui/material/List';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import ListItemText from '@mui/material/ListItemText';
 import Avatar from '@mui/material/Avatar';
+import IconButton from '@mui/material/IconButton';
+import SettingsIcon from '@mui/icons-material/Settings';
+import { StringParam, useQueryParam } from 'use-query-params';
+import { Link } from 'react-router-dom';
 import { useLingui } from '@lingui/react/macro';
+import { CustomTooltip } from '@/base/components/CustomTooltip.tsx';
+import { AppbarSearch } from '@/base/components/AppbarSearch.tsx';
 import { ListItemLink } from '@/base/components/lists/ListItemLink.tsx';
 import { LoadingPlaceholder } from '@/base/components/feedback/LoadingPlaceholder.tsx';
 import { AppRoutes } from '@/base/AppRoute.constants.ts';
+import { SearchParam } from '@/base/Base.types.ts';
+import { useAppAction } from '@/features/navigation-bar/hooks/useAppAction.ts';
 import { useNovelSourceList } from '@/features/novel/services/NovelApi.ts';
 import { NovelUnavailableView } from '@/features/novel/components/NovelUnavailableView.tsx';
 
 export const NovelSourcesTab = () => {
     const { t } = useLingui();
     const { data: sources, loading, available } = useNovelSourceList();
+
+    const [query] = useQueryParam(SearchParam.QUERY, StringParam);
+
+    const filteredSources = useMemo(() => {
+        if (!query) {
+            return sources;
+        }
+
+        const normalizedQuery = query.toLowerCase();
+        return sources.filter((source) => source.name.toLowerCase().includes(normalizedQuery));
+    }, [sources, query]);
+
+    useAppAction(
+        <>
+            <AppbarSearch />
+            <CustomTooltip title={t`Settings`}>
+                <IconButton component={Link} to={AppRoutes.settings.children.browse.path} color="inherit">
+                    <SettingsIcon />
+                </IconButton>
+            </CustomTooltip>
+        </>,
+        [t],
+    );
 
     if (loading) {
         return <LoadingPlaceholder />;
@@ -29,9 +61,13 @@ export const NovelSourcesTab = () => {
         return <NovelUnavailableView message={t`No novel sources`} />;
     }
 
+    if (!filteredSources.length) {
+        return <NovelUnavailableView message={t`No sources found`} />;
+    }
+
     return (
         <List>
-            {sources.map((source) => (
+            {filteredSources.map((source) => (
                 <ListItemLink key={source.id} to={AppRoutes.sources.children.browse.path(source.id)}>
                     <ListItemAvatar>
                         <Avatar variant="rounded" src={source.iconUrl} alt={source.name} />

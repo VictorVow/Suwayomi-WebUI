@@ -2579,6 +2579,10 @@ msgstr "No chapters matching filter"
 msgid "No downloads"
 msgstr "No downloads"
 
+#: src/features/novel/components/NovelExtensionsTab.tsx
+msgid "No extensions found"
+msgstr "No extensions found"
+
 #: src/features/novel/components/NovelUnavailableView.tsx
 msgid "No light novels yet"
 msgstr "No light novels yet"
@@ -2626,6 +2630,10 @@ msgstr "No pages found"
 #: src/features/migration/components/MigrationDestinationSourceList.tsx
 msgid "No sources available to migrate to"
 msgstr "No sources available to migrate to"
+
+#: src/features/novel/components/NovelSourcesTab.tsx
+msgid "No sources found"
+msgstr "No sources found"
 
 #: src/features/browse/sources/Sources.tsx
 msgid "No sources found. Install Some extensions first."
@@ -3344,6 +3352,8 @@ msgstr "Setting can not be changed while the reader is opened"
 #: src/features/extension/info/components/SourceCard.tsx
 #: src/features/library/components/LibraryToolbarMenu.tsx
 #: src/features/navigation-bar/NavigationBar.constants.ts
+#: src/features/novel/components/NovelExtensionsTab.tsx
+#: src/features/novel/components/NovelSourcesTab.tsx
 #: src/features/reader/overlay/navigation/desktop/quick-settings/ReaderNavBarDesktopQuickSettings.tsx
 #: src/features/reader/overlay/navigation/mobile/ReaderBottomBarMobile.tsx
 #: src/features/settings/screens/Settings.tsx
