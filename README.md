@@ -1,4 +1,8 @@
-# Suwayomi-WebUI
+# Miruyomi-WebUI
+
+Miru-yomi / Miyomi (見る + 読む) — literally watch-and-read, fusing the two verbs.
+
+---
 
 This is the repository of the default client of [Suwayomi-Server](https://github.com/Suwayomi/Suwayomi-Server).
 
