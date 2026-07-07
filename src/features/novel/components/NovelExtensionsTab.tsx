@@ -32,10 +32,7 @@ export const NovelExtensionsTab = () => {
     return (
         <List>
             {extensions.map((extension) => (
-                <ListItemLink
-                    key={extension.pkgName}
-                    to={AppRoutes.novel.children.extension.children.info.path(extension.pkgName)}
-                >
+                <ListItemLink key={extension.pkgName} to={AppRoutes.extension.children.info.path(extension.pkgName)}>
                     <ListItemAvatar>
                         <Avatar variant="rounded" src={extension.iconUrl} alt={extension.name} />
                     </ListItemAvatar>

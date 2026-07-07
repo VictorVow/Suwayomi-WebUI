@@ -8,12 +8,11 @@
 
 import { useLingui } from '@lingui/react/macro';
 import { EmptyViewAbsoluteCentered } from '@/base/components/feedback/EmptyViewAbsoluteCentered.tsx';
-import { NOVEL_BACKEND } from '@/features/novel/services/NovelApi.ts';
 
 /**
- * Shared empty-state shown by every Novel screen while the server does not
- * expose an LNReader / novel extension API. Pass a `context`-specific line
- * (e.g. "No novel sources") as the headline.
+ * Shared empty-state for the Novel screens. Novel content comes from installed
+ * LNReader plugins; when none are set up, this explains how to add them. Pass a
+ * `message` specific to the screen (e.g. "No novel sources").
  */
 export const NovelUnavailableView = ({ message }: { message?: string }) => {
     const { t } = useLingui();
@@ -21,8 +20,8 @@ export const NovelUnavailableView = ({ message }: { message?: string }) => {
     return (
         <EmptyViewAbsoluteCentered
             noFaces
-            message={message ?? t`Light novels aren't available yet`}
-            messageExtra={NOVEL_BACKEND.reason}
+            message={message ?? t`No light novels yet`}
+            messageExtra={t`Add an LNReader plugin repository under Settings → Browse, then install a novel source from the Extensions tab.`}
         />
     );
 };

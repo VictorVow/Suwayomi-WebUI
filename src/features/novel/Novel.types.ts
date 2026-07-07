@@ -26,7 +26,6 @@ export interface NovelSource {
     name: string;
     lang: string;
     iconUrl: string;
-    supportsLatest: boolean;
     isNsfw: boolean;
     /** Package name of the extension providing this source. */
     extPkgName?: string;

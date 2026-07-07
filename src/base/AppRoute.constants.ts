@@ -231,26 +231,6 @@ export const AppRoutes = {
                 match: 'downloads',
                 path: '/novel/downloads',
             },
-            sources: {
-                match: 'sources',
-                path: '/novel/sources',
-                children: {
-                    browse: {
-                        match: ':sourceId',
-                        path: (sourceId: SourceIdInfo['id']) => `/novel/sources/${sourceId}`,
-                    },
-                },
-            },
-            extension: {
-                match: 'extension',
-                path: '/novel/extension',
-                children: {
-                    info: {
-                        match: ':pkgName',
-                        path: (pkgName: string) => `/novel/extension/${pkgName}`,
-                    },
-                },
-            },
         },
     },
     migrate: {

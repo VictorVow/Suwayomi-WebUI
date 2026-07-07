@@ -6,6 +6,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
+import { requestManager } from '@/lib/requests/RequestManager.ts';
 import { STABLE_EMPTY_ARRAY } from '@/base/Base.constants.ts';
 import type { NovelEntry, NovelExtension, NovelSource } from '@/features/novel/Novel.types.ts';
 
@@ -14,98 +15,105 @@ import type { NovelEntry, NovelExtension, NovelSource } from '@/features/novel/N
  *  NovelApi — the single integration seam for LNReader / light-novel support.
  * =============================================================================
  *
- * The Novel section (browse novels, novel sources, novel extensions, novel
- * library/updates/history/downloads) is fully built out in the UI, but the
- * Miruyomi-Server does NOT yet expose an LNReader / novel extension GraphQL
- * API — it currently only serves manga sources/extensions.
+ * Miruyomi-Server runs LNReader plugins as native light-novel sources, but — to
+ * avoid drifting from the upstream Suwayomi GraphQL contract — it surfaces them
+ * through the EXISTING manga types rather than novel-specific ones:
  *
- * Everything the Novel screens need funnels through the hooks in this file.
- * To wire the section to a real backend, do exactly two things here:
+ *   - a novel source    = a `SourceType` with a NEGATIVE id
+ *   - a novel plugin     = an `ExtensionType` with pkgName `lnreader:<id>`
+ *   - novel chapter text = REST `GET /api/v1/lnreader/chapter/:chapterId`
  *
- *   1. Flip `NOVEL_BACKEND.available` to `true`.
- *   2. Replace the stub bodies of the `useNovel*` hooks below with real
- *      `requestManager.useX(...)` calls against the server's novel operations
- *      (e.g. GET_NOVEL_SOURCES_LIST, GET_NOVEL_EXTENSIONS, ...). Add those
- *      GraphQL documents under `src/lib/graphql/novel*` and the matching
- *      `requestManager` methods, mirroring the manga source/extension ones.
+ * So the Novel section is just a filtered view over the same source/extension
+ * GraphQL the Manga section uses. This file is the one place that knows the
+ * LNReader identification rules; screens consume its hooks, never requestManager
+ * directly.
  *
- * No screen imports `requestManager` for novel data directly — keep it that way
- * so this stays the one place that has to change.
+ * Setup note: novel sources only appear once the user adds an LNReader plugin
+ * index repo (e.g. the lnreader-plugins `.dist/plugins.min.json` URL) under
+ * Settings → Browse, fetches extensions, and installs a plugin. Until then these
+ * hooks correctly return empty lists.
  */
 
-export interface NovelBackendStatus {
-    /** Whether the server exposes a novel/LNReader extension API. */
-    available: boolean;
-    /** Human-readable reason shown in the UI while unavailable. */
-    reason: string;
-}
+/** A source id belongs to an LNReader plugin when it is a negative Long. */
+export const isNovelSourceId = (id: string): boolean => id.startsWith('-');
 
-export const NOVEL_BACKEND: NovelBackendStatus = {
-    available: false,
-    reason:
-        'The connected server does not expose an LNReader / light-novel extension API yet. ' +
-        'Once Miruyomi-Server ships novel extension support, wire it up in ' +
-        'src/features/novel/services/NovelApi.ts.',
-};
+/** An extension is an LNReader plugin when its package name is `lnreader:<id>`. */
+export const isNovelExtensionPkg = (pkgName: string): boolean => pkgName.startsWith('lnreader:');
 
 interface NovelQueryResult<TData> {
     data: TData;
     loading: boolean;
     error?: Error;
-    /** Whether the backend is available; when false the caller should show the unavailable state. */
+    /** Whether the backend is reachable; false only when the base query itself errors. */
     available: boolean;
     refetch: () => void;
 }
 
-const unavailable = <TData>(data: TData): NovelQueryResult<TData> => ({
-    data,
+/** List novel sources (installed LNReader plugins), filtered out of the shared source list. */
+export const useNovelSourceList = (): NovelQueryResult<NovelSource[]> => {
+    const { data, loading, error, refetch } = requestManager.useGetSourceList({ notifyOnNetworkStatusChange: true });
+
+    const sources: NovelSource[] = (data?.sources.nodes ?? STABLE_EMPTY_ARRAY)
+        .filter((source) => isNovelSourceId(source.id))
+        .map((source) => ({
+            id: source.id,
+            name: source.name,
+            lang: source.lang,
+            iconUrl: source.iconUrl,
+            isNsfw: source.isNsfw,
+            extPkgName: source.extension?.pkgName,
+        }));
+
+    return { data: sources, loading, error, available: !error, refetch: () => refetch?.() };
+};
+
+/** List novel (LNReader) extensions, filtered out of the shared extension list. */
+export const useNovelExtensionList = (): NovelQueryResult<NovelExtension[]> => {
+    const { data, loading, error, refetch } = requestManager.useGetExtensionList();
+
+    const extensions: NovelExtension[] = (data?.extensions.nodes ?? STABLE_EMPTY_ARRAY)
+        .filter((extension) => isNovelExtensionPkg(extension.pkgName))
+        .map((extension) => ({
+            pkgName: extension.pkgName,
+            name: extension.name,
+            lang: extension.lang,
+            versionName: extension.versionName,
+            iconUrl: extension.iconUrl,
+            isInstalled: extension.isInstalled,
+            isObsolete: extension.isObsolete,
+            hasUpdate: extension.hasUpdate,
+            isNsfw: extension.isNsfw,
+            repo: extension.repo,
+        }));
+
+    return { data: extensions, loading, error, available: !error, refetch: () => refetch?.() };
+};
+
+/*
+ * The library / updates / history / downloads views below are novel-scoped
+ * slices of the user's manga library (novels are manga rows with a negative
+ * source id). They are not wired to their manga queries yet — doing so needs a
+ * source-id filter threaded through those list screens — so they report empty.
+ * TODO(novel): back these with the manga library/updates/history/download
+ * queries filtered by `isNovelSourceId(manga.source.id)`.
+ */
+
+const emptyEntries = (): NovelQueryResult<NovelEntry[]> => ({
+    data: STABLE_EMPTY_ARRAY,
     loading: false,
     error: undefined,
-    available: NOVEL_BACKEND.available,
+    available: true,
     refetch: () => {},
 });
 
-/** List all novel sources from installed novel extensions. */
-export const useNovelSourceList = (): NovelQueryResult<NovelSource[]> =>
-    // TODO(novel-backend): replace with `requestManager.useGetNovelSourceList()`
-    unavailable<NovelSource[]>(STABLE_EMPTY_ARRAY);
-
-/** Fetch a single novel source's metadata by id. */
-export const useNovelSource = (_sourceId: string): NovelQueryResult<NovelSource | null> =>
-    // TODO(novel-backend): replace with `requestManager.useGetNovelSource(sourceId)`
-    unavailable<NovelSource | null>(null);
-
-/** Browse a novel source's catalogue (popular / latest / search). */
-export const useNovelSourceEntries = (_sourceId: string): NovelQueryResult<NovelEntry[]> =>
-    // TODO(novel-backend): replace with `requestManager.useGetNovelSourceEntries(...)`
-    unavailable<NovelEntry[]>(STABLE_EMPTY_ARRAY);
-
-/** List installable/installed novel (LNReader) extensions. */
-export const useNovelExtensionList = (): NovelQueryResult<NovelExtension[]> =>
-    // TODO(novel-backend): replace with `requestManager.useNovelExtensionListFetch()`
-    unavailable<NovelExtension[]>(STABLE_EMPTY_ARRAY);
-
-/** Fetch a single novel extension's details by package name. */
-export const useNovelExtension = (_pkgName: string): NovelQueryResult<NovelExtension | null> =>
-    // TODO(novel-backend): replace with `requestManager.useGetNovelExtension(pkgName)`
-    unavailable<NovelExtension | null>(null);
-
 /** The user's novel library entries. */
-export const useNovelLibrary = (): NovelQueryResult<NovelEntry[]> =>
-    // TODO(novel-backend): replace with `requestManager.useGetNovelLibrary()`
-    unavailable<NovelEntry[]>(STABLE_EMPTY_ARRAY);
+export const useNovelLibrary = (): NovelQueryResult<NovelEntry[]> => emptyEntries();
 
 /** Recent chapter updates across the novel library. */
-export const useNovelUpdates = (): NovelQueryResult<NovelEntry[]> =>
-    // TODO(novel-backend): replace with `requestManager.useGetNovelUpdates()`
-    unavailable<NovelEntry[]>(STABLE_EMPTY_ARRAY);
+export const useNovelUpdates = (): NovelQueryResult<NovelEntry[]> => emptyEntries();
 
 /** Reading history for novels. */
-export const useNovelHistory = (): NovelQueryResult<NovelEntry[]> =>
-    // TODO(novel-backend): replace with `requestManager.useGetNovelHistory()`
-    unavailable<NovelEntry[]>(STABLE_EMPTY_ARRAY);
+export const useNovelHistory = (): NovelQueryResult<NovelEntry[]> => emptyEntries();
 
 /** Active + queued novel chapter downloads. */
-export const useNovelDownloadQueue = (): NovelQueryResult<NovelEntry[]> =>
-    // TODO(novel-backend): replace with `requestManager.useGetNovelDownloadStatus()`
-    unavailable<NovelEntry[]>(STABLE_EMPTY_ARRAY);
+export const useNovelDownloadQueue = (): NovelQueryResult<NovelEntry[]> => emptyEntries();

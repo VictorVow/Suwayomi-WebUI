@@ -68,14 +68,6 @@ const { NovelLibrary } = loadable(() => import('@/features/novel/screens/NovelLi
 const { NovelUpdates } = loadable(() => import('@/features/novel/screens/NovelUpdates.tsx'), lazyLoadFallback);
 const { NovelHistory } = loadable(() => import('@/features/novel/screens/NovelHistory.tsx'), lazyLoadFallback);
 const { NovelDownloads } = loadable(() => import('@/features/novel/screens/NovelDownloads.tsx'), lazyLoadFallback);
-const { NovelSourceBrowse } = loadable(
-    () => import('@/features/novel/screens/NovelSourceBrowse.tsx'),
-    lazyLoadFallback,
-);
-const { NovelExtensionInfo } = loadable(
-    () => import('@/features/novel/screens/NovelExtensionInfo.tsx'),
-    lazyLoadFallback,
-);
 const { Updates } = loadable(() => import('@/features/updates/screens/Updates.tsx'), lazyLoadFallback);
 const { Recommended } = loadable(() => import('@/features/recommended/screens/Recommended.tsx'), lazyLoadFallback);
 const { History } = loadable(() => import('@/features/history/screens/History.tsx'), lazyLoadFallback);
@@ -390,20 +382,6 @@ const MainApp = () => {
                             <Route path={AppRoutes.novel.children.history.match} element={<NovelHistory />} />
                             <Route path={AppRoutes.novel.children.downloads.match} element={<NovelDownloads />} />
                             <Route path={AppRoutes.novel.children.browse.match} element={<NovelBrowse />} />
-                            <Route path={AppRoutes.novel.children.sources.match}>
-                                <Route index element={<Navigate to={AppRoutes.novel.children.browse.path} replace />} />
-                                <Route
-                                    path={AppRoutes.novel.children.sources.children.browse.match}
-                                    element={<NovelSourceBrowse />}
-                                />
-                            </Route>
-                            <Route path={AppRoutes.novel.children.extension.match}>
-                                <Route index element={<Navigate to={AppRoutes.novel.children.browse.path} replace />} />
-                                <Route
-                                    path={AppRoutes.novel.children.extension.children.info.match}
-                                    element={<NovelExtensionInfo />}
-                                />
-                            </Route>
                         </Route>
                     </Route>
                 </Routes>

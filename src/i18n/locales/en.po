@@ -370,6 +370,10 @@ msgstr "Active setting ({title})"
 msgid "Add"
 msgstr "Add"
 
+#: src/features/novel/components/NovelUnavailableView.tsx
+msgid "Add an LNReader plugin repository under Settings → Browse, then install a novel source from the Extensions tab."
+msgstr "Add an LNReader plugin repository under Settings → Browse, then install a novel source from the Extensions tab."
+
 #: src/features/chapter/Chapter.constants.ts
 msgid "Add bookmark"
 msgstr "Add bookmark"
@@ -2220,10 +2224,6 @@ msgstr "Licensed"
 msgid "Light"
 msgstr "Light"
 
-#: src/features/novel/components/NovelUnavailableView.tsx
-msgid "Light novels aren't available yet"
-msgstr "Light novels aren't available yet"
-
 #: src/features/reader/settings/ReaderSettings.constants.tsx
 msgid "Lighten"
 msgstr "Lighten"
@@ -2575,6 +2575,10 @@ msgstr "No chapters matching filter"
 msgid "No downloads"
 msgstr "No downloads"
 
+#: src/features/novel/components/NovelUnavailableView.tsx
+msgid "No light novels yet"
+msgstr "No light novels yet"
+
 #: src/features/global-search/screens/SearchAll.tsx
 #: src/features/manga/components/MangaGrid.tsx
 #: src/features/source/browse/screens/SourceMangas.tsx
@@ -2610,10 +2614,6 @@ msgstr "No novel sources"
 #: src/features/novel/screens/NovelUpdates.tsx
 msgid "No novel updates"
 msgstr "No novel updates"
-
-#: src/features/novel/screens/NovelSourceBrowse.tsx
-msgid "No novels found for this source"
-msgstr "No novels found for this source"
 
 #: src/features/reader/viewer/ReaderChapterViewer.tsx
 msgid "No pages found"
@@ -2662,14 +2662,6 @@ msgstr "Novel"
 msgid "Novel Downloads"
 msgstr "Novel Downloads"
 
-#: src/features/novel/screens/NovelExtensionInfo.tsx
-msgid "Novel Extension"
-msgstr "Novel Extension"
-
-#: src/features/novel/screens/NovelExtensionInfo.tsx
-msgid "Novel extension details unavailable"
-msgstr "Novel extension details unavailable"
-
 #: src/features/novel/screens/NovelHistory.tsx
 msgid "Novel History"
 msgstr "Novel History"
@@ -2677,10 +2669,6 @@ msgstr "Novel History"
 #: src/features/novel/screens/NovelLibrary.tsx
 msgid "Novel Library"
 msgstr "Novel Library"
-
-#: src/features/novel/screens/NovelSourceBrowse.tsx
-msgid "Novel Source"
-msgstr "Novel Source"
 
 #: src/features/novel/screens/NovelUpdates.tsx
 msgid "Novel Updates"
