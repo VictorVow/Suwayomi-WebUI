@@ -7,10 +7,7 @@
  */
 
 import { useMemo } from 'react';
-import List from '@mui/material/List';
-import ListItemAvatar from '@mui/material/ListItemAvatar';
-import ListItemText from '@mui/material/ListItemText';
-import Avatar from '@mui/material/Avatar';
+import Stack from '@mui/material/Stack';
 import IconButton from '@mui/material/IconButton';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { StringParam, useQueryParam } from 'use-query-params';
@@ -18,17 +15,17 @@ import { Link } from 'react-router-dom';
 import { useLingui } from '@lingui/react/macro';
 import { CustomTooltip } from '@/base/components/CustomTooltip.tsx';
 import { AppbarSearch } from '@/base/components/AppbarSearch.tsx';
-import { ListItemLink } from '@/base/components/lists/ListItemLink.tsx';
 import { LoadingPlaceholder } from '@/base/components/feedback/LoadingPlaceholder.tsx';
 import { AppRoutes } from '@/base/AppRoute.constants.ts';
 import { SearchParam } from '@/base/Base.types.ts';
 import { useAppAction } from '@/features/navigation-bar/hooks/useAppAction.ts';
 import { useNovelExtensionList } from '@/features/novel/services/NovelApi.ts';
 import { NovelUnavailableView } from '@/features/novel/components/NovelUnavailableView.tsx';
+import { ExtensionCard } from '@/features/browse/extensions/components/ExtensionCard.tsx';
 
 export const NovelExtensionsTab = () => {
     const { t } = useLingui();
-    const { data: extensions, loading, available } = useNovelExtensionList();
+    const { data: extensions, loading, available, refetch } = useNovelExtensionList();
 
     const [query] = useQueryParam(SearchParam.QUERY, StringParam);
 
@@ -66,18 +63,15 @@ export const NovelExtensionsTab = () => {
     }
 
     return (
-        <List>
+        <Stack sx={{ gap: 1, p: 1 }}>
             {filteredExtensions.map((extension) => (
-                <ListItemLink key={extension.pkgName} to={AppRoutes.extension.children.info.path(extension.pkgName)}>
-                    <ListItemAvatar>
-                        <Avatar variant="rounded" src={extension.iconUrl} alt={extension.name} />
-                    </ListItemAvatar>
-                    <ListItemText
-                        primary={extension.name}
-                        secondary={`${extension.lang.toUpperCase()} • v${extension.versionName}`}
-                    />
-                </ListItemLink>
+                <ExtensionCard
+                    key={extension.pkgName}
+                    extension={extension}
+                    handleUpdate={() => refetch()}
+                    showSourceRepo={false}
+                />
             ))}
-        </List>
+        </Stack>
     );
 };

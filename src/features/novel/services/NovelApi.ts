@@ -81,6 +81,7 @@ export const useNovelExtensionList = (): NovelQueryResult<NovelExtension[]> => {
             name: extension.name,
             lang: extension.lang,
             versionName: extension.versionName,
+            versionCode: extension.versionCode,
             iconUrl: extension.iconUrl,
             isInstalled: extension.isInstalled,
             isObsolete: extension.isObsolete,

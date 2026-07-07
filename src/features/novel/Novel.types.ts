@@ -37,6 +37,7 @@ export interface NovelExtension {
     name: string;
     lang: string;
     versionName: string;
+    versionCode: number;
     iconUrl: string;
     isInstalled: boolean;
     isObsolete: boolean;
