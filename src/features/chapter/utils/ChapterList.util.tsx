@@ -20,10 +20,12 @@ import type {
     ChapterScanlatorInfo,
     ChapterSourceOrderInfo,
 } from '@/features/chapter/Chapter.types.ts';
-import type { MangaIdInfo } from '@/features/manga/Manga.types.ts';
+import type { MangaIdInfo, MangaMetadata, MangaSourceIdInfo } from '@/features/manga/Manga.types.ts';
+import { isNovelSourceId } from '@/features/novel/services/NovelApi.ts';
 import type { GqlMetaHolder } from '@/features/metadata/Metadata.types.ts';
 import { createUpdateMangaMetadata, useGetMangaMetadata } from '@/features/manga/services/MangaMetadata.ts';
 import { defaultPromiseErrorHandler } from '@/lib/DefaultPromiseErrorHandler.ts';
+import { DEFAULT_CHAPTER_OPTIONS } from '@/features/chapter/Chapter.constants.ts';
 
 export function unreadFilter(unread: NullAndUndefined<boolean>, { isRead: isChapterRead }: ChapterReadInfo) {
     switch (unread) {
@@ -121,9 +123,18 @@ export const isFilterActive = (options: ChapterListFilterOptions) => {
     return unread != null || downloaded != null || bookmarked != null || !!excludedScanlators.length;
 };
 
-export const useChapterListOptions = (manga: MangaIdInfo & GqlMetaHolder): ChapterListOptions => {
+export const useChapterListOptions = (
+    manga: MangaIdInfo & Partial<MangaSourceIdInfo> & GqlMetaHolder,
+): ChapterListOptions => {
+    // Novels read oldest-first (Prologue -> Chapter N), so default the chapter
+    // list to oldest-at-top. Manga keeps the Suwayomi default (newest-at-top).
+    // Only overrides the *default* — an explicit per-manga `reverse` meta value
+    // still wins (see getMetadataFrom's fallback behavior).
+    const defaultMetadata: MangaMetadata = isNovelSourceId(manga.sourceId ?? '')
+        ? { ...DEFAULT_CHAPTER_OPTIONS, reverse: false }
+        : { ...DEFAULT_CHAPTER_OPTIONS };
     const { unread, downloaded, bookmarked, reverse, sortBy, showChapterNumber, excludedScanlators } =
-        useGetMangaMetadata(manga);
+        useGetMangaMetadata(manga, defaultMetadata);
 
     return useMemo(
         () => ({ unread, downloaded, bookmarked, reverse, sortBy, showChapterNumber, excludedScanlators }),
