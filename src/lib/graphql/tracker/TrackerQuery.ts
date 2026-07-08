@@ -48,8 +48,8 @@ export const GET_TRACKERS_BIND = gql`
 export const TRACKER_SEARCH = gql`
     ${TRACK_RECORD_SEARCH_FIELDS}
 
-    query TRACKER_SEARCH($query: String!, $trackerId: Int!) {
-        searchTracker(input: { query: $query, trackerId: $trackerId }) {
+    query TRACKER_SEARCH($query: String!, $trackerId: Int!, $mangaId: Int) {
+        searchTracker(input: { query: $query, trackerId: $trackerId, mangaId: $mangaId }) {
             trackSearches {
                 ...TRACK_RECORD_SEARCH_FIELDS
             }

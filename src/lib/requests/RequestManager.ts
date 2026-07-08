@@ -3714,9 +3714,10 @@ export class RequestManager {
     public useTrackerSearch(
         trackerId: number,
         query: string,
+        mangaId?: number,
         options?: QueryHookOptions<TrackerSearchQuery, TrackerSearchQueryVariables>,
     ): AbortableApolloUseQueryResponse<TrackerSearchQuery, TrackerSearchQueryVariables> {
-        return this.doRequest(GQLMethod.USE_QUERY, TRACKER_SEARCH, { trackerId, query }, options);
+        return this.doRequest(GQLMethod.USE_QUERY, TRACKER_SEARCH, { trackerId, query, mangaId }, options);
     }
 
     public useGetMangaRelated(

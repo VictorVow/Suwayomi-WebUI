@@ -132,7 +132,7 @@ export const TrackerSearch = ({
 
     const [selectedTrackerRemoteId, setSelectedTrackerRemoteId] = useState<string | undefined>(trackedId);
 
-    const trackerSearch = requestManager.useTrackerSearch(tracker.id, searchString);
+    const trackerSearch = requestManager.useTrackerSearch(tracker.id, searchString, manga.id);
     const searchResults = trackerSearch.data?.searchTracker.trackSearches ?? STABLE_EMPTY_ARRAY;
 
     const hasResults = !!searchResults.length;

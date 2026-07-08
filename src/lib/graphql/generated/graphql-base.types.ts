@@ -2218,6 +2218,7 @@ export type RestoreBackupPayload = {
 export type SearchTrackerInput = {
     query: Scalars['String']['input'];
     trackerId: Scalars['Int']['input'];
+    mangaId?: Scalars['Int']['input'];
 };
 
 export type SearchTrackerPayload = {

@@ -37,6 +37,13 @@ export enum PublishingStatus {
 
 export enum Tracker {
     MYANIMELIST = 1,
+    ANILIST = 2,
+    KITSU = 3,
+    SHIKIMORI = 4,
+    BANGUMI = 5,
+    MANGA_UPDATES = 7,
+    NOVEL_UPDATES = 30,
+    HARDCOVER = 31,
 }
 
 export type TTrackRecordBase = Pick<TrackRecordType, 'id' | 'remoteId' | 'title'>;
