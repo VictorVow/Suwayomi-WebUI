@@ -20,6 +20,7 @@ import { useMemo } from 'react';
 import { useLingui } from '@lingui/react/macro';
 import type { SelectableCollectionReturnType } from '@/base/collection/hooks/useSelectableCollection.ts';
 import { Chapters } from '@/features/chapter/services/Chapters.ts';
+import { useChapterDownload } from '@/features/chapter/components/ChapterDownloadContext.ts';
 import { MenuItem } from '@/base/components/menu/MenuItem.tsx';
 import {
     createGetMenuItemTitle,
@@ -77,6 +78,7 @@ export const ChapterActionMenuItems = ({
     selectable = true,
 }: Props) => {
     const { t } = useLingui();
+    const downloadChapters = useChapterDownload();
 
     const isSingleMode = !!chapter;
     const { isDownloaded, isRead, isBookmarked } = chapter ?? STABLE_EMPTY_OBJECT;
@@ -160,6 +162,17 @@ export const ChapterActionMenuItems = ({
         const chaptersToUpdate = getChapters();
 
         if (!chaptersToUpdate.length) {
+            onClose();
+            return;
+        }
+
+        // The download action is overridable via context (the anime detail
+        // screen swaps in a quality-picker flow). All other actions go through
+        // the standard Chapters.performAction dispatch.
+        if (actualAction === 'download') {
+            downloadChapters(Chapters.getIds(chaptersToUpdate)).catch(
+                defaultPromiseErrorHandler('ChapterActionMenuItems::download'),
+            );
             onClose();
             return;
         }

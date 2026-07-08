@@ -773,6 +773,7 @@ msgstr "Can't migrate an entry to itself"
 #: src/base/components/settings/SelectSetting.tsx
 #: src/base/components/settings/text/TextSettingDialog.tsx
 #: src/base/components/settings/TimeSetting.tsx
+#: src/features/anime/components/QualityPickerDialog.tsx
 #: src/features/backup/component/BackupFlagInclusionDialog.tsx
 #: src/features/backup/component/BackupValidationDialog.tsx
 #: src/features/category/components/CategoriesInclusionSetting.tsx
@@ -1497,6 +1498,7 @@ msgstr "Double page"
 msgid "Doujinshi"
 msgstr "Doujinshi"
 
+#: src/features/anime/components/QualityPickerDialog.tsx
 #: src/features/app-updates/components/ServerUpdateChecker.tsx
 #: src/features/chapter/Chapter.constants.ts
 #: src/features/chapter/components/buttons/ChapterDownloadButton.tsx
@@ -1694,6 +1696,10 @@ msgstr "Extension installed"
 msgid "Extension repositories"
 msgstr "Extension repositories"
 
+#: src/features/anime/services/AnimeDownloads.ts
+msgid "Failed to add episode to download queue"
+msgstr "Failed to add episode to download queue"
+
 #: src/features/settings/components/koreaderSync/KoreaderSyncSettings.tsx
 msgid "Failed to connect to KOReader Sync server."
 msgstr "Failed to connect to KOReader Sync server."
@@ -1709,6 +1715,10 @@ msgstr "Failed to load the anime library"
 #: src/features/novel/screens/NovelLibrary.tsx
 msgid "Failed to load the novel library"
 msgstr "Failed to load the novel library"
+
+#: src/features/anime/services/AnimeDownloads.ts
+msgid "Failed to load video qualities"
+msgstr "Failed to load video qualities"
 
 #: src/features/backup/screens/Backup.tsx
 #: src/features/browse/extensions/Extensions.tsx
@@ -2686,6 +2696,10 @@ msgstr "No chapters found"
 msgid "No chapters matching filter"
 msgstr "No chapters matching filter"
 
+#: src/features/anime/services/AnimeDownloads.ts
+msgid "No downloadable video for this episode"
+msgstr "No downloadable video for this episode"
+
 #: src/features/downloads/screens/DownloadQueue.tsx
 msgid "No downloads"
 msgstr "No downloads"
@@ -3076,6 +3090,7 @@ msgstr "Pure black dark mode"
 msgid "px"
 msgstr "px"
 
+#: src/features/anime/components/QualityPickerDialog.tsx
 #: src/features/anime/player/components/PlayerOverlay.tsx
 msgid "Quality"
 msgstr "Quality"
@@ -3429,6 +3444,10 @@ msgstr "Select enabled sources"
 #: src/features/migration/screens/MigrationSelectDestinationSources.tsx
 msgid "Select pinned sources"
 msgstr "Select pinned sources"
+
+#: src/features/anime/components/QualityPickerDialog.tsx
+msgid "Select quality"
+msgstr "Select quality"
 
 #: src/features/migration/components/MigrationDestinationSourceList.tsx
 msgid "Selected"

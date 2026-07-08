@@ -3320,6 +3320,25 @@ export class RequestManager {
         );
     }
 
+    /**
+     * Enqueues chapter downloads with a quality-index hint (Aniyomi anime
+     * episodes only). Mirrors {@link addChaptersToDownloadQueue} but passes the
+     * server's new optional `qualityIndex` field so the download manager picks
+     * the user's chosen rendition instead of the source's default.
+     */
+    public addChaptersToDownloadQueueWithQuality(
+        ids: number[],
+        qualityIndex: number,
+        options?: MutationOptions<EnqueueChapterDownloadsMutation, EnqueueChapterDownloadsMutationVariables>,
+    ): AbortableApolloMutationResponse<EnqueueChapterDownloadsMutation> {
+        return this.doRequest<EnqueueChapterDownloadsMutation, EnqueueChapterDownloadsMutationVariables>(
+            GQLMethod.MUTATION,
+            ENQUEUE_CHAPTER_DOWNLOADS,
+            { input: { ids, qualityIndex } },
+            options,
+        );
+    }
+
     public removeChaptersFromDownloadQueue(
         ids: number[],
         options?: MutationOptions<DequeueChapterDownloadsMutation, DequeueChapterDownloadsMutationVariables>,

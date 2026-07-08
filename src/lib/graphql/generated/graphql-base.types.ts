@@ -691,6 +691,12 @@ export type EditTextPreference = {
 export type EnqueueChapterDownloadInput = {
     clientMutationId?: InputMaybe<Scalars['String']['input']>;
     id: Scalars['Int']['input'];
+    /**
+     * For Aniyomi anime episodes: which quality rendition (index into the resolved
+     * Video[] list) to download. Ignored for manga/novel chapters. When omitted the
+     * source's preferred/first stream is used.
+     */
+    qualityIndex?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type EnqueueChapterDownloadPayload = {
@@ -702,6 +708,12 @@ export type EnqueueChapterDownloadPayload = {
 export type EnqueueChapterDownloadsInput = {
     clientMutationId?: InputMaybe<Scalars['String']['input']>;
     ids: Array<Scalars['Int']['input']>;
+    /**
+     * For Aniyomi anime episodes: which quality rendition (index into the resolved
+     * Video[] list) to download. Applied to every id in this batch. Ignored for
+     * manga/novel chapters.
+     */
+    qualityIndex?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type EnqueueChapterDownloadsPayload = {

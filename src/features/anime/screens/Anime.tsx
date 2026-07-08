@@ -19,7 +19,9 @@ import { CustomTooltip } from '@/base/components/CustomTooltip.tsx';
 import { requestManager } from '@/lib/requests/RequestManager.ts';
 import { ChapterList } from '@/features/chapter/components/ChapterList.tsx';
 import { ChapterRouteContext } from '@/features/chapter/components/ChapterRouteContext.ts';
+import { ChapterDownloadContext } from '@/features/chapter/components/ChapterDownloadContext.ts';
 import { Chapters } from '@/features/chapter/services/Chapters.ts';
+import { downloadAnimeEpisodes } from '@/features/anime/services/AnimeDownloads.ts';
 import { useRefreshManga } from '@/features/manga/hooks/useRefreshManga.ts';
 import { MangaDetails } from '@/features/manga/components/details/MangaDetails.tsx';
 import { MangaToolbarMenu } from '@/features/manga/components/MangaToolbarMenu.tsx';
@@ -115,8 +117,10 @@ export const Anime: React.FC = () => {
             {isLoading && <LoadingPlaceholder />}
 
             <ChapterRouteContext.Provider value={Chapters.getPlayerUrl}>
-                {manga && <MangaDetails manga={manga} mode={mode} />}
-                {manga && <ChapterList manga={manga} isRefreshing={refreshing} />}
+                <ChapterDownloadContext.Provider value={downloadAnimeEpisodes}>
+                    {manga && <MangaDetails manga={manga} mode={mode} />}
+                    {manga && <ChapterList manga={manga} isRefreshing={refreshing} />}
+                </ChapterDownloadContext.Provider>
             </ChapterRouteContext.Provider>
         </Box>
     );
