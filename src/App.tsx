@@ -68,6 +68,7 @@ const { NovelLibrary } = loadable(() => import('@/features/novel/screens/NovelLi
 const { NovelUpdates } = loadable(() => import('@/features/novel/screens/NovelUpdates.tsx'), lazyLoadFallback);
 const { NovelHistory } = loadable(() => import('@/features/novel/screens/NovelHistory.tsx'), lazyLoadFallback);
 const { NovelDownloads } = loadable(() => import('@/features/novel/screens/NovelDownloads.tsx'), lazyLoadFallback);
+const { Novel } = loadable(() => import('@/features/novel/screens/Novel.tsx'), lazyLoadFallback);
 const { NovelReader } = loadable(() => import('@/features/novel/reader/screens/NovelReader.tsx'), lazyLoadFallback);
 const { AnimeLibrary } = loadable(() => import('@/features/anime/screens/AnimeLibrary.tsx'), lazyLoadFallback);
 const { AnimeUpdates } = loadable(() => import('@/features/anime/screens/AnimeUpdates.tsx'), lazyLoadFallback);
@@ -407,6 +408,7 @@ const MainApp = () => {
                             <Route path={AppRoutes.novel.children.downloads.match} element={<NovelDownloads />} />
                             <Route path={AppRoutes.novel.children.browse.match} element={<NovelBrowse />} />
                         </Route>
+                        <Route path={AppRoutes.novelDetail.match} element={<Novel />} />
 
                         {/* Anime Routes (flat, mirroring the manga structure) */}
                         <Route path={AppRoutes.animeLibrary.match} element={<AnimeLibrary />} />

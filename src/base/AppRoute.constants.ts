@@ -233,6 +233,10 @@ export const AppRoutes = {
             },
         },
     },
+    novelDetail: {
+        match: 'novel/:id',
+        path: (mangaId: MangaIdInfo['id']) => `/novel/${mangaId}`,
+    },
     // Anime routes mirror the flat Manga structure (anime has a detail page +
     // a full-screen player, so it cannot use Novel's parent-with-children form).
     animeLibrary: {

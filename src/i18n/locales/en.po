@@ -1121,6 +1121,10 @@ msgstr "Could not load latest track info from tracker"
 msgid "Could not load manga"
 msgstr "Could not load manga"
 
+#: src/features/novel/screens/Novel.tsx
+msgid "Could not load novel"
+msgstr "Could not load novel"
+
 #: src/features/theme/components/ThemePreview.tsx
 msgid "Could not load theme fonts"
 msgstr "Could not load theme fonts"
@@ -2793,6 +2797,7 @@ msgid "Nothing found"
 msgstr "Nothing found"
 
 #: src/features/navigation-bar/NavigationBar.constants.ts
+#: src/features/novel/screens/Novel.tsx
 #: src/features/tracker/Tracker.constants.ts
 msgid "Novel"
 msgstr "Novel"

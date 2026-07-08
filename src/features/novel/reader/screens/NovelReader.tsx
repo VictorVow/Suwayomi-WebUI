@@ -163,7 +163,7 @@ export const NovelReader = () => {
                 isVisible={isVisible}
                 title={manga.title}
                 chapterName={currentChapter.name}
-                onClose={() => navigate(AppRoutes.manga.path(mangaId))}
+                onClose={() => navigate(AppRoutes.novelDetail.path(mangaId))}
                 hasPrevChapter={hasPrevChapter}
                 hasNextChapter={hasNextChapter}
                 onPrevChapter={() => goToChapter(prevChapter?.sourceOrder)}

@@ -39,7 +39,7 @@ export const NovelDownloadList = ({
     return (
         <List>
             {rows.map((row) => (
-                <ListItemLink key={row.chapterId} to={AppRoutes.manga.path(row.mangaId)}>
+                <ListItemLink key={row.chapterId} to={AppRoutes.novelDetail.path(row.mangaId)}>
                     <Box sx={{ width: '100%' }}>
                         <ListItemText primary={row.mangaTitle} secondary={`${row.chapterName} — ${row.state}`} />
                         <LinearProgress
