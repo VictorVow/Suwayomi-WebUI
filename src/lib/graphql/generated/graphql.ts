@@ -4062,7 +4062,7 @@ export type GetTrackersBindQuery = {
 export type TrackerSearchQueryVariables = Exact<{
     query: string;
     trackerId: number;
-    mangaId?: number;
+    mangaId?: number | null | undefined;
 }>;
 
 export type TrackerSearchQuery = {

@@ -217,6 +217,7 @@ import type {
 import {
     CategoryOrderBy,
     ChapterOrderBy,
+    ContentType,
     DownloaderState,
     DownloadUpdateType,
     FetchSourceMangaType,
@@ -2971,7 +2972,15 @@ export class RequestManager {
             } as unknown as AbortableApolloUseQueryResponse<GetMangasLibraryQuery, GetMangasLibraryQueryVariables>;
         }
 
-        return this.useGetMangas(GET_MANGAS_LIBRARY, { condition: { inLibrary: true, categoryIds: [id] } }, options);
+        // The manga library (the only consumer of category manga listings —
+        // novel/anime libraries query `mangas` directly with a `contentType`
+        // condition) is scoped to MANGA content so novel/anime titles that
+        // share the category don't leak into the manga library tabs/grid.
+        return this.useGetMangas(
+            GET_MANGAS_LIBRARY,
+            { condition: { inLibrary: true, categoryIds: [id], contentType: ContentType.Manga } },
+            options,
+        );
     }
 
     public deleteCategory(

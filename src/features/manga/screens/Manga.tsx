@@ -20,7 +20,7 @@ import { requestManager } from '@/lib/requests/RequestManager.ts';
 import { ChapterList } from '@/features/chapter/components/ChapterList.tsx';
 import { ChapterRouteContext } from '@/features/chapter/components/ChapterRouteContext.ts';
 import { Chapters } from '@/features/chapter/services/Chapters.ts';
-import { isNovelSourceId } from '@/features/novel/services/NovelApi.ts';
+import { isNovelSourceId } from '@/lib/source/contentKind.ts';
 import { useRefreshManga } from '@/features/manga/hooks/useRefreshManga.ts';
 import { MangaDetails } from '@/features/manga/components/details/MangaDetails.tsx';
 import { MangaToolbarMenu } from '@/features/manga/components/MangaToolbarMenu.tsx';

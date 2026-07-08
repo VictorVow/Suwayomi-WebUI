@@ -341,6 +341,23 @@ export type ConnectKoSyncAccountInput = {
     username: Scalars['String']['input'];
 };
 
+/**
+ * The kind of content a manga row represents, derived from its source.
+ *
+ * Miruyomi-Server stores manga, light-novel and anime titles in the same `manga`
+ * table. This enum is the single discriminator used to scope library/category
+ * queries to one content type:
+ *
+ *   * `MANGA` - Tachiyomi manga sources (`source.kind = MANGA`, positive source id)
+ *   * `NOVEL` - LNReader light-novel plugins (negative source id)
+ *   * `ANIME` - Aniyomi anime sources (`source.kind = ANIME`)
+ */
+export enum ContentType {
+    Anime = 'ANIME',
+    Manga = 'MANGA',
+    Novel = 'NOVEL',
+}
+
 export type CreateBackupInput = {
     clientMutationId?: InputMaybe<Scalars['String']['input']>;
     flags?: InputMaybe<PartialBackupFlagsInput>;
@@ -1111,6 +1128,7 @@ export type MangaConditionInput = {
     author?: InputMaybe<Scalars['String']['input']>;
     categoryIds?: InputMaybe<Array<Scalars['Int']['input']>>;
     chaptersLastFetchedAt?: InputMaybe<Scalars['LongString']['input']>;
+    contentType?: InputMaybe<ContentType>;
     description?: InputMaybe<Scalars['String']['input']>;
     genre?: InputMaybe<Array<Scalars['String']['input']>>;
     id?: InputMaybe<Scalars['Int']['input']>;
@@ -2216,9 +2234,9 @@ export type RestoreBackupPayload = {
 };
 
 export type SearchTrackerInput = {
+    mangaId?: InputMaybe<Scalars['Int']['input']>;
     query: Scalars['String']['input'];
     trackerId: Scalars['Int']['input'];
-    mangaId?: Scalars['Int']['input'];
 };
 
 export type SearchTrackerPayload = {

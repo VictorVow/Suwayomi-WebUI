@@ -77,9 +77,10 @@ export function Library() {
     } = requestManager.useGetCategories<GetCategoriesLibraryQuery, GetCategoriesLibraryQueryVariables>(
         GET_CATEGORIES_LIBRARY,
     );
-    const tabsData = categoriesResponse?.categories.nodes.filter(
-        (category) => category.id !== 0 || (category.id === 0 && category.mangas.totalCount),
-    );
+    // `category.mangas.totalCount` is scoped to MANGA content on the server
+    // (see CategoryType.mangas resolver), so a category holding only novels
+    // or anime — or an empty category — is hidden from the manga library.
+    const tabsData = categoriesResponse?.categories.nodes.filter((category) => category.mangas.totalCount > 0);
     const tabs = tabsData ?? STABLE_EMPTY_ARRAY;
 
     const librarySizeResponse = requestManager.useGetMangas<

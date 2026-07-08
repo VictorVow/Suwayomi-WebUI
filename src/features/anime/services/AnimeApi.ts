@@ -13,7 +13,7 @@ import { GET_MANGAS_LIBRARY } from '@/lib/graphql/manga/MangaQuery.ts';
 import { Mangas } from '@/features/manga/services/Mangas.ts';
 import type { GetMangasLibraryQuery, GetMangasLibraryQueryVariables } from '@/lib/graphql/generated/graphql.ts';
 import type { AnimeDownloadRow, AnimeEpisodeRow, AnimeExtension, AnimeSource } from '@/features/anime/Anime.types.ts';
-import { SourceKind } from '@/lib/graphql/generated/graphql-base.types.ts';
+import { SourceKind, ContentType } from '@/lib/graphql/generated/graphql-base.types.ts';
 
 /*
  * =============================================================================
@@ -21,9 +21,12 @@ import { SourceKind } from '@/lib/graphql/generated/graphql-base.types.ts';
  * =============================================================================
  *
  * Miruyomi-Server runs Aniyomi anime APKs in the same Kotlin sidecar as
- * Tachiyomi manga APKs, but — to avoid drifting from the upstream Suwayomi
- * GraphQL contract — it surfaces them through the EXISTING manga types rather
- * than anime-specific ones:
+ * Tachiyomi manga APKs. Anime is surfaced through the shared manga types, with
+ * a derived content-type discriminator: an anime source is a `SourceType` with
+ * `kind === ANIME`. The server exposes this discriminator as the `ContentType`
+ * GraphQL enum, scoped via the `MangaConditionInput.contentType` condition
+ * inferred from each source, so library/category counts are correct on the
+ * server rather than filtered only client-side.
  *
  *   - an anime source    = a `SourceType` with `kind === ANIME`
  *   - an anime extension = an `ExtensionType` with `kind === ANIME`
@@ -34,9 +37,14 @@ import { SourceKind } from '@/lib/graphql/generated/graphql-base.types.ts';
  * Unlike novels (whose source ids are negative and so can be discriminated by
  * sign alone), anime source ids are positive just like manga. The discriminator
  * is the `kind` field on `SourceType`/`ExtensionType`, which Miruyomi-Server
- * exposes via the `SourceKind` enum. This file is the one place that knows the
- * anime identification rule; screens consume its hooks, never requestManager
- * directly.
+ * exposes via the `SourceKind` enum (and, derivatively, `ContentType`).
+ *
+ * Note: Miruyomi originally mirrored the upstream Suwayomi GraphQL contract to
+ * ease reimplementation. That compatibility is no longer the highest priority;
+ * the schema now carries Miruyomi-specific extensions (e.g. `ContentType`) where
+ * that yields a cleaner, less leaky design. This file remains the one place
+ * that knows the anime identification rule; screens consume its hooks, never
+ * requestManager directly.
  *
  * Setup note: anime sources only appear once the user adds an Aniyomi
  * extension repo (an `index.min.json` carrying `Aniyomi:`-prefixed APKs) under
@@ -151,23 +159,24 @@ const chapterToRow = (chapter: UpdateOrHistoryChapter): AnimeEpisodeRow => ({
 
 /** The user's library, filtered to anime. Returns full manga nodes for BaseMangaGrid. */
 export const useAnimeLibrary = (): AnimeQueryResult<LibraryMangaNode[]> => {
-    const { ids, error: sourceError, refetch: refetchSources } = useAnimeSourceIdSet();
+    // The server `contentType: ANIME` condition scopes the result to Aniyomi
+    // anime sources, so the library no longer needs the client-side
+    // `useAnimeSourceIdSet` filter. That set is still used by the updates/
+    // history/downloads hooks below, whose queries have no `contentType`
+    // predicate yet.
     const { data, loading, error, refetch } = requestManager.useGetMangas<
         GetMangasLibraryQuery,
         GetMangasLibraryQueryVariables
-    >(GET_MANGAS_LIBRARY, { condition: { inLibrary: true } });
+    >(GET_MANGAS_LIBRARY, { condition: { inLibrary: true, contentType: ContentType.Anime } });
 
-    const mangas = (data?.mangas.nodes ?? STABLE_EMPTY_ARRAY).filter((manga) => ids.has(manga.sourceId));
+    const mangas = data?.mangas.nodes ?? STABLE_EMPTY_ARRAY;
 
     return {
         data: mangas,
         loading,
-        error: error ?? sourceError,
-        available: !error && !sourceError,
-        refetch: () => {
-            refetch?.();
-            refetchSources();
-        },
+        error,
+        available: !error,
+        refetch: () => refetch?.(),
     };
 };
 

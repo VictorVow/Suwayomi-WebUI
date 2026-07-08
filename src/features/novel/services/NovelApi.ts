@@ -12,33 +12,38 @@ import { GET_MANGAS_LIBRARY } from '@/lib/graphql/manga/MangaQuery.ts';
 import { Mangas } from '@/features/manga/services/Mangas.ts';
 import type { GetMangasLibraryQuery, GetMangasLibraryQueryVariables } from '@/lib/graphql/generated/graphql.ts';
 import type { NovelChapterRow, NovelDownloadRow, NovelExtension, NovelSource } from '@/features/novel/Novel.types.ts';
+import { isNovelSourceId } from '@/lib/source/contentKind.ts';
+import { ContentType } from '@/lib/graphql/generated/graphql-base.types.ts';
 
 /*
  * =============================================================================
  *  NovelApi — the single integration seam for LNReader / light-novel support.
  * =============================================================================
  *
- * Miruyomi-Server runs LNReader plugins as native light-novel sources, but — to
- * avoid drifting from the upstream Suwayomi GraphQL contract — it surfaces them
- * through the EXISTING manga types rather than novel-specific ones:
+ * Miruyomi-Server runs LNReader plugins as native light-novel sources. They are
+ * surfaced through the shared manga types, with a derived content-type
+ * discriminator: a novel source is a `SourceType` with a NEGATIVE id. The server
+ * exposes this discriminator as the `ContentType` GraphQL enum, scoped via the
+ * `MangaConditionInput.contentType` condition inferred from each source, so the
+ * library/category counts are correct on the server rather than filtered only
+ * client-side.
  *
  *   - a novel source    = a `SourceType` with a NEGATIVE id
- *   - a novel plugin     = an `ExtensionType` with pkgName `lnreader:<id>`
+ *   - a novel plugin    = an `ExtensionType` with pkgName `lnreader:<id>`
  *   - novel chapter text = REST `GET /api/v1/lnreader/chapter/:chapterId`
  *
- * So the Novel section is just a filtered view over the same source/extension
- * GraphQL the Manga section uses. This file is the one place that knows the
- * LNReader identification rules; screens consume its hooks, never requestManager
- * directly.
+ * Note: Miruyomi originally mirrored the upstream Suwayomi GraphQL contract to
+ * ease reimplementation. That compatibility is no longer the highest priority;
+ * the schema now carries Miruyomi-specific extensions (e.g. `ContentType`) where
+ * that yields a cleaner, less leaky design. This file remains the one place
+ * that knows the LNReader identification rules; screens consume its hooks,
+ * never requestManager directly.
  *
  * Setup note: novel sources only appear once the user adds an LNReader plugin
  * index repo (e.g. the lnreader-plugins `.dist/plugins.min.json` URL) under
  * Settings → Browse, fetches extensions, and installs a plugin. Until then these
  * hooks correctly return empty lists.
  */
-
-/** A source id belongs to an LNReader plugin when it is a negative Long. */
-export const isNovelSourceId = (id: string): boolean => id.startsWith('-');
 
 /** An extension is an LNReader plugin when its package name is `lnreader:<id>`. */
 export const isNovelExtensionPkg = (pkgName: string): boolean => pkgName.startsWith('lnreader:');
@@ -132,9 +137,13 @@ export const useNovelLibrary = (): NovelQueryResult<LibraryMangaNode[]> => {
     const { data, loading, error, refetch } = requestManager.useGetMangas<
         GetMangasLibraryQuery,
         GetMangasLibraryQueryVariables
-    >(GET_MANGAS_LIBRARY, { condition: { inLibrary: true } });
+    >(GET_MANGAS_LIBRARY, { condition: { inLibrary: true, contentType: ContentType.Novel } });
 
-    const mangas = (data?.mangas.nodes ?? STABLE_EMPTY_ARRAY).filter((manga) => isNovelSourceId(manga.sourceId));
+    // The server `contentType: NOVEL` condition already scopes the result to
+    // lnreader plugin sources (negative source ids), so no client-side filter
+    // is needed here. `isNovelSourceId` remains in use by the updates/history/
+    // downloads hooks below, whose queries have no `contentType` predicate yet.
+    const mangas = data?.mangas.nodes ?? STABLE_EMPTY_ARRAY;
 
     return { data: mangas, loading, error, available: !error, refetch: () => refetch?.() };
 };

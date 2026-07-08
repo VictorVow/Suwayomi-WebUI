@@ -21,7 +21,7 @@ import type {
     ChapterSourceOrderInfo,
 } from '@/features/chapter/Chapter.types.ts';
 import type { MangaIdInfo, MangaMetadata, MangaSourceIdInfo } from '@/features/manga/Manga.types.ts';
-import { isNovelSourceId } from '@/features/novel/services/NovelApi.ts';
+import { isNovelSourceId } from '@/lib/source/contentKind.ts';
 import type { GqlMetaHolder } from '@/features/metadata/Metadata.types.ts';
 import { createUpdateMangaMetadata, useGetMangaMetadata } from '@/features/manga/services/MangaMetadata.ts';
 import { defaultPromiseErrorHandler } from '@/lib/DefaultPromiseErrorHandler.ts';
