@@ -6,7 +6,6 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-import { useState, type RefObject } from 'react';
 import Paper from '@mui/material/Paper';
 import InputBase from '@mui/material/InputBase';
 import IconButton from '@mui/material/IconButton';
@@ -15,7 +14,6 @@ import CloseIcon from '@mui/icons-material/Close';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { useLingui } from '@lingui/react/macro';
-import { useChapterTextSearch } from '@/features/novel/reader/hooks/useChapterTextSearch.ts';
 
 const matchLabel = (supported: boolean, matchCount: number, currentIndex: number, unsupportedLabel: string): string => {
     if (!supported) {
@@ -28,25 +26,33 @@ const matchLabel = (supported: boolean, matchCount: number, currentIndex: number
 };
 
 /**
- * Find-in-chapter search bar. Searches only the currently rendered chapter's
- * text (no cross-chapter or full-text backend search exists for lnreader
- * novels) via the CSS Custom Highlight API — see `useChapterTextSearch`.
+ * Find-in-chapter search bar (presentational). Matching/state lives in the
+ * parent (`NovelReader.tsx`) via the shared `useChapterTextSearch` hook so
+ * the keyboard `next_match`/`previous_match` shortcuts and the selection
+ * bar's `search` action can drive it without a ref.
  */
 export const NovelReaderSearch = ({
     open,
     onClose,
-    contentRef,
+    query,
+    onQueryChange,
+    supported,
+    matchCount,
+    currentIndex,
+    goToNext,
+    goToPrevious,
 }: {
     open: boolean;
     onClose: () => void;
-    contentRef: RefObject<HTMLElement | null>;
+    query: string;
+    onQueryChange: (q: string) => void;
+    supported: boolean;
+    matchCount: number;
+    currentIndex: number;
+    goToNext: () => void;
+    goToPrevious: () => void;
 }) => {
     const { t } = useLingui();
-    const [query, setQuery] = useState('');
-    const { supported, matchCount, currentIndex, goToNext, goToPrevious } = useChapterTextSearch(
-        contentRef,
-        open ? query : '',
-    );
 
     if (!open) {
         return null;
@@ -59,7 +65,7 @@ export const NovelReaderSearch = ({
                 position: 'absolute',
                 top: 8,
                 right: 8,
-                zIndex: 2,
+                zIndex: 60,
                 display: 'flex',
                 alignItems: 'center',
                 px: 1,
@@ -71,7 +77,7 @@ export const NovelReaderSearch = ({
                 autoFocus
                 placeholder={t`Search in chapter`}
                 value={query}
-                onChange={(e) => setQuery(e.target.value)}
+                onChange={(e) => onQueryChange(e.target.value)}
                 onKeyDown={(e) => {
                     if (e.key === 'Enter') {
                         if (e.shiftKey) {

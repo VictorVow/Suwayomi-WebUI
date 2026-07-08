@@ -7,185 +7,139 @@
  */
 
 import Box from '@mui/material/Box';
-import Stack from '@mui/material/Stack';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
-import ToggleButton from '@mui/material/ToggleButton';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
-import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-import MenuBookIcon from '@mui/icons-material/MenuBook';
-import SearchIcon from '@mui/icons-material/Search';
-import BookmarkIcon from '@mui/icons-material/Bookmark';
-import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
-import TextDecreaseIcon from '@mui/icons-material/TextDecrease';
-import TextIncreaseIcon from '@mui/icons-material/TextIncrease';
-import { useLingui } from '@lingui/react/macro';
-import { MAX_FONT_SIZE, MIN_FONT_SIZE, NovelReaderTheme } from '@/features/novel/reader/preferences.ts';
+import type { HeadFootRenderCtx } from '@/features/novel/reader/settings/headFoot.ts';
+import type { NovelReaderSettings } from '@/features/novel/reader/preferences.ts';
+import type { ReaderPanel } from '@/features/novel/reader/readerPanel.ts';
+import { NovelReaderMainOverlay } from '@/features/novel/reader/components/NovelReaderMainOverlay.tsx';
+import { NovelReaderFontSizeOverlay } from '@/features/novel/reader/components/NovelReaderFontSizeOverlay.tsx';
+import { NovelReaderGoto } from '@/features/novel/reader/components/NovelReaderGoto.tsx';
+import { NovelReaderWordActions } from '@/features/novel/reader/components/NovelReaderWordActions.tsx';
+import { NovelReaderSettingsPanel } from '@/features/novel/reader/settings/NovelReaderSettingsPanel.tsx';
 
-/**
- * Persistent top/bottom chrome for the novel reader — mirrors `PlayerOverlay`'s
- * role (nav, settings) but for text: prev/next chapter, table of contents,
- * find-in-chapter, font size, theme, and bookmark. Unlike `PlayerOverlay` this
- * does not auto-hide on a timer; visibility is toggled by tapping the content
- * pane (see `NovelReader.tsx`), matching a persistent-toolbar reading UI.
- */
-export const NovelReaderOverlay = ({
-    isVisible,
-    title,
-    chapterName,
-    onClose,
-    hasPrevChapter,
-    hasNextChapter,
-    onPrevChapter,
-    onNextChapter,
-    onOpenToc,
-    isSearchOpen,
-    onToggleSearch,
-    isBookmarked,
-    onToggleBookmark,
-    fontSize,
-    onFontSizeStep,
-    theme,
-    onThemeChange,
-}: {
-    isVisible: boolean;
-    title?: string;
-    chapterName?: string;
+export interface ReaderOverlayHandlers {
     onClose: () => void;
-    hasPrevChapter: boolean;
-    hasNextChapter: boolean;
+    onNavigateBack: () => void;
+    onNavigateForward: () => void;
+    onGoHome: () => void;
     onPrevChapter: () => void;
     onNextChapter: () => void;
-    onOpenToc: () => void;
-    isSearchOpen: boolean;
     onToggleSearch: () => void;
-    isBookmarked: boolean;
+    onGoto: () => void;
+    onToggleToc: () => void;
+    onToggleBookmarks: () => void;
     onToggleBookmark: () => void;
-    fontSize: number;
-    onFontSizeStep: (direction: 1 | -1) => void;
-    theme: NovelReaderTheme;
-    onThemeChange: (theme: NovelReaderTheme) => void;
-}) => {
-    const { t } = useLingui();
+    onGotoChapterByFraction: (fraction: number) => void;
+    onGoToBookStart: () => void;
+    onGoToBookEnd: () => void;
+    onLookupWord: (word: string) => void;
+    onFontSize: () => void;
+    onPrefs: () => void;
+}
+
+interface OverlayProps {
+    panel: ReaderPanel;
+    settings: NovelReaderSettings;
+    title?: string;
+    chapterName?: string;
+    chapterIndex: number;
+    chapterCount: number;
+    hasPrevChapter: boolean;
+    hasNextChapter: boolean;
+    isBookmarked: boolean;
+    footerCtx?: HeadFootRenderCtx;
+    handlers: ReaderOverlayHandlers;
+}
+
+/**
+ * Panel-stack dispatcher — the calibre `Overlay` host. The LIFO stack lives
+ * in `NovelReader.tsx` (`panelStack`); this component renders the *top* panel
+ * plus the dark translucent backdrop behind it. Sub-panels (MainOverlay,
+ * FontSizeOverlay, Goto, WordActions, Prefs) each close by popping the stack
+ * via `onClose`. A backdrop click also pops the top panel, matching calibre's
+ * `Overlay.container_clicked` behavior.
+ *
+ * The persistent chrome header/footer (`NovelReaderChrome`) is NOT part of
+ * the panel stack; it sits in the screen root above the content with lower
+ * z-index so active panels occlude it.
+ */
+export const NovelReaderOverlay = (props: OverlayProps) => {
+    const {
+        panel,
+        settings,
+        title,
+        chapterName,
+        chapterIndex,
+        chapterCount,
+        hasPrevChapter,
+        hasNextChapter,
+        isBookmarked,
+        footerCtx,
+        handlers,
+    } = props;
+    const { onClose, onToggleBookmark } = handlers;
+
+    const render = () => {
+        switch (panel.kind) {
+            case 'main':
+                return (
+                    <NovelReaderMainOverlay
+                        title={title}
+                        hasPrevChapter={hasPrevChapter}
+                        hasNextChapter={hasNextChapter}
+                        isBookmarked={isBookmarked}
+                        onNavigateBack={handlers.onNavigateBack}
+                        onNavigateForward={handlers.onNavigateForward}
+                        onGoHome={handlers.onGoHome}
+                        onPrevChapter={handlers.onPrevChapter}
+                        onNextChapter={handlers.onNextChapter}
+                        onToggleSearch={handlers.onToggleSearch}
+                        onGoto={handlers.onGoto}
+                        onToggleToc={handlers.onToggleToc}
+                        onToggleBookmarks={handlers.onToggleBookmarks}
+                        onToggleBookmark={onToggleBookmark}
+                        onFontSize={handlers.onFontSize}
+                        onPrefs={handlers.onPrefs}
+                        onClose={onClose}
+                        settings={settings}
+                        footerCtx={footerCtx}
+                    />
+                );
+            case 'font_size':
+                return <NovelReaderFontSizeOverlay onClose={onClose} />;
+            case 'goto':
+                return (
+                    <NovelReaderGoto
+                        onClose={onClose}
+                        onPrevSection={handlers.onPrevChapter}
+                        onNextSection={handlers.onNextChapter}
+                        onGoToBookStart={handlers.onGoToBookStart}
+                        onGoToBookEnd={handlers.onGoToBookEnd}
+                        onGotoChapterByFraction={handlers.onGotoChapterByFraction}
+                        chapterName={chapterName}
+                        chapterIndex={chapterIndex}
+                        chapterCount={chapterCount}
+                    />
+                );
+            case 'word_actions':
+                return <NovelReaderWordActions word={panel.word} onClose={onClose} />;
+            case 'prefs':
+                return <NovelReaderSettingsPanel onClose={onClose} />;
+            default:
+                return null;
+        }
+    };
 
     return (
         <Box
             sx={{
-                position: 'fixed',
+                position: 'absolute',
                 inset: 0,
-                zIndex: 1,
-                pointerEvents: 'none',
-                opacity: isVisible ? 1 : 0,
-                transition: 'opacity 0.2s',
+                zIndex: 40,
+                color: '#fff',
+                background: panel.kind === 'main' || panel.kind === 'prefs' ? 'rgba(0,0,0,0.45)' : 'rgba(0,0,0,0.25)',
             }}
         >
-            {/* Top bar */}
-            <Stack
-                direction="row"
-                sx={{
-                    alignItems: 'center',
-                    gap: 1,
-                    p: 1,
-                    pointerEvents: isVisible ? 'auto' : 'none',
-                    background: 'linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0) 100%)',
-                }}
-            >
-                <IconButton color="inherit" onClick={onClose} aria-label={t`Close`}>
-                    <ArrowBackIcon />
-                </IconButton>
-                <Box sx={{ minWidth: 0, flexGrow: 1 }}>
-                    {title && (
-                        <Typography variant="subtitle1" noWrap sx={{ fontWeight: 'bold' }}>
-                            {title}
-                        </Typography>
-                    )}
-                    {chapterName && (
-                        <Typography variant="caption" noWrap sx={{ opacity: 0.8, display: 'block' }}>
-                            {chapterName}
-                        </Typography>
-                    )}
-                </Box>
-                <IconButton color="inherit" onClick={onOpenToc} aria-label={t`Table of Contents`}>
-                    <MenuBookIcon />
-                </IconButton>
-                <IconButton
-                    color="inherit"
-                    onClick={onToggleSearch}
-                    aria-label={t`Search in chapter`}
-                    sx={{ opacity: isSearchOpen ? 1 : 0.8 }}
-                >
-                    <SearchIcon />
-                </IconButton>
-                <IconButton color="inherit" onClick={onToggleBookmark} aria-label={t`Bookmark chapter`}>
-                    {isBookmarked ? <BookmarkIcon /> : <BookmarkBorderIcon />}
-                </IconButton>
-            </Stack>
-
-            {/* Bottom bar */}
-            <Stack
-                direction="row"
-                sx={{
-                    position: 'absolute',
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    gap: 1,
-                    p: 1,
-                    pointerEvents: isVisible ? 'auto' : 'none',
-                    background: 'linear-gradient(to top, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0) 100%)',
-                }}
-            >
-                <IconButton
-                    color="inherit"
-                    onClick={onPrevChapter}
-                    disabled={!hasPrevChapter}
-                    aria-label={t`Previous chapter`}
-                >
-                    <NavigateBeforeIcon />
-                </IconButton>
-
-                <Stack direction="row" sx={{ alignItems: 'center', gap: 1 }}>
-                    <IconButton
-                        color="inherit"
-                        onClick={() => onFontSizeStep(-1)}
-                        disabled={fontSize <= MIN_FONT_SIZE}
-                        aria-label={t`Decrease font size`}
-                    >
-                        <TextDecreaseIcon />
-                    </IconButton>
-                    <IconButton
-                        color="inherit"
-                        onClick={() => onFontSizeStep(1)}
-                        disabled={fontSize >= MAX_FONT_SIZE}
-                        aria-label={t`Increase font size`}
-                    >
-                        <TextIncreaseIcon />
-                    </IconButton>
-                    <ToggleButtonGroup
-                        size="small"
-                        exclusive
-                        value={theme}
-                        onChange={(_, value: NovelReaderTheme | null) => value && onThemeChange(value)}
-                    >
-                        <ToggleButton value={NovelReaderTheme.LIGHT}>{t`Light`}</ToggleButton>
-                        <ToggleButton value={NovelReaderTheme.SEPIA}>{t`Sepia`}</ToggleButton>
-                        <ToggleButton value={NovelReaderTheme.DARK}>{t`Dark`}</ToggleButton>
-                    </ToggleButtonGroup>
-                </Stack>
-
-                <IconButton
-                    color="inherit"
-                    onClick={onNextChapter}
-                    disabled={!hasNextChapter}
-                    aria-label={t`Next chapter`}
-                >
-                    <NavigateNextIcon />
-                </IconButton>
-            </Stack>
+            {render()}
         </Box>
     );
 };

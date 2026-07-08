@@ -364,11 +364,16 @@ msgstr "Active setting ({title})"
 
 #: src/base/components/settings/MutableListSetting.tsx
 #: src/features/manga/hooks/useManageMangaLibraryState.tsx
+#: src/features/novel/reader/settings/NovelReaderSettingsPanel.tsx
 #: src/features/reader/hotkeys/settings/components/ReaderSettingHotkey.tsx
 #: src/features/settings/components/images/KeyValueItems.tsx
 #: src/features/settings/screens/ImageProcessingSetting.tsx
 msgid "Add"
 msgstr "Add"
+
+#: src/features/novel/reader/components/NovelReaderWordActions.tsx
+msgid "Add a custom lookup"
+msgstr "Add a custom lookup"
 
 #: src/features/anime/components/AnimeUnavailableView.tsx
 msgid "Add an Aniyomi extension repository under Settings → Browse, then install an anime source from the Extensions tab."
@@ -548,6 +553,10 @@ msgstr "Auto webtoon mode"
 msgid "Auto-download"
 msgstr "Auto-download"
 
+#: src/features/novel/reader/settings/NovelReaderSettingsPanel.tsx
+msgid "Auto-hide chrome (0 = off)"
+msgstr "Auto-hide chrome (0 = off)"
+
 #: src/features/reader/overlay/progress-bar/settings/components/ReaderSettingProgressBarPosition.tsx
 msgid "Automatic progress bar vertical position"
 msgstr "Automatic progress bar vertical position"
@@ -592,6 +601,10 @@ msgstr "Automatically use webtoon mode for entries that are detected to likely u
 msgid "Available"
 msgstr "Available"
 
+#: src/features/novel/reader/components/NovelReaderMainOverlay.tsx
+msgid "Back"
+msgstr "Back"
+
 #: src/features/backup/screens/Backup.tsx
 msgid "Back up library as a Tachiyomi backup"
 msgstr "Back up library as a Tachiyomi backup"
@@ -599,6 +612,10 @@ msgstr "Back up library as a Tachiyomi backup"
 #: src/features/reader/settings/general/components/ReaderSettingBackgroundColor.tsx
 msgid "Background color"
 msgstr "Background color"
+
+#: src/features/novel/reader/settings/NovelReaderSettingsPanel.tsx
+msgid "Background preview"
+msgstr "Background preview"
 
 #: src/features/backup/screens/Backup.tsx
 #: src/features/settings/screens/Settings.tsx
@@ -661,9 +678,17 @@ msgstr "Black"
 msgid "Blue"
 msgstr "Blue"
 
-#: src/features/novel/reader/components/NovelReaderOverlay.tsx
-msgid "Bookmark chapter"
-msgstr "Bookmark chapter"
+#: src/features/novel/reader/components/NovelReaderGoto.tsx
+msgid "Book end"
+msgstr "Book end"
+
+#: src/features/novel/reader/components/NovelReaderGoto.tsx
+msgid "Book start"
+msgstr "Book start"
+
+#: src/features/novel/reader/components/NovelReaderMainOverlay.tsx
+msgid "Bookmark"
+msgstr "Bookmark"
 
 #: src/features/chapter/Chapter.constants.ts
 msgid "Bookmark selected"
@@ -674,6 +699,10 @@ msgstr "Bookmark selected"
 msgid "Bookmarked"
 msgstr "Bookmarked"
 
+#: src/features/novel/reader/components/NovelReaderMainOverlay.tsx
+msgid "Bookmarks"
+msgstr "Bookmarks"
+
 #: src/features/reader/settings/layout/components/ReaderSettingTapZoneInvertMode.tsx
 msgid "Both"
 msgstr "Both"
@@ -682,6 +711,10 @@ msgstr "Both"
 #: src/features/reader/settings/general/components/ReaderSettingSafeAreaInset.tsx
 msgid "Bottom"
 msgstr "Bottom"
+
+#: src/features/novel/reader/settings/NovelReaderSettingsPanel.tsx
+msgid "Bottom margin"
+msgstr "Bottom margin"
 
 #: src/features/migration/components/MigrationBulkSearchOptionsDialog.tsx
 msgid "Breaks down the title into keywords for a wider search"
@@ -781,6 +814,7 @@ msgstr "Can't migrate an entry to itself"
 #: src/features/category/components/CreateOrEditCategoryDialog.tsx
 #: src/features/migration/components/MigrationBulkSearchOptionsDialog.tsx
 #: src/features/migration/components/MigrationOptionsDialog.tsx
+#: src/features/novel/reader/components/NovelReaderWordActions.tsx
 #: src/features/reader/hotkeys/settings/components/RecordHotkey.tsx
 #: src/features/settings/components/globalUpdate/GlobalUpdateSettingsEntries.tsx
 #: src/features/source/browse/components/SourceOptions.tsx
@@ -853,6 +887,10 @@ msgstr "Channel"
 msgid "Chapter"
 msgstr "Chapter"
 
+#: src/features/novel/reader/components/NovelReaderGoto.tsx
+msgid "Chapter {chapterIndex} / {chapterCount}"
+msgstr "Chapter {chapterIndex} / {chapterCount}"
+
 #: src/features/novel/reader/screens/NovelReader.tsx
 #: src/features/reader/screens/Reader.tsx
 msgid "Chapter does not exist"
@@ -911,6 +949,7 @@ msgid "Cleanup database"
 msgstr "Cleanup database"
 
 #: src/base/collection/components/SelectableCollectionSelectAll.tsx
+#: src/features/novel/reader/components/NovelReaderSelectionBar.tsx
 msgid "Clear"
 msgstr "Clear"
 
@@ -938,7 +977,11 @@ msgstr "Client data"
 #: src/base/components/feedback/SnackbarWithDescription.tsx
 #: src/features/app-updates/components/VersionUpdateInfoDialog.tsx
 #: src/features/migration/components/migration-entry/MigrationDestinationEntry.tsx
-#: src/features/novel/reader/components/NovelReaderOverlay.tsx
+#: src/features/novel/reader/components/NovelReaderFontSizeOverlay.tsx
+#: src/features/novel/reader/components/NovelReaderGoto.tsx
+#: src/features/novel/reader/components/NovelReaderMainOverlay.tsx
+#: src/features/novel/reader/components/NovelReaderWordActions.tsx
+#: src/features/novel/reader/settings/NovelReaderSettingsPanel.tsx
 msgid "Close"
 msgstr "Close"
 
@@ -953,6 +996,10 @@ msgstr "Cloudflare bypass"
 #: src/features/reader/filters/settings/components/ReaderSettingRGBA.tsx
 msgid "Color filter blend mode"
 msgstr "Color filter blend mode"
+
+#: src/features/novel/reader/settings/NovelReaderSettingsPanel.tsx
+msgid "Colors"
+msgstr "Colors"
 
 #: src/base/components/GridLayouts.tsx
 #: src/features/library/components/LibraryOptionsPanel.tsx
@@ -995,6 +1042,10 @@ msgstr "Connected as {currentUsername} to {currentServerAddress}"
 #: src/features/settings/components/koreaderSync/KoreaderSyncSettings.tsx
 msgid "Connected as {initialUsername} to {initialServerAddress}"
 msgstr "Connected as {initialUsername} to {initialServerAddress}"
+
+#: src/features/novel/reader/components/NovelReaderMainOverlay.tsx
+msgid "Contents"
+msgstr "Contents"
 
 #: src/features/migration/components/MigrationContinueButton.tsx
 msgid "Continue"
@@ -1041,6 +1092,7 @@ msgstr "Copied to clipboard"
 
 #: src/features/manga/components/details/MangaDetails.tsx
 #: src/features/migration/components/MigrationOptionsDialog.tsx
+#: src/features/novel/reader/components/NovelReaderSelectionBar.tsx
 msgid "Copy"
 msgstr "Copy"
 
@@ -1273,6 +1325,7 @@ msgstr "Currently publishing"
 msgid "Currently supported for: AniList, MyAnimeList"
 msgstr "Currently supported for: AniList, MyAnimeList"
 
+#: src/features/novel/reader/components/NovelReaderWordActions.tsx
 #: src/features/settings/Settings.constants.ts
 msgid "Custom"
 msgstr "Custom"
@@ -1284,6 +1337,10 @@ msgstr "Custom brightness"
 #: src/features/reader/filters/settings/components/ReaderSettingRGBA.tsx
 msgid "Custom color filters"
 msgstr "Custom color filters"
+
+#: src/features/novel/reader/settings/NovelReaderSettingsPanel.tsx
+msgid "Custom color scheme"
+msgstr "Custom color scheme"
 
 #: src/features/reader/filters/settings/components/ReaderSettingContrast.tsx
 msgid "Custom contrast"
@@ -1317,7 +1374,6 @@ msgstr "Cycle reading direction"
 msgid "Cycle reading mode"
 msgstr "Cycle reading mode"
 
-#: src/features/novel/reader/components/NovelReaderOverlay.tsx
 #: src/features/settings/screens/Appearance.tsx
 msgid "Dark"
 msgstr "Dark"
@@ -1343,7 +1399,7 @@ msgstr "Day"
 msgid "Decrease auto scroll speed"
 msgstr "Decrease auto scroll speed"
 
-#: src/features/novel/reader/components/NovelReaderOverlay.tsx
+#: src/features/novel/reader/components/NovelReaderFontSizeOverlay.tsx
 msgid "Decrease font size"
 msgstr "Decrease font size"
 
@@ -1619,6 +1675,10 @@ msgstr "Enable debug logs"
 msgid "Enable page read progress"
 msgstr "Enable page read progress"
 
+#: src/features/novel/reader/components/NovelReaderGoto.tsx
+msgid "Enter a scroll fraction (0–1 or 0–100%)"
+msgstr "Enter a scroll fraction (0–1 or 0–100%)"
+
 #: src/features/downloads/screens/DownloadSettings.tsx
 msgid "Entries in excluded categories will not be downloaded even if they are also in included categories"
 msgstr "Entries in excluded categories will not be downloaded even if they are also in included categories"
@@ -1861,6 +1921,20 @@ msgstr "FlareSolverr will automatically rotate expired sessions based on the TTL
 msgid "Flavor"
 msgstr "Flavor"
 
+#: src/features/novel/reader/settings/NovelReaderSettingsPanel.tsx
+msgid "Font family"
+msgstr "Font family"
+
+#: src/features/novel/reader/components/NovelReaderFontSizeOverlay.tsx
+#: src/features/novel/reader/components/NovelReaderMainOverlay.tsx
+#: src/features/novel/reader/settings/NovelReaderSettingsPanel.tsx
+msgid "Font size"
+msgstr "Font size"
+
+#: src/features/novel/reader/settings/NovelReaderSettingsPanel.tsx
+msgid "Footer"
+msgstr "Footer"
+
 #: src/features/theme/Themes.ts
 msgid "Forest Dew"
 msgstr "Forest Dew"
@@ -1868,6 +1942,10 @@ msgstr "Forest Dew"
 #: src/features/library/screens/LibrarySettings.tsx
 msgid "Forget manga categories"
 msgstr "Forget manga categories"
+
+#: src/features/novel/reader/components/NovelReaderMainOverlay.tsx
+msgid "Forward"
+msgstr "Forward"
 
 #: src/features/anime/player/components/PlayerOverlay.tsx
 msgid "Forward 10 seconds"
@@ -1907,6 +1985,15 @@ msgstr "Global update"
 msgid "Global update (last update: {date})"
 msgstr "Global update (last update: {date})"
 
+#: src/features/novel/reader/components/NovelReaderGoto.tsx
+msgid "Go"
+msgstr "Go"
+
+#: src/features/novel/reader/components/NovelReaderGoto.tsx
+#: src/features/novel/reader/components/NovelReaderMainOverlay.tsx
+msgid "Go to"
+msgstr "Go to"
+
 #: src/features/reader/settings/general/components/ReaderSettingBackgroundColor.tsx
 msgid "Gray"
 msgstr "Gray"
@@ -1932,6 +2019,10 @@ msgstr "H2"
 msgid "Has results"
 msgstr "Has results"
 
+#: src/features/novel/reader/settings/NovelReaderSettingsPanel.tsx
+msgid "Header"
+msgstr "Header"
+
 #: src/features/settings/components/images/Processing.tsx
 msgid "Headers"
 msgstr "Headers"
@@ -1940,6 +2031,10 @@ msgstr "Headers"
 #: src/features/settings/components/images/Processing.tsx
 msgid "Headers ({0})"
 msgstr "Headers ({0})"
+
+#: src/features/novel/reader/settings/NovelReaderSettingsPanel.tsx
+msgid "Headers and footers"
+msgstr "Headers and footers"
 
 #: src/features/manga/Manga.constants.ts
 #: src/features/tracker/Tracker.constants.ts
@@ -2077,7 +2172,7 @@ msgstr "Include: {includedCategoriesText}"
 msgid "Increase auto scroll speed"
 msgstr "Increase auto scroll speed"
 
-#: src/features/novel/reader/components/NovelReaderOverlay.tsx
+#: src/features/novel/reader/components/NovelReaderFontSizeOverlay.tsx
 msgid "Increase font size"
 msgstr "Increase font size"
 
@@ -2278,6 +2373,10 @@ msgstr "Layout"
 msgid "Left"
 msgstr "Left"
 
+#: src/features/novel/reader/settings/NovelReaderSettingsPanel.tsx
+msgid "Left margin"
+msgstr "Left margin"
+
 #: src/features/reader/settings/layout/components/ReaderSettingReadingDirection.tsx
 #: src/features/reader/settings/ReaderSettings.constants.tsx
 msgid "Left to right"
@@ -2307,7 +2406,6 @@ msgstr "Library entries"
 msgid "Licensed"
 msgstr "Licensed"
 
-#: src/features/novel/reader/components/NovelReaderOverlay.tsx
 #: src/features/settings/screens/Appearance.tsx
 msgid "Light"
 msgstr "Light"
@@ -2323,6 +2421,10 @@ msgstr "Limit reader width"
 #: src/features/downloads/screens/DownloadSettings.tsx
 msgid "Limit the amount of new chapters that are going to get downloaded."
 msgstr "Limit the amount of new chapters that are going to get downloaded."
+
+#: src/features/novel/reader/settings/NovelReaderSettingsPanel.tsx
+msgid "Line height"
+msgstr "Line height"
 
 #: src/features/settings/screens/About.tsx
 msgid "Links"
@@ -2354,6 +2456,10 @@ msgstr "Local source guide"
 #: src/features/browse/screens/BrowseSettings.tsx
 msgid "Local source location"
 msgstr "Local source location"
+
+#: src/features/novel/reader/components/NovelReaderGoto.tsx
+msgid "Location"
+msgstr "Location"
 
 #: src/features/settings/screens/ServerSettings.tsx
 msgid "Log file cleanup"
@@ -2391,6 +2497,14 @@ msgstr "Logging in to {trackerName}…"
 msgid "Long strip"
 msgstr "Long strip"
 
+#: src/features/novel/reader/components/NovelReaderSelectionBar.tsx
+msgid "Lookup"
+msgstr "Lookup"
+
+#: src/features/novel/reader/components/NovelReaderWordActions.tsx
+msgid "Lookup: {word}"
+msgstr "Lookup: {word}"
+
 #: src/features/device/screens/DeviceSetting.tsx
 msgid ""
 "Manage your existing devices.\n"
@@ -2405,6 +2519,7 @@ msgstr ""
 #: src/features/manga/Manga.constants.ts
 #: src/features/manga/screens/Manga.tsx
 #: src/features/navigation-bar/NavigationBar.constants.ts
+#: src/features/novel/reader/components/NovelReaderMainOverlay.tsx
 #: src/features/reader/settings/behaviour/components/ReaderSettingExitMode.tsx
 #: src/features/recommended/AniList.ts
 #: src/features/tracker/Tracker.constants.ts
@@ -2453,6 +2568,10 @@ msgstr "Mark as read"
 msgid "Mark as unread"
 msgstr "Mark as unread"
 
+#: src/features/novel/reader/settings/NovelReaderSettingsPanel.tsx
+msgid "Mark chapter read"
+msgstr "Mark chapter read"
+
 #: src/features/settings/screens/ServerSettings.tsx
 msgid "Mark chapters as read on download"
 msgstr "Mark chapters as read on download"
@@ -2469,6 +2588,10 @@ msgstr "Mark selected as read"
 msgid "Mark selected as unread"
 msgstr "Mark selected as unread"
 
+#: src/features/novel/reader/settings/NovelReaderSettingsPanel.tsx
+msgid "Mark-read threshold"
+msgstr "Mark-read threshold"
+
 #: src/features/migration/components/MigrationBulkSearchOptionsDialog.tsx
 msgid "Match based on chapter number"
 msgstr "Match based on chapter number"
@@ -2480,6 +2603,10 @@ msgstr "Match found"
 #: src/features/migration/components/migration-entry/MigrationEntry.tsx
 msgid "Matches"
 msgstr "Matches"
+
+#: src/features/novel/reader/settings/NovelReaderSettingsPanel.tsx
+msgid "Max text width"
+msgstr "Max text width"
 
 #: src/features/settings/screens/ServerSettings.tsx
 msgid "Maximum log file size"
@@ -2623,10 +2750,16 @@ msgstr "MyAnimeList - Related Entries"
 msgid "n/a"
 msgstr "n/a"
 
+#: src/features/novel/reader/components/NovelReaderWordActions.tsx
+#: src/features/novel/reader/settings/NovelReaderSettingsPanel.tsx
 #: src/features/settings/components/images/KeyValueItem.tsx
 #: src/features/theme/components/CreateThemeDialog.tsx
 msgid "Name"
 msgstr "Name"
+
+#: src/features/novel/reader/settings/NovelReaderSettingsPanel.tsx
+msgid "Net search URL ({q})"
+msgstr "Net search URL ({q})"
 
 #: src/features/backup/Backup.utils.ts
 #: src/features/settings/screens/ServerSettings.tsx
@@ -2641,7 +2774,7 @@ msgstr "New category"
 msgid "Next"
 msgstr "Next"
 
-#: src/features/novel/reader/components/NovelReaderOverlay.tsx
+#: src/features/novel/reader/components/NovelReaderMainOverlay.tsx
 #: src/features/reader/hotkeys/settings/components/ReaderSettingHotkey.tsx
 #: src/features/reader/overlay/navigation/desktop/components/ReaderNavBarDesktopChapterNavigation.tsx
 msgid "Next chapter"
@@ -2663,6 +2796,10 @@ msgstr "Next page"
 #: src/features/recommended/AniList.ts
 msgid "Next Season"
 msgstr "Next Season"
+
+#: src/features/novel/reader/components/NovelReaderGoto.tsx
+msgid "Next section"
+msgstr "Next section"
 
 #: src/features/reader/viewer/components/ReaderTransitionPage.tsx
 msgid "Next:"
@@ -2897,6 +3034,10 @@ msgstr "Offset double spreads"
 msgid "Ok"
 msgstr "Ok"
 
+#: src/features/novel/reader/settings/NovelReaderSettingsPanel.tsx
+msgid "On open"
+msgstr "On open"
+
 #: src/features/tracker/Tracker.constants.ts
 msgid "Oneshot"
 msgstr "Oneshot"
@@ -2984,6 +3125,14 @@ msgstr "Page"
 msgid "Page gap"
 msgstr "Page gap"
 
+#: src/features/novel/reader/settings/NovelReaderSettingsPanel.tsx
+msgid "Page layout"
+msgstr "Page layout"
+
+#: src/features/novel/reader/settings/NovelReaderSettingsPanel.tsx
+msgid "Paragraph spacing"
+msgstr "Paragraph spacing"
+
 #: src/features/browse/screens/BrowseSettings.tsx
 msgid "Parallel source requests"
 msgstr "Parallel source requests"
@@ -2992,6 +3141,11 @@ msgstr "Parallel source requests"
 #: src/features/settings/screens/ServerSettings.tsx
 msgid "Password"
 msgstr "Password"
+
+#. placeholder {0}: Math.round(settings.mark_read_threshold * 100)
+#: src/features/novel/reader/settings/NovelReaderSettingsPanel.tsx
+msgid "Past {0}%"
+msgstr "Past {0}%"
 
 #: src/features/navigation-bar/NavigationBar.constants.ts
 msgid "Paused — {count} remaining"
@@ -3036,6 +3190,10 @@ msgstr "Port"
 msgid "PostgreSQL"
 msgstr "PostgreSQL"
 
+#: src/features/novel/reader/components/NovelReaderMainOverlay.tsx
+msgid "Preferences"
+msgstr "Preferences"
+
 #: src/features/reader/settings/behaviour/ReaderBehaviourSettings.tsx
 msgid "Preload images"
 msgstr "Preload images"
@@ -3043,6 +3201,10 @@ msgstr "Preload images"
 #: src/features/reader/hotkeys/settings/components/RecordHotkey.tsx
 msgid "Press keys"
 msgstr "Press keys"
+
+#: src/features/novel/reader/components/NovelReaderMainOverlay.tsx
+msgid "Prev chapter"
+msgstr "Prev chapter"
 
 #: src/features/reader/settings/general/components/ReaderSettingSafeAreaInset.tsx
 msgid "Prevents content from overlapping device cutouts and screen edges"
@@ -3057,7 +3219,6 @@ msgstr "Preview"
 msgid "Previous"
 msgstr "Previous"
 
-#: src/features/novel/reader/components/NovelReaderOverlay.tsx
 #: src/features/reader/hotkeys/settings/components/ReaderSettingHotkey.tsx
 #: src/features/reader/overlay/navigation/desktop/components/ReaderNavBarDesktopChapterNavigation.tsx
 msgid "Previous chapter"
@@ -3079,6 +3240,10 @@ msgstr "Previous page"
 #: src/features/recommended/AniList.ts
 msgid "Previous Season"
 msgstr "Previous Season"
+
+#: src/features/novel/reader/components/NovelReaderGoto.tsx
+msgid "Previous section"
+msgstr "Previous section"
 
 #: src/features/reader/viewer/components/ReaderTransitionPage.tsx
 msgid "Previous:"
@@ -3126,6 +3291,7 @@ msgstr "Queued"
 msgid "Quick settings"
 msgstr "Quick settings"
 
+#: src/features/novel/reader/components/NovelReaderMainOverlay.tsx
 #: src/features/reader/settings/screens/GlobalReaderSettings.tsx
 #: src/features/settings/screens/Settings.tsx
 msgid "Reader"
@@ -3135,9 +3301,17 @@ msgstr "Reader"
 msgid "Reader — Manga {mangaId} Chapter {chapterSourceOrder}"
 msgstr "Reader — Manga {mangaId} Chapter {chapterSourceOrder}"
 
+#: src/features/novel/reader/settings/NovelReaderSettingsPanel.tsx
+msgid "Reader preferences"
+msgstr "Reader preferences"
+
 #: src/features/reader/settings/layout/components/ReaderSettingWidth.tsx
 msgid "Reader width"
 msgstr "Reader width"
+
+#: src/features/novel/reader/settings/NovelReaderSettingsPanel.tsx
+msgid "Reading"
+msgstr "Reading"
 
 #: src/features/reader/overlay/navigation/desktop/quick-settings/components/ReaderNavBarDesktopReadingDirection.tsx
 #: src/features/reader/settings/layout/components/ReaderSettingReadingDirection.tsx
@@ -3198,6 +3372,7 @@ msgstr "Remind later"
 
 #: src/base/components/settings/DateSetting.tsx
 #: src/features/manga/hooks/useManageMangaLibraryState.tsx
+#: src/features/novel/reader/components/NovelReaderWordActions.tsx
 #: src/features/tracker/components/cards/TrackerActiveCard.tsx
 msgid "Remove"
 msgstr "Remove"
@@ -3262,6 +3437,14 @@ msgstr "Restore"
 msgid "Restore Backup"
 msgstr "Restore Backup"
 
+#: src/features/novel/reader/settings/NovelReaderSettingsPanel.tsx
+msgid "Restore defaults"
+msgstr "Restore defaults"
+
+#: src/features/novel/reader/settings/NovelReaderSettingsPanel.tsx
+msgid "Restore scroll position"
+msgstr "Restore scroll position"
+
 #: src/features/backup/screens/Backup.tsx
 msgid "Restoring backup…"
 msgstr "Restoring backup…"
@@ -3295,6 +3478,10 @@ msgstr "Right"
 msgid "Right and left"
 msgstr "Right and left"
 
+#: src/features/novel/reader/settings/NovelReaderSettingsPanel.tsx
+msgid "Right margin"
+msgstr "Right margin"
+
 #: src/features/reader/settings/layout/components/ReaderSettingReadingDirection.tsx
 #: src/features/reader/settings/ReaderSettings.constants.tsx
 msgid "Right to left"
@@ -3304,6 +3491,7 @@ msgstr "Right to left"
 msgid "Rosegold"
 msgstr "Rosegold"
 
+#: src/features/novel/reader/components/NovelReaderWordActions.tsx
 #: src/features/settings/screens/ImageProcessingSetting.tsx
 #: src/features/theme/components/CreateThemeDialog.tsx
 msgid "Save"
@@ -3366,6 +3554,8 @@ msgstr "Scroll forward"
 
 #: src/base/components/AppbarSearch.tsx
 #: src/features/migration/components/MigrationBulkSearchOptionsDialog.tsx
+#: src/features/novel/reader/components/NovelReaderMainOverlay.tsx
+#: src/features/novel/reader/components/NovelReaderSelectionBar.tsx
 msgid "Search"
 msgstr "Search"
 
@@ -3390,7 +3580,6 @@ msgstr ""
 "Search for a ID via \"id:<ID>\" (e.g. \"id:13\")\n"
 "Limit search to your lists via \"my:<Title>\" (e.g. \"my:One Piece\")"
 
-#: src/features/novel/reader/components/NovelReaderOverlay.tsx
 #: src/features/novel/reader/components/NovelReaderSearch.tsx
 msgid "Search in chapter"
 msgstr "Search in chapter"
@@ -3476,7 +3665,10 @@ msgstr "Select quality"
 msgid "Selected"
 msgstr "Selected"
 
-#: src/features/novel/reader/components/NovelReaderOverlay.tsx
+#: src/features/novel/reader/settings/NovelReaderSettingsPanel.tsx
+msgid "Selection"
+msgstr "Selection"
+
 #: src/features/reader/filters/settings/components/ReaderSettingSepia.tsx
 msgid "Sepia"
 msgstr "Sepia"
@@ -3617,6 +3809,10 @@ msgstr "Show reading mode"
 #: src/features/browse/screens/BrowseSettings.tsx
 msgid "Show related for each manga"
 msgstr "Show related for each manga"
+
+#: src/features/novel/reader/settings/NovelReaderSettingsPanel.tsx
+msgid "Show selection bar"
+msgstr "Show selection bar"
 
 #: src/features/reader/settings/behaviour/ReaderBehaviourSettings.tsx
 msgid "Show tap zones overlay"
@@ -3842,7 +4038,6 @@ msgstr "Sync will not be triggered if the progress difference is within this tol
 msgid "System"
 msgstr "System"
 
-#: src/features/novel/reader/components/NovelReaderOverlay.tsx
 #: src/features/novel/reader/components/NovelReaderToc.tsx
 msgid "Table of Contents"
 msgstr "Table of Contents"
@@ -4023,6 +4218,10 @@ msgstr "Toggle stretch image"
 msgid "Top"
 msgstr "Top"
 
+#: src/features/novel/reader/settings/NovelReaderSettingsPanel.tsx
+msgid "Top margin"
+msgstr "Top margin"
+
 #: src/features/recommended/AniList.ts
 msgid "Top Rated"
 msgstr "Top Rated"
@@ -4139,6 +4338,10 @@ msgstr "Unable to load sources"
 msgid "Unable to load video"
 msgstr "Unable to load video"
 
+#: src/features/novel/reader/components/NovelReaderMainOverlay.tsx
+msgid "Unbookmark"
+msgstr "Unbookmark"
+
 #: src/features/migration/MigrationManager.ts
 #: src/features/settings/screens/ServerSettings.tsx
 msgid "Understood"
@@ -4246,6 +4449,10 @@ msgstr "Updating"
 msgid "URL"
 msgstr "URL"
 
+#: src/features/novel/reader/components/NovelReaderWordActions.tsx
+msgid "URL with {word}"
+msgstr "URL with {word}"
+
 #: src/features/settings/Settings.constants.ts
 msgid ""
 "Use a custom WebUI.\n"
@@ -4277,6 +4484,10 @@ msgstr "Use the latest released version."
 #: src/features/settings/Settings.constants.ts
 msgid "Use the version that was delivered with the server release"
 msgstr "Use the version that was delivered with the server release"
+
+#: src/features/novel/reader/settings/NovelReaderSettingsPanel.tsx
+msgid "User stylesheet"
+msgstr "User stylesheet"
 
 #: src/base/components/modals/LoginDialog.tsx
 #: src/features/authentication/screens/LoginPage.tsx
