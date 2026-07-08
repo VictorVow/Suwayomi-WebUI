@@ -384,6 +384,10 @@ const MainApp = () => {
                                     </MangaRouteContext.Provider>
                                 }
                             />
+                            <Route
+                                path={AppRoutes.animeSources.children.configure.match}
+                                element={<SourceConfigure />}
+                            />
                         </Route>
                         <Route path={AppRoutes.novelSources.match}>
                             <Route
@@ -393,6 +397,10 @@ const MainApp = () => {
                                         <SourceMangas />
                                     </MangaRouteContext.Provider>
                                 }
+                            />
+                            <Route
+                                path={AppRoutes.novelSources.children.configure.match}
+                                element={<SourceConfigure />}
                             />
                         </Route>
                         <Route path={AppRoutes.extension.match}>

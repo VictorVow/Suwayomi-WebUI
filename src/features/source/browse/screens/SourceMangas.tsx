@@ -464,7 +464,18 @@ export function SourceMangas() {
             {source?.isConfigurable && (
                 <CustomTooltip title={t`Settings`}>
                     <IconButton
-                        onClick={() => navigate(AppRoutes.sources.children.configure.path(sourceId))}
+                        onClick={() => {
+                            const configurePath = (() => {
+                                if (sourceBrowseScope === 'anime') {
+                                    return AppRoutes.animeSources.children.configure.path(sourceId);
+                                }
+                                if (sourceBrowseScope === 'novel') {
+                                    return AppRoutes.novelSources.children.configure.path(sourceId);
+                                }
+                                return AppRoutes.sources.children.configure.path(sourceId);
+                            })();
+                            navigate(configurePath);
+                        }}
                         aria-label="display more actions"
                         edge="end"
                         color="inherit"

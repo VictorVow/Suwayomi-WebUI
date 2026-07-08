@@ -176,6 +176,10 @@ export const AppRoutes = {
                     ...state,
                 }),
             },
+            configure: {
+                match: ':sourceId/configure',
+                path: (sourceId: SourceIdInfo['id']) => `/anime/sources/${sourceId}/configure`,
+            },
         },
     },
     novelSources: {
@@ -189,6 +193,10 @@ export const AppRoutes = {
                 state: (state: RouteStateSourceBrowse) => ({
                     ...state,
                 }),
+            },
+            configure: {
+                match: ':sourceId/configure',
+                path: (sourceId: SourceIdInfo['id']) => `/novel/sources/${sourceId}/configure`,
             },
         },
     },
