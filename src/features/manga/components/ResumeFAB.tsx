@@ -20,6 +20,7 @@ import type {
     ChapterSourceOrderInfo,
 } from '@/features/chapter/Chapter.types.ts';
 import { ContinueReadingTooltip } from '@/features/manga/components/ContinueReadingTooltip.tsx';
+import { useChapterRoute } from '@/features/chapter/components/ChapterRouteContext.ts';
 
 export function ResumeFab({
     chapter,
@@ -32,6 +33,7 @@ export function ResumeFab({
         ChapterScanlatorInfo;
 }) {
     const { t } = useLingui();
+    const getChapterUrl = useChapterRoute();
 
     const { sourceOrder, name, chapterNumber, scanlator } = chapter;
     const isFirstChapter = sourceOrder === 1;
@@ -47,7 +49,7 @@ export function ResumeFab({
                 component={Link}
                 variant="extended"
                 color="primary"
-                to={Chapters.getReaderUrl(chapter)}
+                to={getChapterUrl(chapter)}
                 state={Chapters.getReaderOpenChapterLocationState(chapter)}
             >
                 <PlayArrow />
