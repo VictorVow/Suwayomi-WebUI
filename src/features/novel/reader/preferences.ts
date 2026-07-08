@@ -158,7 +158,7 @@ export const NOVEL_READER_DEFAULT_SETTINGS: NovelReaderSettings = {
     margin_right: 24,
     margin_top: 16,
     margin_bottom: 16,
-    max_text_width: 900,
+    max_text_width: 0, // unlimited by default, matches calibre's own default
     line_height: 1.7,
     current_color_scheme: 'dark',
     user_color_schemes: {},
