@@ -23,6 +23,7 @@ import { lazyLoadFallback } from '@/base/utils/LazyLoad.tsx';
 import { ErrorBoundary } from '@/base/components/feedback/ErrorBoundary.tsx';
 import { useNavBarContext } from '@/features/navigation-bar/NavbarContext.tsx';
 import { AppRoutes } from '@/base/AppRoute.constants.ts';
+import { MangaRouteContext } from '@/features/manga/components/MangaRouteContext.ts';
 import { useMetadataServerSettings } from '@/features/settings/services/ServerSettingsMetadata.ts';
 import { MediaQuery } from '@/base/utils/MediaQuery.tsx';
 import { BrowseTab } from '@/features/browse/Browse.types.ts';
@@ -115,6 +116,11 @@ const { GlobalReaderSettings } = loadable(
 const { More } = loadable(() => import('@/features/settings/screens/More.tsx'), lazyLoadFallback);
 const { Reader } = loadable(() => import('@/features/reader/screens/Reader.tsx'), lazyLoadFallback);
 const { HistorySettings } = loadable(() => import('@/features/history/screens/HistorySettings.tsx'), lazyLoadFallback);
+
+// Stable MangaRouteContext values for the content-scoped source browse routes.
+// Module-level so the provider value never changes identity across renders.
+const getAnimeSourceMangaRouteUrl = (id: number) => AppRoutes.anime.path(id);
+const getNovelSourceMangaRouteUrl = (id: number) => AppRoutes.novelDetail.path(id);
 
 if (import.meta.env.DEV) {
     // Adds messages only in a dev environment
@@ -363,6 +369,31 @@ const MainApp = () => {
                             <Route path={AppRoutes.sources.children.browse.match} element={<SourceMangas />} />
                             <Route path={AppRoutes.sources.children.configure.match} element={<SourceConfigure />} />
                             <Route path={AppRoutes.sources.children.searchAll.match} element={<SearchAll />} />
+                        </Route>
+                        {/* Content-scoped source browse routes. Wrapping SourceMangas in
+                            MangaRouteContext.Provider makes the grid cards link to the
+                            correct detail slug (/anime/:id or /novel/:id) instead of the
+                            default /manga/:id. The shared /sources/:id route above stays
+                            manga-scoped. */}
+                        <Route path={AppRoutes.animeSources.match}>
+                            <Route
+                                path={AppRoutes.animeSources.children.browse.match}
+                                element={
+                                    <MangaRouteContext.Provider value={getAnimeSourceMangaRouteUrl}>
+                                        <SourceMangas />
+                                    </MangaRouteContext.Provider>
+                                }
+                            />
+                        </Route>
+                        <Route path={AppRoutes.novelSources.match}>
+                            <Route
+                                path={AppRoutes.novelSources.children.browse.match}
+                                element={
+                                    <MangaRouteContext.Provider value={getNovelSourceMangaRouteUrl}>
+                                        <SourceMangas />
+                                    </MangaRouteContext.Provider>
+                                }
+                            />
                         </Route>
                         <Route path={AppRoutes.extension.match}>
                             {/* TODO: deprecated - "source" and "extension" page got merged into "browse" */}

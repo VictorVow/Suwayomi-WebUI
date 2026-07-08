@@ -68,7 +68,7 @@ export const NovelSourcesTab = () => {
     return (
         <List>
             {filteredSources.map((source) => (
-                <ListItemLink key={source.id} to={AppRoutes.sources.children.browse.path(source.id)}>
+                <ListItemLink key={source.id} to={AppRoutes.novelSources.children.browse.path(source.id)}>
                     <ListItemAvatar>
                         <Avatar variant="rounded" src={source.iconUrl} alt={source.name} />
                     </ListItemAvatar>

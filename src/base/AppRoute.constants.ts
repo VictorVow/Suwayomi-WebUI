@@ -161,6 +161,37 @@ export const AppRoutes = {
             },
         },
     },
+    // Content-scoped mirror of `sources` so Anime/Novel source browse pages
+    // keep their URL slug (and survive hard reloads) instead of dropping into
+    // the shared `/sources/:id` route, whose grid cards default to `/manga/:id`.
+    animeSources: {
+        match: 'anime/sources',
+        path: '/anime/sources',
+        children: {
+            browse: {
+                match: ':sourceId',
+                path: (sourceId: SourceIdInfo['id'], query?: string | null | undefined) =>
+                    UrlUtil.addQueryParam(`/anime/sources/${sourceId}`, query),
+                state: (state: RouteStateSourceBrowse) => ({
+                    ...state,
+                }),
+            },
+        },
+    },
+    novelSources: {
+        match: 'novel/sources',
+        path: '/novel/sources',
+        children: {
+            browse: {
+                match: ':sourceId',
+                path: (sourceId: SourceIdInfo['id'], query?: string | null | undefined) =>
+                    UrlUtil.addQueryParam(`/novel/sources/${sourceId}`, query),
+                state: (state: RouteStateSourceBrowse) => ({
+                    ...state,
+                }),
+            },
+        },
+    },
     downloads: {
         match: 'manga/downloads',
         path: '/manga/downloads',
