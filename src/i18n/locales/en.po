@@ -2676,6 +2676,7 @@ msgstr "No anime downloads"
 msgid "No anime extensions"
 msgstr "No anime extensions"
 
+#: src/features/global-search/screens/SearchAll.tsx
 #: src/features/source/browse/screens/SourceMangas.tsx
 msgid "No anime found"
 msgstr "No anime found"
@@ -2761,6 +2762,7 @@ msgstr "No novel sources"
 msgid "No novel updates"
 msgstr "No novel updates"
 
+#: src/features/global-search/screens/SearchAll.tsx
 #: src/features/source/browse/screens/SourceMangas.tsx
 msgid "No novels found"
 msgstr "No novels found"

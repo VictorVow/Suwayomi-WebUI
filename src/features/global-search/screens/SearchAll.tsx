@@ -23,6 +23,7 @@ import IconButton from '@mui/material/IconButton';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { d } from 'koration';
 import { useLingui } from '@lingui/react/macro';
+import { msg, type MacroMessageDescriptor } from '@lingui/core/macro';
 import { requestManager } from '@/lib/requests/RequestManager.ts';
 import { AppbarSearch } from '@/base/components/AppbarSearch.tsx';
 import { useDebounce } from '@/base/hooks/useDebounce.ts';
@@ -37,6 +38,7 @@ import { translateExtensionLanguage } from '@/features/extension/Extensions.util
 import { AppRoutes } from '@/base/AppRoute.constants.ts';
 import { getErrorMessage } from '@/lib/HelperFunctions.ts';
 import { Sources } from '@/features/source/services/Sources.ts';
+import { useSourceBrowseScope } from '@/features/source/browse/useSourceBrowseScope.ts';
 import type {
     SourceDisplayNameInfo,
     SourceIdInfo,
@@ -118,6 +120,12 @@ const compareSourcesBySearchResult = (
 };
 const TRIGGER_SEARCH_THRESHOLD = d(1).seconds.inWholeMilliseconds;
 
+const NO_RESULTS_MESSAGE_BY_SCOPE: Record<ReturnType<typeof useSourceBrowseScope>, MacroMessageDescriptor> = {
+    manga: msg`No manga found`,
+    anime: msg`No anime found`,
+    novel: msg`No novels found`,
+};
+
 const SourceSearchPreview = React.memo(
     ({
         source,
@@ -139,6 +147,8 @@ const SourceSearchPreview = React.memo(
         const { t } = useLingui();
 
         const { id, name, lang } = source;
+
+        const sourceBrowseScope = useSourceBrowseScope();
 
         const currentSearchString = useRef(searchString);
         const currentAbortRequest = useRef<(reason: any) => void>(() => {});
@@ -179,7 +189,7 @@ const SourceSearchPreview = React.memo(
         if (error) {
             errorMessage = t`Could not search source`;
         } else if (noMangasFound) {
-            errorMessage = t`No manga found`;
+            errorMessage = t(NO_RESULTS_MESSAGE_BY_SCOPE[sourceBrowseScope]);
         }
 
         if ((!isLoading && !searchString) || emptyQuery) {
@@ -195,11 +205,33 @@ const SourceSearchPreview = React.memo(
                 <Card sx={{ mb: 1 }}>
                     <CardActionArea
                         component={Link}
-                        to={AppRoutes.sources.children.browse.path(id, searchString)}
-                        state={AppRoutes.sources.children.browse.state({
-                            mode,
-                            mangaId,
-                        })}
+                        to={(() => {
+                            if (sourceBrowseScope === 'anime') {
+                                return AppRoutes.animeSources.children.browse.path(id, searchString);
+                            }
+                            if (sourceBrowseScope === 'novel') {
+                                return AppRoutes.novelSources.children.browse.path(id, searchString);
+                            }
+                            return AppRoutes.sources.children.browse.path(id, searchString);
+                        })()}
+                        state={(() => {
+                            if (sourceBrowseScope === 'anime') {
+                                return AppRoutes.animeSources.children.browse.state({
+                                    mode,
+                                    mangaId,
+                                });
+                            }
+                            if (sourceBrowseScope === 'novel') {
+                                return AppRoutes.novelSources.children.browse.state({
+                                    mode,
+                                    mangaId,
+                                });
+                            }
+                            return AppRoutes.sources.children.browse.state({
+                                mode,
+                                mangaId,
+                            });
+                        })()}
                         sx={{ p: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
                     >
                         <Box>

@@ -45,6 +45,7 @@ import { makeToast } from '@/base/utils/Toast.ts';
 import { GET_SOURCE_BROWSE } from '@/lib/graphql/source/SourceQuery.ts';
 import type { IPos, RouteStateSourceBrowse, SourceIdInfo } from '@/features/source/Source.types.ts';
 import { SourceContentType } from '@/features/source/Source.types.ts';
+import { useSourceBrowseScope, type SourceBrowseScope } from '@/features/source/browse/useSourceBrowseScope.ts';
 import { defaultPromiseErrorHandler } from '@/lib/DefaultPromiseErrorHandler.ts';
 import { EmptyView } from '@/base/components/feedback/EmptyView.tsx';
 import { EmptyViewAbsoluteCentered } from '@/base/components/feedback/EmptyViewAbsoluteCentered.tsx';
@@ -79,8 +80,6 @@ const StyledGridWrapper = styled(Box)(() => ({
     minHeight: '100%',
     position: 'relative',
 }));
-
-type SourceBrowseScope = 'manga' | 'anime' | 'novel';
 
 const SOURCE_CONTENT_TYPE_TO_ERROR_MSG_KEY: Record<
     SourceBrowseScope,
@@ -359,15 +358,7 @@ export function SourceMangas() {
         [savedSearches, query, dialogFiltersToApply],
     );
 
-    const sourceBrowseScope: SourceBrowseScope = (() => {
-        if (location.pathname.startsWith('/anime/sources')) {
-            return 'anime';
-        }
-        if (location.pathname.startsWith('/novel/sources')) {
-            return 'novel';
-        }
-        return 'manga';
-    })();
+    const sourceBrowseScope = useSourceBrowseScope();
 
     const message = !isLoading ? t(SOURCE_CONTENT_TYPE_TO_ERROR_MSG_KEY[sourceBrowseScope][contentType]) : undefined;
     const isLocalSource = sourceId === Sources.LOCAL_SOURCE_ID;
