@@ -80,10 +80,27 @@ const StyledGridWrapper = styled(Box)(() => ({
     position: 'relative',
 }));
 
-const SOURCE_CONTENT_TYPE_TO_ERROR_MSG_KEY: { [contentType in SourceContentType]: MessageDescriptor } = {
-    [SourceContentType.POPULAR]: msg`No manga found`,
-    [SourceContentType.LATEST]: msg`No manga found`,
-    [SourceContentType.SEARCH]: msg`No manga matches this filter`,
+type SourceBrowseScope = 'manga' | 'anime' | 'novel';
+
+const SOURCE_CONTENT_TYPE_TO_ERROR_MSG_KEY: Record<
+    SourceBrowseScope,
+    { [contentType in SourceContentType]: MessageDescriptor }
+> = {
+    manga: {
+        [SourceContentType.POPULAR]: msg`No manga found`,
+        [SourceContentType.LATEST]: msg`No manga found`,
+        [SourceContentType.SEARCH]: msg`No manga matches this filter`,
+    },
+    anime: {
+        [SourceContentType.POPULAR]: msg`No anime found`,
+        [SourceContentType.LATEST]: msg`No anime found`,
+        [SourceContentType.SEARCH]: msg`No anime matches this filter`,
+    },
+    novel: {
+        [SourceContentType.POPULAR]: msg`No novels found`,
+        [SourceContentType.LATEST]: msg`No novels found`,
+        [SourceContentType.SEARCH]: msg`No novels matches this filter`,
+    },
 };
 
 const getUniqueMangas = <Manga extends MangaIdInfo>(mangas: Manga[]): Manga[] => {
@@ -342,7 +359,17 @@ export function SourceMangas() {
         [savedSearches, query, dialogFiltersToApply],
     );
 
-    const message = !isLoading ? t(SOURCE_CONTENT_TYPE_TO_ERROR_MSG_KEY[contentType]) : undefined;
+    const sourceBrowseScope: SourceBrowseScope = (() => {
+        if (location.pathname.startsWith('/anime/sources')) {
+            return 'anime';
+        }
+        if (location.pathname.startsWith('/novel/sources')) {
+            return 'novel';
+        }
+        return 'manga';
+    })();
+
+    const message = !isLoading ? t(SOURCE_CONTENT_TYPE_TO_ERROR_MSG_KEY[sourceBrowseScope][contentType]) : undefined;
     const isLocalSource = sourceId === Sources.LOCAL_SOURCE_ID;
     const messageExtra = isLocalSource ? (
         <>

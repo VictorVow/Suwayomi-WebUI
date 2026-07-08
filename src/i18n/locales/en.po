@@ -2676,6 +2676,14 @@ msgstr "No anime downloads"
 msgid "No anime extensions"
 msgstr "No anime extensions"
 
+#: src/features/source/browse/screens/SourceMangas.tsx
+msgid "No anime found"
+msgstr "No anime found"
+
+#: src/features/source/browse/screens/SourceMangas.tsx
+msgid "No anime matches this filter"
+msgstr "No anime matches this filter"
+
 #: src/features/anime/components/AnimeSourcesTab.tsx
 msgid "No anime sources"
 msgstr "No anime sources"
@@ -2752,6 +2760,14 @@ msgstr "No novel sources"
 #: src/features/novel/screens/NovelUpdates.tsx
 msgid "No novel updates"
 msgstr "No novel updates"
+
+#: src/features/source/browse/screens/SourceMangas.tsx
+msgid "No novels found"
+msgstr "No novels found"
+
+#: src/features/source/browse/screens/SourceMangas.tsx
+msgid "No novels matches this filter"
+msgstr "No novels matches this filter"
 
 #: src/features/reader/viewer/ReaderChapterViewer.tsx
 msgid "No pages found"
