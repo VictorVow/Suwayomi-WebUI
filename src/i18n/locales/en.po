@@ -460,6 +460,7 @@ msgid "AniList - Relations"
 msgstr "AniList - Relations"
 
 #: src/features/anime/screens/Anime.tsx
+#: src/features/home/screens/Home.tsx
 #: src/features/navigation-bar/NavigationBar.constants.ts
 #: src/features/recommended/AniList.ts
 msgid "Anime"
@@ -1772,6 +1773,10 @@ msgstr "Failed to connect to KOReader Sync server."
 msgid "Failed to disconnect from KOReader Sync server."
 msgstr "Failed to disconnect from KOReader Sync server."
 
+#: src/features/home/components/HomeLibraryRow.tsx
+msgid "Failed to load"
+msgstr "Failed to load"
+
 #: src/features/anime/screens/AnimeLibrary.tsx
 msgid "Failed to load the anime library"
 msgstr "Failed to load the anime library"
@@ -2064,6 +2069,11 @@ msgstr "Hikari connection pool"
 #: src/features/settings/screens/Settings.tsx
 msgid "History"
 msgstr "History"
+
+#: src/features/home/screens/Home.tsx
+#: src/features/navigation-bar/NavigationBar.constants.ts
+msgid "Home"
+msgstr "Home"
 
 #: src/features/reader/settings/layout/components/ReaderSettingTapZoneInvertMode.tsx
 msgid "Horizontal"
@@ -2516,6 +2526,7 @@ msgstr ""
 "This makes it possible to have e.g. different settings on a desktop and a smartphone"
 
 #: src/features/browse/screens/BrowseSettings.tsx
+#: src/features/home/screens/Home.tsx
 #: src/features/manga/Manga.constants.ts
 #: src/features/manga/screens/Manga.tsx
 #: src/features/navigation-bar/NavigationBar.constants.ts
@@ -2972,6 +2983,10 @@ msgstr "Novel Library"
 #: src/features/novel/screens/NovelUpdates.tsx
 msgid "Novel Updates"
 msgstr "Novel Updates"
+
+#: src/features/home/screens/Home.tsx
+msgid "Novels"
+msgstr "Novels"
 
 #: src/features/browse/screens/BrowseSettings.tsx
 msgid "NSFW (18+) sources"
@@ -3621,6 +3636,10 @@ msgstr "Second to last read chapter"
 #: src/features/settings/screens/ServerSettings.tsx
 msgid "See <0>FlareSolverr</0> for information on how to set it up"
 msgstr "See <0>FlareSolverr</0> for information on how to set it up"
+
+#: src/features/home/components/HomeLibraryRow.tsx
+msgid "See all"
+msgstr "See all"
 
 #: src/features/theme/components/CreateThemeDialog.tsx
 msgid "See the official <0>MUI documentation</0> for how to customize the theme.<1/>The palette API is not supported, you have to use the new <2>color schemes API</2>.<3/><4/>You can use theme creators like <5>MUI Theme Creator</5>, however, you have to adjust the created object according to the new color schemes API.<6/><7/>In case no background is defined, a background will be calculated based on the primary color."
@@ -4625,6 +4644,7 @@ msgid "You have to add a extension repository to be able to install extensions"
 msgstr "You have to add a extension repository to be able to install extensions"
 
 #: src/features/anime/screens/AnimeLibrary.tsx
+#: src/features/home/screens/Home.tsx
 msgid "Your anime library is empty"
 msgstr "Your anime library is empty"
 
@@ -4640,6 +4660,11 @@ msgstr "Your library is empty"
 msgid "Your library will be accessible. Use this only on private networks or when otherwise securing access."
 msgstr "Your library will be accessible. Use this only on private networks or when otherwise securing access."
 
+#: src/features/home/screens/Home.tsx
+msgid "Your manga library is empty"
+msgstr "Your manga library is empty"
+
+#: src/features/home/screens/Home.tsx
 #: src/features/novel/screens/NovelLibrary.tsx
 msgid "Your novel library is empty"
 msgstr "Your novel library is empty"

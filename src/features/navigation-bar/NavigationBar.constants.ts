@@ -21,6 +21,8 @@ import GetAppOutlinedIcon from '@mui/icons-material/GetAppOutlined';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import SettingsIcon from '@mui/icons-material/Settings';
 import InfoIcon from '@mui/icons-material/Info';
+import HomeIcon from '@mui/icons-material/Home';
+import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import MenuBookOutlinedIcon from '@mui/icons-material/MenuBookOutlined';
 import MovieIcon from '@mui/icons-material/Movie';
@@ -261,7 +263,19 @@ export const NAVIGATION_BAR_ANIME_ITEMS = [
     },
 ] as const satisfies RestrictedNavBarItem<'desktop'>[];
 
+export const NAVIGATION_BAR_HOME_ITEMS = [
+    {
+        path: AppRoutes.root.path,
+        title: msg`Home`,
+        SelectedIconComponent: HomeIcon,
+        IconComponent: HomeOutlinedIcon,
+        show: 'both',
+        moreGroup: NavBarItemMoreGroup.GENERAL,
+    },
+] as const satisfies RestrictedNavBarItem<'both'>[];
+
 export const NAVIGATION_BAR_ITEMS = [
+    ...NAVIGATION_BAR_HOME_ITEMS,
     ...NAVIGATION_BAR_BASE_ITEMS,
     ...NAVIGATION_BAR_DESKTOP_ITEMS,
     ...NAVIGATION_BAR_MOBILE_ITEMS,
@@ -270,6 +284,7 @@ export const NAVIGATION_BAR_ITEMS = [
 ] as const satisfies NavbarItem[];
 
 // Named references to the individual items, used to compose the desktop sidebar sections below.
+const [HOME_ITEM] = NAVIGATION_BAR_HOME_ITEMS;
 const [LIBRARY_ITEM, RECOMMENDED_ITEM, UPDATES_ITEM, HISTORY_ITEM, BROWSE_ITEM] = NAVIGATION_BAR_BASE_ITEMS;
 const [DOWNLOADS_ITEM, SETTINGS_ITEM, ABOUT_ITEM] = NAVIGATION_BAR_DESKTOP_ITEMS;
 
@@ -306,6 +321,7 @@ const NOVEL_SECTION: NavbarSection = {
  *  - About (standalone, pinned below Settings)
  */
 export const DESKTOP_NAV_ENTRIES: NavbarEntry[] = [
+    { kind: 'item', item: HOME_ITEM },
     { kind: 'item', item: RECOMMENDED_ITEM },
     { kind: 'section', section: MANGA_SECTION },
     { kind: 'section', section: ANIME_SECTION },

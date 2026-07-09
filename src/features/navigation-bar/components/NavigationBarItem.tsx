@@ -49,7 +49,8 @@ export const NavigationBarItem = ({
     const isCollapsed = forceCollapsed ?? isCollapsedContext;
 
     const isDisabled = disabled || !path;
-    const isActive = !isDisabled && !!path && location.pathname.startsWith(path);
+    const isActive =
+        !isDisabled && !!path && (path === '/' ? location.pathname === '/' : location.pathname.startsWith(path));
     const Icon = isActive ? SelectedIconComponent : IconComponent;
 
     const { listItemProps, listItemIconProps } = useMemo(

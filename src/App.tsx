@@ -40,6 +40,7 @@ import { SplashScreen } from '@/features/authentication/components/SplashScreen.
 import { d } from 'koration';
 
 const { Browse } = loadable(() => import('@/features/browse/screens/Browse.tsx'), lazyLoadFallback);
+const { Home } = loadable(() => import('@/features/home/screens/Home.tsx'), lazyLoadFallback);
 const { DownloadQueue } = loadable(() => import('@/features/downloads/screens/DownloadQueue.tsx'), lazyLoadFallback);
 const { Library } = loadable(() => import('@/features/library/screens/Library.tsx'), lazyLoadFallback);
 const { Manga } = loadable(() => import('@/features/manga/screens/Manga.tsx'), lazyLoadFallback);
@@ -306,10 +307,7 @@ const MainApp = () => {
 
                     <Route element={<PrivateRoutes />}>
                         {/* General Routes */}
-                        <Route
-                            path={AppRoutes.root.match}
-                            element={<Navigate to={AppRoutes.library.path()} replace />}
-                        />
+                        <Route path={AppRoutes.root.match} element={<Home />} />
                         <Route
                             path={AppRoutes.matchAll.match}
                             element={<Navigate to={AppRoutes.root.path} replace />}
