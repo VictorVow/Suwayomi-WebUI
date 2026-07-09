@@ -38,9 +38,8 @@ import { translateExtensionLanguage } from '@/features/extension/Extensions.util
 import { AppRoutes } from '@/base/AppRoute.constants.ts';
 import { getErrorMessage } from '@/lib/HelperFunctions.ts';
 import { Sources } from '@/features/source/services/Sources.ts';
-import { useSourceBrowseScope } from '@/features/source/browse/useSourceBrowseScope.ts';
-import { isNovelSourceId } from '@/lib/source/contentKind.ts';
-import { SourceKind } from '@/lib/graphql/generated/graphql-base.types.ts';
+import { useSourceBrowseScope, type SourceBrowseScope } from '@/features/source/browse/useSourceBrowseScope.ts';
+import { ContentType } from '@/lib/graphql/generated/graphql-base.types.ts';
 import type {
     SourceDisplayNameInfo,
     SourceIdInfo,
@@ -122,10 +121,16 @@ const compareSourcesBySearchResult = (
 };
 const TRIGGER_SEARCH_THRESHOLD = d(1).seconds.inWholeMilliseconds;
 
-const NO_RESULTS_MESSAGE_BY_SCOPE: Record<ReturnType<typeof useSourceBrowseScope>, MacroMessageDescriptor> = {
+const NO_RESULTS_MESSAGE_BY_SCOPE: Record<SourceBrowseScope, MacroMessageDescriptor> = {
     manga: msg`No manga found`,
     anime: msg`No anime found`,
     novel: msg`No novels found`,
+};
+
+const CONTENT_TYPE_BY_SCOPE: Record<SourceBrowseScope, ContentType> = {
+    manga: ContentType.Manga,
+    anime: ContentType.Anime,
+    novel: ContentType.Novel,
 };
 
 const SourceSearchPreview = React.memo(
@@ -305,24 +310,16 @@ export const SearchAll = ({
 
     const sourceBrowseScope = useSourceBrowseScope();
 
-    const { data, loading, error, refetch } = requestManager.useGetSourceList();
+    const { data, loading, error, refetch } = requestManager.useGetSourceList({
+        contentType: CONTENT_TYPE_BY_SCOPE[sourceBrowseScope],
+    });
     const tmpSources = data?.sources.nodes ?? STABLE_EMPTY_ARRAY;
     const sources = useMemo(
         () =>
-            tmpSources
-                .filter((source) => {
-                    if (sourceBrowseScope === 'anime') {
-                        return source.kind === SourceKind.Anime;
-                    }
-                    if (sourceBrowseScope === 'novel') {
-                        return isNovelSourceId(source.id);
-                    }
-                    return source.kind !== SourceKind.Anime && !isNovelSourceId(source.id);
-                })
-                .filter(
-                    (source) => !migrationDestinationSourceIds || migrationDestinationSourceIds.includes(source.id),
-                ),
-        [tmpSources, sourceBrowseScope, migrationDestinationSourceIds],
+            tmpSources.filter(
+                (source) => !migrationDestinationSourceIds || migrationDestinationSourceIds.includes(source.id),
+            ),
+        [tmpSources, migrationDestinationSourceIds],
     );
 
     const [sourceToLoadingStateMap, setSourceToLoadingStateMap] = useState<SourceToLoadingStateMap>(new Map());

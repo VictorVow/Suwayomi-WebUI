@@ -3754,7 +3754,6 @@ msgstr "Setting can not be changed while the reader is opened"
 
 #: src/base/components/inputs/LanguageSelect.tsx
 #: src/features/anime/components/AnimeExtensionsTab.tsx
-#: src/features/anime/components/AnimeSourcesTab.tsx
 #: src/features/anime/player/components/PlayerOverlay.tsx
 #: src/features/backup/Backup.constants.ts
 #: src/features/browse/extensions/components/ExtensionCard.tsx
@@ -3763,7 +3762,6 @@ msgstr "Setting can not be changed while the reader is opened"
 #: src/features/library/components/LibraryToolbarMenu.tsx
 #: src/features/navigation-bar/NavigationBar.constants.ts
 #: src/features/novel/components/NovelExtensionsTab.tsx
-#: src/features/novel/components/NovelSourcesTab.tsx
 #: src/features/reader/overlay/navigation/desktop/quick-settings/ReaderNavBarDesktopQuickSettings.tsx
 #: src/features/reader/overlay/navigation/mobile/ReaderBottomBarMobile.tsx
 #: src/features/settings/screens/Settings.tsx
@@ -4315,6 +4313,7 @@ msgstr "UI Login"
 msgid "Unable to load chapter text"
 msgstr "Unable to load chapter text"
 
+#: src/features/anime/components/AnimeSourcesTab.tsx
 #: src/features/backup/screens/Backup.tsx
 #: src/features/browse/extensions/Extensions.tsx
 #: src/features/browse/screens/BrowseSettings.tsx
@@ -4333,6 +4332,7 @@ msgstr "Unable to load chapter text"
 #: src/features/manga/hooks/useManageMangaLibraryState.tsx
 #: src/features/migration/screens/MigrationSelectMangas.tsx
 #: src/features/migration/screens/MigrationSelectSource.tsx
+#: src/features/novel/components/NovelSourcesTab.tsx
 #: src/features/novel/reader/screens/NovelReader.tsx
 #: src/features/reader/screens/Reader.tsx
 #: src/features/reader/settings/screens/GlobalReaderSettings.tsx
