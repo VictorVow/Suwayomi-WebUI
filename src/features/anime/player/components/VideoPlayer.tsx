@@ -196,6 +196,8 @@ export const useVideoPlayer = ({ chapterId, videos, onQualityChange, qualityInde
                 setIsMuted(video.muted);
             });
             video.addEventListener('ratechange', () => setPlaybackRate(video.playbackRate));
+            video.addEventListener('waiting', () => setIsBuffering(true));
+            video.addEventListener('playing', () => setIsBuffering(false));
 
             try {
                 await player.load(streamUrl);
@@ -213,7 +215,27 @@ export const useVideoPlayer = ({ chapterId, videos, onQualityChange, qualityInde
                 );
                 refreshTracks(player);
             } catch (e) {
-                if (!cancelled) {
+                if (cancelled) {
+                    return;
+                }
+                // Shaka can't play progressive (non-fragmented) MP4 via
+                // MediaSource — it only handles HLS/DASH/fMP4 manifests.
+                // Fall back to native <video src> playback so direct video
+                // streams (common for sources like haho.moe) still play. The
+                // overlay's basic controls already drive the native element;
+                // only ABR/track-selection is unavailable in this mode.
+                try {
+                    await player.destroy();
+                } catch {
+                    /* already tearing down */
+                }
+                playerRef.current = null;
+                const v = videoRef.current;
+                if (v && !cancelled) {
+                    v.src = streamUrl;
+                    void v.play().catch(() => {});
+                    setErrorMessage(undefined);
+                } else if (!cancelled) {
                     setErrorMessage(shakaErrorMessage(e));
                 }
             }
