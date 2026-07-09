@@ -10,6 +10,7 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import Switch from '@mui/material/Switch';
+import IconButton from '@mui/material/IconButton';
 import { Trans, useLingui } from '@lingui/react/macro';
 import { plural } from '@lingui/core/macro';
 import { requestManager } from '@/lib/requests/RequestManager.ts';
@@ -32,6 +33,17 @@ import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
 import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
 import ListSubheader from '@mui/material/ListSubheader';
+import { CustomTooltip } from '@/base/components/CustomTooltip.tsx';
+import { GitIcon } from '@/assets/icons/svg/GitIcon.tsx';
+
+const getExtensionRepoBaseUrl = (repo: string): string | undefined => {
+    const match = repo.match(/https:\/\/(?:www\.|raw\.)?(?:github|githubusercontent)\.com\/([^/]+)\/([^/]+)/);
+    if (!match) {
+        return undefined;
+    }
+    const [, user, repoName] = match;
+    return `https://github.com/${user}/${repoName}`;
+};
 
 type ExtensionsSettings = Pick<GqlServerSettings, 'maxSourcesInParallel' | 'localSourcePath' | 'extensionRepos'>;
 
@@ -127,6 +139,25 @@ export const BrowseSettings = () => {
                         requestManager.clearExtensionCache();
                     }}
                     valueInfos={serverSettings.extensionRepos.map((extensionRepo) => [extensionRepo])}
+                    renderItemLeadingAction={(repo) => {
+                        const baseUrl = getExtensionRepoBaseUrl(repo);
+                        if (!baseUrl) {
+                            return undefined;
+                        }
+                        return (
+                            <CustomTooltip title={t`Open repository`}>
+                                <IconButton
+                                    component="a"
+                                    href={baseUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    onClick={(e) => e.stopPropagation()}
+                                >
+                                    <GitIcon />
+                                </IconButton>
+                            </CustomTooltip>
+                        );
+                    }}
                     addItemButtonTitle={t`Add repository`}
                     placeholder="https://github.com/MY_ACCOUNT/MY_REPO/tree/repo"
                     validateItem={(repo) =>

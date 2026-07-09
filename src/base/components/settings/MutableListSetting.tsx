@@ -31,11 +31,13 @@ import { makeToast } from '@/base/utils/Toast.ts';
 
 const MutableListItem = ({
     handleDelete,
+    leadingAction,
     mutable = true,
     deletable = true,
     ...textSettingProps
 }: Omit<TextSettingProps, 'isPassword' | 'disabled'> & {
     handleDelete: () => void;
+    leadingAction?: JSX.Element;
     mutable?: boolean;
     deletable?: boolean;
 }) => {
@@ -43,6 +45,7 @@ const MutableListItem = ({
 
     return (
         <Stack sx={{ flexDirection: 'row', alignItems: 'center' }}>
+            {leadingAction}
             {mutable ? (
                 <TextSetting {...textSettingProps} dialogTitle="" />
             ) : (
@@ -71,6 +74,7 @@ type MutableListSettingProps = Pick<TextSettingProps, 'settingName' | 'placehold
     allowDuplicates?: boolean;
     validateItem?: (value: string, tmpValues?: string[]) => boolean;
     invalidItemError?: string;
+    renderItemLeadingAction?: (value: string) => JSX.Element | undefined;
 };
 
 const getValues = (valueInfos: MutableListSettingProps['valueInfos']): string[] =>
@@ -87,6 +91,7 @@ export const MutableListSetting = ({
     allowDuplicates = false,
     validateItem = () => true,
     invalidItemError,
+    renderItemLeadingAction,
 }: MutableListSettingProps) => {
     const { t } = useLingui();
 
@@ -207,6 +212,7 @@ export const MutableListSetting = ({
                                 handleChange={(newValue: string) => updateSetting(index, newValue)}
                                 handleDelete={() => updateSetting(index, undefined)}
                                 value={dialogValue}
+                                leadingAction={renderItemLeadingAction?.(dialogValue)}
                                 mutable={valueInfos?.find(([value]) => value === dialogValue)?.[1]?.mutable}
                                 deletable={valueInfos?.find(([value]) => value === dialogValue)?.[1]?.deletable}
                             />

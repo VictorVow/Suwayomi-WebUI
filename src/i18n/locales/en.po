@@ -3101,6 +3101,10 @@ msgstr "Open on AniList"
 msgid "Open page on exit"
 msgstr "Open page on exit"
 
+#: src/features/browse/screens/BrowseSettings.tsx
+msgid "Open repository"
+msgstr "Open repository"
+
 #: src/features/settings/screens/WebUISettings.tsx
 msgid "Open the WebUI when starting the server"
 msgstr "Open the WebUI when starting the server"
