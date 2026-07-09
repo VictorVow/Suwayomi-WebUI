@@ -22,9 +22,9 @@ export interface PlayerTrack {
     raw: unknown;
 }
 
-export interface VideoPlayerProps {
+export interface UseVideoPlayerParams {
     /** The chapter (episode) id, used to resolve the proxied stream URL. */
-    chapterId: number;
+    chapterId: number | undefined;
     /** The available quality renditions (from useEpisodeVideos). */
     videos: AniyomiVideo[];
     /** Called when the user picks a quality rendition (by index). */
@@ -45,7 +45,7 @@ export interface VideoPlayerProps {
  * declared in \`Video.audioTracks\` are surfaced for selection when the stream
  * is HLS (shaka discovers multi-audio from the manifest automatically).
  */
-export const VideoPlayer = ({ chapterId, videos, onQualityChange, qualityIndex }: VideoPlayerProps) => {
+export const useVideoPlayer = ({ chapterId, videos, onQualityChange, qualityIndex }: UseVideoPlayerParams) => {
     const videoRef = useRef<HTMLVideoElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
     const playerRef = useRef<shaka.Player | null>(null);
@@ -63,7 +63,7 @@ export const VideoPlayer = ({ chapterId, videos, onQualityChange, qualityIndex }
     const [errorMessage, setErrorMessage] = useState<string | undefined>();
 
     const streamUrl = useMemo(
-        () => (videos.length ? AnimePlayerApi.getStreamUrl(chapterId, qualityIndex) : undefined),
+        () => (videos.length && chapterId != null ? AnimePlayerApi.getStreamUrl(chapterId, qualityIndex) : undefined),
         [chapterId, qualityIndex, videos.length],
     );
 
@@ -336,4 +336,4 @@ export const VideoPlayer = ({ chapterId, videos, onQualityChange, qualityIndex }
     };
 };
 
-export type VideoPlayerController = ReturnType<typeof VideoPlayer>;
+export type VideoPlayerController = ReturnType<typeof useVideoPlayer>;

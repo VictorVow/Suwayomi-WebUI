@@ -14,7 +14,7 @@ import { requestManager } from '@/lib/requests/RequestManager.ts';
 import { GET_MANGA_READER } from '@/lib/graphql/manga/MangaQuery.ts';
 import { GET_CHAPTERS_READER } from '@/lib/graphql/chapter/ChapterQuery.ts';
 import type { GetMangaReaderQuery, GetChaptersReaderQuery } from '@/lib/graphql/generated/graphql.ts';
-import { VideoPlayer } from '@/features/anime/player/components/VideoPlayer.tsx';
+import { useVideoPlayer } from '@/features/anime/player/components/VideoPlayer.tsx';
 import { PlayerOverlay } from '@/features/anime/player/components/PlayerOverlay.tsx';
 import { useEpisodeVideos } from '@/features/anime/player/hooks/useEpisodeVideos.ts';
 import { AppRoutes } from '@/base/AppRoute.constants.ts';
@@ -90,6 +90,14 @@ export const Player = () => {
         [mangaId, navigate],
     );
 
+    const safeQualityIndex = videos.length ? Math.min(qualityIndex, videos.length - 1) : 0;
+    const controller = useVideoPlayer({
+        chapterId: currentChapter?.id,
+        videos,
+        onQualityChange: handleQualityChange,
+        qualityIndex: safeQualityIndex,
+    });
+
     if (mangaResponse.loading || chaptersResponse.loading) {
         return <LoadingPlaceholder />;
     }
@@ -106,16 +114,8 @@ export const Player = () => {
         return <EmptyViewAbsoluteCentered message={t`Unable to load video`} messageExtra={videosError?.message} />;
     }
 
-    const safeQualityIndex = Math.min(qualityIndex, videos.length - 1);
     const currentVideo = videos[safeQualityIndex];
     const qualityLabel = currentVideo?.resolution ?? currentVideo?.videoTitle ?? undefined;
-
-    const controller = VideoPlayer({
-        chapterId: currentChapter.id,
-        videos,
-        onQualityChange: handleQualityChange,
-        qualityIndex: safeQualityIndex,
-    });
 
     return (
         <Box
