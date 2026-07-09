@@ -13,6 +13,25 @@ import { AnimePlayerApi } from '@/features/anime/player/AnimePlayerApi.ts';
 import { AuthManager } from '@/features/authentication/AuthManager.ts';
 
 /**
+ * Extracts a human-readable message from a shaka error. For BAD_HTTP_STATUS
+ * (category 1, code 1001) the server's response body is in `data[2]` — the
+ * aniyomi proxy routes put the real upstream-failure cause there, so surface
+ * it instead of the opaque "Shaka Error 1001".
+ */
+function shakaErrorMessage(err: unknown): string {
+    if (err instanceof shaka.util.Error) {
+        if (err.category === 1 && err.code === 1001 && Array.isArray(err.data) && typeof err.data[2] === 'string') {
+            return err.data[2] || err.message;
+        }
+        return err.message || 'Playback error';
+    }
+    if (err instanceof Error) {
+        return err.message;
+    }
+    return String(err);
+}
+
+/**
  * A track as exposed by the player UI. Built from shaka's variant/audio/text
  * track lists so the React controls don't depend on shaka types directly.
  */
@@ -149,8 +168,8 @@ export const useVideoPlayer = ({ chapterId, videos, onQualityChange, qualityInde
             });
 
             player.addEventListener('error', (event) => {
-                const { detail } = event as unknown as { detail?: { message?: string } };
-                setErrorMessage(detail?.message ?? 'Playback error');
+                const { detail } = event as unknown as { detail?: shaka.util.Error };
+                setErrorMessage(detail ? shakaErrorMessage(detail) : 'Playback error');
             });
             player.addEventListener('buffering', (event) => {
                 setIsBuffering(Boolean((event as unknown as { buffering: boolean }).buffering));
@@ -195,7 +214,7 @@ export const useVideoPlayer = ({ chapterId, videos, onQualityChange, qualityInde
                 refreshTracks(player);
             } catch (e) {
                 if (!cancelled) {
-                    setErrorMessage(e instanceof Error ? e.message : String(e));
+                    setErrorMessage(shakaErrorMessage(e));
                 }
             }
         };
