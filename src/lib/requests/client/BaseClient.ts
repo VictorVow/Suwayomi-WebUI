@@ -110,12 +110,25 @@ export abstract class BaseClient<Client, ClientConfig, Fetcher> {
 
         const defaultUrl = import.meta.env.DEV
             ? import.meta.env.VITE_SERVER_URL_DEFAULT
-            : `${protocol}//${hostname}:${port}`;
+            : `${protocol}//${hostname}${port ? `:${port}` : ''}`;
 
         const serverBaseURL = AppStorage.local.getItemParsed(BaseClient.BASE_URL_KEY, defaultUrl);
 
+        // Normalize a stray empty port (e.g. "https://host:" produced by an
+        // earlier build that appended `:${port}` even when the browser omitted
+        // the default port). Re-serializing via `new URL()` drops the empty
+        // port segment while preserving any subpath, so persisted values from
+        // that build are corrected without the user needing to clear storage.
+        // Falls back to the raw value if it isn't a valid absolute URL.
+        let normalized = serverBaseURL;
+        try {
+            normalized = new URL(serverBaseURL).href.replace(/\/$/, '');
+        } catch {
+            /* keep raw value for non-absolute/dev overrides */
+        }
+
         // Apply subpath configuration to the base URL
-        return SubpathUtil.getApiBaseUrl(serverBaseURL);
+        return SubpathUtil.getApiBaseUrl(normalized);
     }
 
     public getBaseUrl(): string {

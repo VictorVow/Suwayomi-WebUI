@@ -10,6 +10,7 @@ import shaka from 'shaka-player';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { AniyomiVideo } from '@/features/anime/player/Player.types.ts';
 import { AnimePlayerApi } from '@/features/anime/player/AnimePlayerApi.ts';
+import { AuthManager } from '@/features/authentication/AuthManager.ts';
 
 /**
  * A track as exposed by the player UI. Built from shaka's variant/audio/text
@@ -128,6 +129,24 @@ export const useVideoPlayer = ({ chapterId, videos, onQualityChange, qualityInde
             player = new shaka.Player();
             playerRef.current = player;
             await player.attach(video);
+
+            // Send the same auth the REST/GraphQL clients do: cookies plus the
+            // Bearer access token when the server requires auth. Without this,
+            // shaka's XHR/fetch skips credentials and gets 401 on protected
+            // deployments (the /videos list fetch works because it uses
+            // `credentials: 'include'` via AnimePlayerApi; the media/segment
+            // fetches go through shaka's networking engine, which defaults to
+            // `allowCrossSiteCredentials: false`).
+            player.getNetworkingEngine()?.registerRequestFilter((type, request) => {
+                // oxlint-disable-next-line no-param-reassign -- shaka request filters mutate the request in place
+                request.allowCrossSiteCredentials = true;
+                const isAuthRequired = AuthManager.isAuthRequired();
+                const accessToken = AuthManager.getAccessToken();
+                if (isAuthRequired && accessToken) {
+                    // oxlint-disable-next-line no-param-reassign -- shaka request filters mutate the request in place
+                    request.headers['Authorization'] = `Bearer ${accessToken}`;
+                }
+            });
 
             player.addEventListener('error', (event) => {
                 const { detail } = event as unknown as { detail?: { message?: string } };
