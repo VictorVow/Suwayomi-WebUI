@@ -180,6 +180,11 @@ export const AppRoutes = {
                 match: ':sourceId/configure',
                 path: (sourceId: SourceIdInfo['id']) => `/anime/sources/${sourceId}/configure`,
             },
+            searchAll: {
+                match: 'all/search',
+                path: (query?: string | null | undefined) => UrlUtil.addQueryParam('/anime/sources/all/search', query),
+                state: (state: RouteStateSourcesSearchAll) => ({ ...state }),
+            },
         },
     },
     novelSources: {
@@ -197,6 +202,11 @@ export const AppRoutes = {
             configure: {
                 match: ':sourceId/configure',
                 path: (sourceId: SourceIdInfo['id']) => `/novel/sources/${sourceId}/configure`,
+            },
+            searchAll: {
+                match: 'all/search',
+                path: (query?: string | null | undefined) => UrlUtil.addQueryParam('/novel/sources/all/search', query),
+                state: (state: RouteStateSourcesSearchAll) => ({ ...state }),
             },
         },
     },

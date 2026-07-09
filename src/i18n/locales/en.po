@@ -1977,8 +1977,10 @@ msgstr "GitHub Server"
 msgid "GitHub WebUI"
 msgstr "GitHub WebUI"
 
+#: src/features/anime/components/AnimeSourcesTab.tsx
 #: src/features/browse/sources/Sources.tsx
 #: src/features/global-search/screens/SearchAll.tsx
+#: src/features/novel/components/NovelSourcesTab.tsx
 msgid "Global Search"
 msgstr "Global Search"
 

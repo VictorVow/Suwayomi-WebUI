@@ -39,6 +39,8 @@ import { AppRoutes } from '@/base/AppRoute.constants.ts';
 import { getErrorMessage } from '@/lib/HelperFunctions.ts';
 import { Sources } from '@/features/source/services/Sources.ts';
 import { useSourceBrowseScope } from '@/features/source/browse/useSourceBrowseScope.ts';
+import { isNovelSourceId } from '@/lib/source/contentKind.ts';
+import { SourceKind } from '@/lib/graphql/generated/graphql-base.types.ts';
 import type {
     SourceDisplayNameInfo,
     SourceIdInfo,
@@ -301,14 +303,26 @@ export const SearchAll = ({
         settings: { showNsfw, shouldShowOnlySourcesWithResults },
     } = useMetadataServerSettings();
 
+    const sourceBrowseScope = useSourceBrowseScope();
+
     const { data, loading, error, refetch } = requestManager.useGetSourceList();
     const tmpSources = data?.sources.nodes ?? STABLE_EMPTY_ARRAY;
     const sources = useMemo(
         () =>
-            tmpSources.filter(
-                (source) => !migrationDestinationSourceIds || migrationDestinationSourceIds.includes(source.id),
-            ),
-        [tmpSources, migrationDestinationSourceIds],
+            tmpSources
+                .filter((source) => {
+                    if (sourceBrowseScope === 'anime') {
+                        return source.kind === SourceKind.Anime;
+                    }
+                    if (sourceBrowseScope === 'novel') {
+                        return isNovelSourceId(source.id);
+                    }
+                    return source.kind !== SourceKind.Anime && !isNovelSourceId(source.id);
+                })
+                .filter(
+                    (source) => !migrationDestinationSourceIds || migrationDestinationSourceIds.includes(source.id),
+                ),
+        [tmpSources, sourceBrowseScope, migrationDestinationSourceIds],
     );
 
     const [sourceToLoadingStateMap, setSourceToLoadingStateMap] = useState<SourceToLoadingStateMap>(new Map());

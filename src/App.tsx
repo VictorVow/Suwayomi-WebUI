@@ -386,6 +386,7 @@ const MainApp = () => {
                                 path={AppRoutes.animeSources.children.configure.match}
                                 element={<SourceConfigure />}
                             />
+                            <Route path={AppRoutes.animeSources.children.searchAll.match} element={<SearchAll />} />
                         </Route>
                         <Route path={AppRoutes.novelSources.match}>
                             <Route
@@ -400,6 +401,7 @@ const MainApp = () => {
                                 path={AppRoutes.novelSources.children.configure.match}
                                 element={<SourceConfigure />}
                             />
+                            <Route path={AppRoutes.novelSources.children.searchAll.match} element={<SearchAll />} />
                         </Route>
                         <Route path={AppRoutes.extension.match}>
                             {/* TODO: deprecated - "source" and "extension" page got merged into "browse" */}

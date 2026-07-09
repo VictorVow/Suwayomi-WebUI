@@ -13,8 +13,9 @@ import ListItemText from '@mui/material/ListItemText';
 import Avatar from '@mui/material/Avatar';
 import IconButton from '@mui/material/IconButton';
 import SettingsIcon from '@mui/icons-material/Settings';
+import TravelExploreIcon from '@mui/icons-material/TravelExplore';
 import { StringParam, useQueryParam } from 'use-query-params';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useLingui } from '@lingui/react/macro';
 import { CustomTooltip } from '@/base/components/CustomTooltip.tsx';
 import { AppbarSearch } from '@/base/components/AppbarSearch.tsx';
@@ -28,6 +29,7 @@ import { AnimeUnavailableView } from '@/features/anime/components/AnimeUnavailab
 
 export const AnimeSourcesTab = () => {
     const { t } = useLingui();
+    const navigate = useNavigate();
     const { data: sources, loading, available } = useAnimeSourceList();
 
     const [query] = useQueryParam(SearchParam.QUERY, StringParam);
@@ -44,6 +46,11 @@ export const AnimeSourcesTab = () => {
     useAppAction(
         <>
             <AppbarSearch />
+            <CustomTooltip title={t`Global Search`}>
+                <IconButton onClick={() => navigate(AppRoutes.animeSources.children.searchAll.path())} color="inherit">
+                    <TravelExploreIcon />
+                </IconButton>
+            </CustomTooltip>
             <CustomTooltip title={t`Settings`}>
                 <IconButton component={Link} to={AppRoutes.settings.children.browse.path} color="inherit">
                     <SettingsIcon />
