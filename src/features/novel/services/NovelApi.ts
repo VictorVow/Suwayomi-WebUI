@@ -12,7 +12,7 @@ import { GET_MANGAS_LIBRARY } from '@/lib/graphql/manga/MangaQuery.ts';
 import { Mangas } from '@/features/manga/services/Mangas.ts';
 import type { GetMangasLibraryQuery, GetMangasLibraryQueryVariables } from '@/lib/graphql/generated/graphql.ts';
 import type { NovelChapterRow, NovelDownloadRow, NovelExtension, NovelSource } from '@/features/novel/Novel.types.ts';
-import { isNovelSourceId } from '@/lib/source/contentKind.ts';
+import { isNovelSourceId, isNovelExtensionPkg } from '@/lib/source/contentKind.ts';
 import { ContentType } from '@/lib/graphql/generated/graphql-base.types.ts';
 
 /*
@@ -45,8 +45,7 @@ import { ContentType } from '@/lib/graphql/generated/graphql-base.types.ts';
  * hooks correctly return empty lists.
  */
 
-/** An extension is an LNReader plugin when its package name is `lnreader:<id>`. */
-export const isNovelExtensionPkg = (pkgName: string): boolean => pkgName.startsWith('lnreader:');
+/** An extension is an LNReader plugin when its package name is `lnreader:<id>` (see `@/lib/source/contentKind.ts`). */
 
 interface NovelQueryResult<TData> {
     data: TData;
@@ -59,7 +58,9 @@ interface NovelQueryResult<TData> {
 
 /** List novel sources (installed LNReader plugins), filtered out of the shared source list. */
 export const useNovelSourceList = (): NovelQueryResult<NovelSource[]> => {
-    const { data, loading, error, refetch } = requestManager.useGetSourceList({ notifyOnNetworkStatusChange: true });
+    const { data, loading, error, refetch } = requestManager.useGetSourceList(undefined, {
+        notifyOnNetworkStatusChange: true,
+    });
 
     const sources: NovelSource[] = (data?.sources.nodes ?? STABLE_EMPTY_ARRAY)
         .filter((source) => isNovelSourceId(source.id))

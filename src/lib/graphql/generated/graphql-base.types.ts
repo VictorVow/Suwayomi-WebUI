@@ -180,6 +180,7 @@ export enum CbzMediaType {
 
 export type ChapterConditionInput = {
     chapterNumber?: InputMaybe<Scalars['Float']['input']>;
+    contentType?: InputMaybe<ContentType>;
     fetchedAt?: InputMaybe<Scalars['LongString']['input']>;
     id?: InputMaybe<Scalars['Int']['input']>;
     isBookmarked?: InputMaybe<Scalars['Boolean']['input']>;
@@ -741,6 +742,7 @@ export type EnqueueChapterDownloadsPayload = {
 
 export type ExtensionConditionInput = {
     apkName?: InputMaybe<Scalars['String']['input']>;
+    contentType?: InputMaybe<ContentType>;
     hasUpdate?: InputMaybe<Scalars['Boolean']['input']>;
     iconUrl?: InputMaybe<Scalars['String']['input']>;
     isInstalled?: InputMaybe<Scalars['Boolean']['input']>;
@@ -2692,6 +2694,7 @@ export type SortSelectionInput = {
 };
 
 export type SourceConditionInput = {
+    contentType?: InputMaybe<ContentType>;
     id?: InputMaybe<Scalars['LongString']['input']>;
     isNsfw?: InputMaybe<Scalars['Boolean']['input']>;
     lang?: InputMaybe<Scalars['String']['input']>;

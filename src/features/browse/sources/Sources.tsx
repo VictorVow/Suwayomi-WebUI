@@ -31,6 +31,7 @@ import { StyledGroupHeader } from '@/base/components/virtuoso/StyledGroupHeader.
 import { StyledGroupItemWrapper } from '@/base/components/virtuoso/StyledGroupItemWrapper.tsx';
 import { SourceLanguageSelect } from '@/features/source/components/SourceLanguageSelect.tsx';
 import { STABLE_EMPTY_ARRAY } from '@/base/Base.constants.ts';
+import { ContentType } from '@/lib/graphql/generated/graphql-base.types.ts';
 
 export function Sources({ tabsMenuHeight }: { tabsMenuHeight: number }) {
     const { t } = useLingui();
@@ -40,7 +41,14 @@ export function Sources({ tabsMenuHeight }: { tabsMenuHeight: number }) {
         settings: { showNsfw, lastUsedSourceId },
     } = useMetadataServerSettings();
 
-    const { data, loading: isLoading, error, refetch } = requestManager.useGetSourceList();
+    const {
+        data,
+        loading: isLoading,
+        error,
+        refetch,
+    } = requestManager.useGetSourceList({
+        contentType: ContentType.Manga,
+    });
     const sources = data?.sources.nodes ?? STABLE_EMPTY_ARRAY;
     const filteredSources = useMemo(
         () =>

@@ -3673,7 +3673,9 @@ export type GetSourceMigratableQuery = {
     };
 };
 
-export type GetSourcesListQueryVariables = Exact<{ [key: string]: never }>;
+export type GetSourcesListQueryVariables = Exact<{
+    condition?: Types.SourceConditionInput | null | undefined;
+}>;
 
 export type GetSourcesListQuery = {
     __typename: 'Query';

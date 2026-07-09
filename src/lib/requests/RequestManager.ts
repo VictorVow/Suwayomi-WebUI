@@ -1748,9 +1748,15 @@ export class RequestManager {
     }
 
     public useGetSourceList(
+        condition?: GetSourcesListQueryVariables['condition'],
         options?: QueryHookOptions<GetSourcesListQuery, GetSourcesListQueryVariables>,
     ): AbortableApolloUseQueryResponse<GetSourcesListQuery, GetSourcesListQueryVariables> {
-        return this.doRequest(GQLMethod.USE_QUERY, GET_SOURCES_LIST, {}, options);
+        return this.doRequest(
+            GQLMethod.USE_QUERY,
+            GET_SOURCES_LIST,
+            { condition } as GetSourcesListQueryVariables,
+            options,
+        );
     }
 
     public useGetSource<Data, Variables extends OperationVariables>(
@@ -3362,6 +3368,7 @@ export class RequestManager {
 
     public useGetRecentlyUpdatedChapters(
         initialPages: number = 1,
+        condition?: GetChaptersUpdatesQueryVariables['condition'],
         options?: QueryHookOptions<GetChaptersUpdatesQuery, GetChaptersUpdatesQueryVariables>,
     ): AbortableApolloUseQueryResponse<GetChaptersUpdatesQuery, GetChaptersUpdatesQueryVariables> {
         const PAGE_SIZE = 50;
@@ -3373,6 +3380,7 @@ export class RequestManager {
         const result = this.useGetChapters<GetChaptersUpdatesQuery, GetChaptersUpdatesQueryVariables>(
             GET_CHAPTERS_UPDATES,
             {
+                condition,
                 filter: { inLibrary: { equalTo: true } },
                 order: [
                     { by: ChapterOrderBy.FetchedAt, byType: SortOrder.Desc },
@@ -3410,6 +3418,7 @@ export class RequestManager {
 
     public useGetRecentlyReadChapters(
         initialPages: number = 1,
+        condition?: GetChaptersHistoryQueryVariables['condition'],
         options?: QueryHookOptions<GetChaptersHistoryQuery, GetChaptersHistoryQueryVariables>,
     ): AbortableApolloUseQueryResponse<GetChaptersHistoryQuery, GetChaptersHistoryQueryVariables> {
         const PAGE_SIZE = 50;
@@ -3421,6 +3430,7 @@ export class RequestManager {
         const result = this.useGetChapters<GetChaptersHistoryQuery, GetChaptersHistoryQueryVariables>(
             GET_CHAPTERS_HISTORY,
             {
+                condition,
                 filter: { lastReadAt: { isNull: false, notEqualToAll: ['0'] } },
                 order: [
                     { by: ChapterOrderBy.LastReadAt, byType: SortOrder.Desc },

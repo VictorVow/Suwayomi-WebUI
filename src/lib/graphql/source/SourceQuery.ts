@@ -47,8 +47,8 @@ export const GET_SOURCE_MIGRATABLE = gql`
 export const GET_SOURCES_LIST = gql`
     ${SOURCE_LIST_FIELDS}
 
-    query GET_SOURCES_LIST {
-        sources {
+    query GET_SOURCES_LIST($condition: SourceConditionInput) {
+        sources(condition: $condition) {
             nodes {
                 ...SOURCE_LIST_FIELDS
             }

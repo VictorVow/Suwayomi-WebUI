@@ -22,6 +22,7 @@ import { ChapterHistoryCard } from '@/features/history/components/ChapterHistory
 import { Chapters } from '@/features/chapter/services/Chapters.ts';
 import { useAppTitle } from '@/features/navigation-bar/hooks/useAppTitle.ts';
 import { STABLE_EMPTY_ARRAY } from '@/base/Base.constants.ts';
+import { ContentType } from '@/lib/graphql/generated/graphql-base.types.ts';
 
 export const History: React.FC = () => {
     const { t } = useLingui();
@@ -34,9 +35,13 @@ export const History: React.FC = () => {
         error,
         fetchMore,
         refetch,
-    } = requestManager.useGetRecentlyReadChapters(undefined, {
-        fetchPolicy: 'cache-and-network',
-    });
+    } = requestManager.useGetRecentlyReadChapters(
+        undefined,
+        { contentType: ContentType.Manga },
+        {
+            fetchPolicy: 'cache-and-network',
+        },
+    );
     const hasNextPage = !!chapterHistoryData?.chapters.pageInfo.hasNextPage;
     const endCursor = chapterHistoryData?.chapters.pageInfo.endCursor;
     const readEntries = chapterHistoryData?.chapters.nodes ?? STABLE_EMPTY_ARRAY;

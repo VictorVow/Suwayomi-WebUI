@@ -26,6 +26,9 @@ import { SourceKind } from '@/lib/graphql/generated/graphql-base.types.ts';
 /** A source id belongs to an LNReader (novel) plugin when it is a negative Long. */
 export const isNovelSourceId = (id: string): boolean => id.startsWith('-');
 
+/** An extension is an LNReader (novel) plugin when its pkgName is `lnreader:<id>`. */
+export const isNovelExtensionPkg = (pkgName: string): boolean => pkgName.startsWith('lnreader:');
+
 export type ContentKind = 'MANGA' | 'NOVEL' | 'ANIME';
 
 /** The content kind of a title, derived from its source id and source kind. */
@@ -34,6 +37,17 @@ export const contentKindOf = (sourceId: string, sourceKind?: SourceKind | null):
         return 'NOVEL';
     }
     if (sourceKind === SourceKind.Anime) {
+        return 'ANIME';
+    }
+    return 'MANGA';
+};
+
+/** The content kind of an extension, derived from its kind and pkgName. */
+export const extensionContentKindOf = (kind: SourceKind, pkgName: string): ContentKind => {
+    if (isNovelExtensionPkg(pkgName)) {
+        return 'NOVEL';
+    }
+    if (kind === SourceKind.Anime) {
         return 'ANIME';
     }
     return 'MANGA';

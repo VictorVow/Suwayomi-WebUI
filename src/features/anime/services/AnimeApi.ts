@@ -69,7 +69,9 @@ interface AnimeQueryResult<TData> {
  * rest reuse the cache.
  */
 const useAnimeSourceIdSet = (): { ids: Set<string>; loading: boolean; error?: Error; refetch: () => void } => {
-    const { data, loading, error, refetch } = requestManager.useGetSourceList({ notifyOnNetworkStatusChange: true });
+    const { data, loading, error, refetch } = requestManager.useGetSourceList(undefined, {
+        notifyOnNetworkStatusChange: true,
+    });
 
     const ids = useMemo(() => {
         const set = new Set<string>();
@@ -86,7 +88,9 @@ const useAnimeSourceIdSet = (): { ids: Set<string>; loading: boolean; error?: Er
 
 /** List anime sources (installed Aniyomi extensions), filtered out of the shared source list. */
 export const useAnimeSourceList = (): AnimeQueryResult<AnimeSource[]> => {
-    const { data, loading, error, refetch } = requestManager.useGetSourceList({ notifyOnNetworkStatusChange: true });
+    const { data, loading, error, refetch } = requestManager.useGetSourceList(undefined, {
+        notifyOnNetworkStatusChange: true,
+    });
 
     const sources: AnimeSource[] = (data?.sources.nodes ?? STABLE_EMPTY_ARRAY)
         .filter((source) => source.kind === SourceKind.Anime)

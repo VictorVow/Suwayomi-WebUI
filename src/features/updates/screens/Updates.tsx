@@ -26,6 +26,7 @@ import { Chapters } from '@/features/chapter/services/Chapters.ts';
 import { useAppTitleAndAction } from '@/features/navigation-bar/hooks/useAppTitleAndAction.ts';
 import { GROUPED_VIRTUOSO_Z_INDEX } from '@/lib/virtuoso/Virtuoso.constants.ts';
 import { STABLE_EMPTY_ARRAY } from '@/base/Base.constants.ts';
+import { ContentType } from '@/lib/graphql/generated/graphql-base.types.ts';
 
 export const Updates: React.FC = () => {
     const { t } = useLingui();
@@ -37,9 +38,13 @@ export const Updates: React.FC = () => {
         error,
         fetchMore,
         refetch,
-    } = requestManager.useGetRecentlyUpdatedChapters(undefined, {
-        fetchPolicy: 'cache-and-network',
-    });
+    } = requestManager.useGetRecentlyUpdatedChapters(
+        undefined,
+        { contentType: ContentType.Manga },
+        {
+            fetchPolicy: 'cache-and-network',
+        },
+    );
     const hasNextPage = !!chapterUpdateData?.chapters.pageInfo.hasNextPage;
     const endCursor = chapterUpdateData?.chapters.pageInfo.endCursor;
     const updateEntries = chapterUpdateData?.chapters.nodes ?? STABLE_EMPTY_ARRAY;

@@ -42,6 +42,7 @@ import { EXTENSION_ACTION_TO_FAILURE_TRANSLATION_MAP } from '@/features/extensio
 import { AppRoutes } from '@/base/AppRoute.constants.ts';
 import { getErrorMessage } from '@/lib/HelperFunctions.ts';
 import { STABLE_EMPTY_ARRAY } from '@/base/Base.constants.ts';
+import { extensionContentKindOf } from '@/lib/source/contentKind.ts';
 import {
     createUpdateMetadataServerSettings,
     useMetadataServerSettings,
@@ -143,7 +144,13 @@ export function Extensions({ tabsMenuHeight }: { tabsMenuHeight: number }) {
     const areReposDefined = !!serverSettingsData?.settings.extensionRepos.length;
     const areMultipleReposInUse = (serverSettingsData?.settings.extensionRepos.length ?? 0) > 1;
 
-    const allExtensions = data?.fetchExtensions?.extensions ?? STABLE_EMPTY_ARRAY;
+    const allExtensions = useMemo(
+        () =>
+            (data?.fetchExtensions?.extensions ?? STABLE_EMPTY_ARRAY).filter(
+                (extension) => extensionContentKindOf(extension.kind, extension.pkgName) === 'MANGA',
+            ),
+        [data],
+    );
     const allLangs = useMemo(() => getLanguagesFromExtensions(allExtensions), [allExtensions]);
 
     const filteredExtensions = useMemo(
