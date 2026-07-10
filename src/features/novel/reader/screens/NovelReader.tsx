@@ -6,7 +6,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import { useLingui } from '@lingui/react/macro';
@@ -18,6 +18,7 @@ import { AppRoutes } from '@/base/AppRoute.constants.ts';
 import { EmptyViewAbsoluteCentered } from '@/base/components/feedback/EmptyViewAbsoluteCentered.tsx';
 import { LoadingPlaceholder } from '@/base/components/feedback/LoadingPlaceholder.tsx';
 import { useNovelChapterText } from '@/features/novel/reader/hooks/useNovelChapterText.ts';
+import { useContinuousChapterFeed } from '@/features/novel/reader/hooks/useContinuousChapterFeed.ts';
 import { NovelReaderOverlay } from '@/features/novel/reader/components/NovelReaderOverlay.tsx';
 import { NovelReaderToc } from '@/features/novel/reader/components/NovelReaderToc.tsx';
 import { NovelReaderSearch } from '@/features/novel/reader/components/NovelReaderSearch.tsx';
@@ -42,6 +43,13 @@ const fontFamilyCssMap: Record<'system' | 'serif' | 'sans', string> = {
     sans: 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif',
 };
 
+const EMPTY_CHAPTERS: never[] = [];
+
+// Start fetching the neighbouring chapter once the reader is within this
+// many px of the loaded range's top/bottom edge, rather than eagerly
+// prefetching it as soon as the current chapter is opened.
+const SCROLL_BOUNDARY_PX = 600;
+
 /**
  * Full-screen novel text reader — a fuller port of calibre's content-server
  * reader.
@@ -51,8 +59,13 @@ const fontFamilyCssMap: Record<'system' | 'serif' | 'sans', string> = {
  * anchoring / highlight annotations are out of scope. Two layout modes are
  * supported:
  *
- *   - `continuous` (default): vertical scroll, auto-advances to the next
- *     chapter when scrolling past the bottom.
+ *   - `continuous` (default): true vertical scroll — chapters are
+ *     concatenated in one scrollable pane. Only the opened chapter is
+ *     fetched up front; the neighbouring chapter is fetched and appended
+ *     (or prepended) once the reader scrolls within `SCROLL_BOUNDARY_PX` of
+ *     the loaded range's edge (see `useContinuousChapterFeed`), so scrolling
+ *     flows straight from one chapter's text into the next with no
+ *     page-swap.
  *   - `paged`: CSS multi-column layout that splits the text into
  *     viewport-sized pages navigated via tap zones, mouse wheel, and arrow
  *     keys. At the last page, advancing moves to the next chapter.
@@ -101,7 +114,75 @@ export const NovelReader = () => {
     const colors = resolveColorScheme(settings.current_color_scheme, settings.user_color_schemes);
     const isPaged = settings.reading_mode === 'paged';
 
-    const { html, loading: htmlLoading, error: htmlError } = useNovelChapterText(currentChapter?.id);
+    // Only paged mode uses this — continuous mode fetches chapter bodies
+    // through `useContinuousChapterFeed` instead, so this stays idle there
+    // rather than double-fetching the anchor chapter.
+    const {
+        html,
+        loading: htmlLoading,
+        error: htmlError,
+    } = useNovelChapterText(isPaged ? currentChapter?.id : undefined);
+
+    // ── Continuous mode: sliding window of concatenated chapters ──────────
+    // readingOrderChapters is ascending (index 0 = earliest), the inverse of
+    // sortedChapters, so array index increases in the forward reading
+    // direction — the natural top-to-bottom order sections are rendered in.
+    const readingOrderChapters = useMemo(() => [...sortedChapters].reverse(), [sortedChapters]);
+    const anchorIndex = currentIndex >= 0 ? readingOrderChapters.length - 1 - currentIndex : -1;
+
+    const silentTransitionRef = useRef(false);
+    const sectionRefs = useRef<Map<number, HTMLElement>>(new Map());
+    const activeSectionElRef = useRef<HTMLElement | null>(null);
+
+    const feed = useContinuousChapterFeed(
+        isPaged ? EMPTY_CHAPTERS : readingOrderChapters,
+        isPaged ? -1 : anchorIndex,
+        silentTransitionRef,
+    );
+
+    const [activeIndex, setActiveIndex] = useState(anchorIndex);
+
+    // Explicit navigation (TOC, prev/next buttons, keyboard, browser
+    // back/forward, deep link) moves the route's anchor chapter — follow it.
+    // (When the anchor instead moves because of the silent-sync effect below,
+    // it moves *to* activeIndex, so this is a no-op in that case.)
+    useEffect(() => {
+        setActiveIndex(anchorIndex);
+    }, [anchorIndex]);
+
+    // When continuous-mode scrolling has landed on a chapter other than the
+    // route's anchor, silently sync the URL to it — keeps deep-linking and
+    // the back button meaningful — without collapsing the loaded window or
+    // resetting scroll (see `silentTransitionRef` consumers).
+    useEffect(() => {
+        if (isPaged || activeIndex < 0 || activeIndex === anchorIndex) {
+            return;
+        }
+        const chapter = readingOrderChapters[activeIndex];
+        if (!chapter) {
+            return;
+        }
+        silentTransitionRef.current = true;
+        navigate(AppRoutes.novelReader.path(mangaId, chapter.sourceOrder), { replace: true });
+    }, [isPaged, activeIndex, anchorIndex, readingOrderChapters, mangaId, navigate]);
+
+    const setSectionRef = useCallback(
+        (index: number) => (el: HTMLDivElement | null) => {
+            if (el) {
+                sectionRefs.current.set(index, el);
+            } else {
+                sectionRefs.current.delete(index);
+            }
+        },
+        [],
+    );
+
+    // Keep the active chapter's own section element fresh for behaviour
+    // tracking — a layout effect so it's up to date before any passive
+    // effect (e.g. `useReaderBehaviour`) reads it.
+    useLayoutEffect(() => {
+        activeSectionElRef.current = isPaged ? null : (sectionRefs.current.get(activeIndex) ?? null);
+    });
 
     // ── Refs + chrome auto-hide (declared above callbacks that depend on them) ──
     const contentRef = useRef<HTMLDivElement>(null);
@@ -164,6 +245,8 @@ export const NovelReader = () => {
         currentIndex + 1,
         markRead,
         currentChapter?.isRead ?? false,
+        activeSectionElRef,
+        silentTransitionRef,
     );
 
     // Re-fire mark-read on chapter mount only when policy is `on_open`.
@@ -221,7 +304,12 @@ export const NovelReader = () => {
                 const page = Math.round(frac * (paged.pageCount - 1));
                 paged.goToPage(page);
             } else {
-                const target = (el.scrollHeight - el.clientHeight) * Math.min(1, Math.max(0, frac));
+                // Seek within the active chapter's own section, not the whole
+                // (possibly multi-chapter) pane.
+                const sectionEl = activeSectionElRef.current ?? el;
+                const sectionTop = sectionEl === el ? 0 : sectionEl.offsetTop;
+                const sectionHeight = sectionEl === el ? el.scrollHeight : sectionEl.offsetHeight;
+                const target = sectionTop + (sectionHeight - el.clientHeight) * Math.min(1, Math.max(0, frac));
                 el.scrollTo({ top: target, behavior: 'smooth' });
             }
             closeAll();
@@ -241,8 +329,12 @@ export const NovelReader = () => {
         el.scrollTo({ left: paged.pageIndex * el.clientWidth, top: 0 });
     }, [isPaged, paged.pageIndex]);
 
-    // ── Continuous mode auto-advance ──────────────────────────────────────
-    // When scrolled to the very bottom, auto-advance to the next chapter.
+    // ── Continuous mode: lazy-load the neighbour chapter + track which
+    // chapter is active ─────────────────────────────────────────────────────
+    // Fetches the next/previous chapter only once scrolling comes within
+    // SCROLL_BOUNDARY_PX of the loaded range's edge (see
+    // `useContinuousChapterFeed`), and tracks which loaded chapter's section
+    // the reader has scrolled into so chrome/progress/mark-read/URL follow it.
     useEffect(() => {
         if (isPaged) {
             return undefined;
@@ -251,23 +343,70 @@ export const NovelReader = () => {
         if (!el) {
             return undefined;
         }
-        let advancing = false;
         const onScroll = () => {
-            if (advancing) {
-                return;
-            }
             const maxScroll = el.scrollHeight - el.clientHeight;
-            if (maxScroll <= 0) {
-                return;
+            if (maxScroll > 0) {
+                if (el.scrollTop <= SCROLL_BOUNDARY_PX && feed.hasMorePrev) {
+                    feed.loadPrev();
+                }
+                if (el.scrollTop >= maxScroll - SCROLL_BOUNDARY_PX && feed.hasMoreNext) {
+                    feed.loadNext();
+                }
             }
-            if (el.scrollTop >= maxScroll - 2 && hasNextChapter) {
-                advancing = true;
-                goToChapter(nextChapter?.sourceOrder);
-            }
+
+            // The active section is the loaded one furthest down whose top
+            // has already scrolled past — i.e. the chapter currently
+            // occupying the top of the viewport.
+            let active = anchorIndex;
+            let bestTop = -Infinity;
+            sectionRefs.current.forEach((node, index) => {
+                if (node.offsetTop <= el.scrollTop + 1 && node.offsetTop > bestTop) {
+                    bestTop = node.offsetTop;
+                    active = index;
+                }
+            });
+            setActiveIndex((prev) => (prev === active ? prev : active));
         };
         el.addEventListener('scroll', onScroll, { passive: true });
+        onScroll();
         return () => el.removeEventListener('scroll', onScroll);
-    }, [isPaged, contentRef, hasNextChapter, nextChapter?.sourceOrder, goToChapter]);
+    }, [isPaged, feed.hasMorePrev, feed.hasMoreNext, feed.loadPrev, feed.loadNext, anchorIndex]);
+
+    // Prepending an earlier chapter (scrolling up past the loaded range)
+    // grows content above the viewport — compensate scrollTop by the same
+    // delta as those sections resize (placeholder → sanitized HTML) so the
+    // reader's current view doesn't jump.
+    const beforeActiveIndicesKey = feed.sections
+        .filter((section) => section.index < activeIndex)
+        .map((section) => section.index)
+        .join(',');
+    useLayoutEffect(() => {
+        if (isPaged || !beforeActiveIndicesKey) {
+            return undefined;
+        }
+        const el = contentRef.current;
+        if (!el) {
+            return undefined;
+        }
+        const nodes = beforeActiveIndicesKey
+            .split(',')
+            .map((key) => sectionRefs.current.get(Number(key)))
+            .filter((node): node is HTMLElement => node != null);
+        if (nodes.length === 0) {
+            return undefined;
+        }
+        let prevHeight = nodes.reduce((sum, node) => sum + node.offsetHeight, 0);
+        const ro = new ResizeObserver(() => {
+            const newHeight = nodes.reduce((sum, node) => sum + node.offsetHeight, 0);
+            const delta = newHeight - prevHeight;
+            if (delta !== 0) {
+                el.scrollTop += delta;
+                prevHeight = newHeight;
+            }
+        });
+        nodes.forEach((node) => ro.observe(node));
+        return () => ro.disconnect();
+    }, [isPaged, beforeActiveIndicesKey]);
 
     // ── Paged mode: keyboard + wheel navigation ───────────────────────────
     useEffect(() => {
@@ -317,9 +456,12 @@ export const NovelReader = () => {
         };
     }, [isPaged, contentRef, paged, panelStack.length, isSearchOpen, isTocOpen]);
 
-    // ── 3a: reset scroll to top on chapter change (continuous mode) ────────
+    // ── 3a: reset scroll to top on explicit chapter change (continuous mode) ──
+    // Skipped for silent scroll-driven hand-offs (see `silentTransitionRef`):
+    // the reader is already mid-scroll into that chapter, so snapping to its
+    // top would fight the very scroll that triggered the hand-off.
     useEffect(() => {
-        if (isPaged) {
+        if (isPaged || silentTransitionRef.current) {
             return;
         }
         const el = contentRef.current;
@@ -328,6 +470,13 @@ export const NovelReader = () => {
         }
         el.scrollTop = 0;
     }, [isPaged, currentChapter?.id]);
+
+    // Consumed by every effect above keyed on `currentChapter?.id` — declared
+    // last among them so it always clears the flag only after they've all
+    // had a chance to read it for this commit.
+    useEffect(() => {
+        silentTransitionRef.current = false;
+    }, [currentChapter?.id]);
 
     // ── Keyboard shortcuts ────────────────────────────────────────────────
     useReaderKeyboard({
@@ -435,20 +584,16 @@ export const NovelReader = () => {
         '& br': { display: 'block', content: '""', mt: 0, mb: 1 },
     } as const;
 
-    const renderChapterContent = () => (
+    const renderPagedContent = () => (
         <Box
-            sx={
-                isPaged
-                    ? {
-                          ...contentInnerSx,
-                          columnWidth: '100vw',
-                          columnGap: '0px',
-                          height: '100%',
-                          mx: 0,
-                          maxWidth: 'none',
-                      }
-                    : contentInnerSx
-            }
+            sx={{
+                ...contentInnerSx,
+                columnWidth: '100vw',
+                columnGap: '0px',
+                height: '100%',
+                mx: 0,
+                maxWidth: 'none',
+            }}
         >
             {htmlLoading && <LoadingPlaceholder />}
             {htmlError && (
@@ -459,6 +604,29 @@ export const NovelReader = () => {
                 <div dangerouslySetInnerHTML={{ __html: html }} />
             )}
         </Box>
+    );
+
+    // Continuous mode: every loaded chapter gets its own section, stacked
+    // top-to-bottom in reading order, so scrolling flows straight from one
+    // chapter's text into the next.
+    const renderContinuousContent = () => (
+        <>
+            {feed.sections.map((section) => (
+                <Box key={section.chapter.id} ref={setSectionRef(section.index)} sx={contentInnerSx}>
+                    {section.loading && <LoadingPlaceholder />}
+                    {section.error && (
+                        <EmptyViewAbsoluteCentered
+                            message={t`Unable to load chapter text`}
+                            messageExtra={section.error.message}
+                        />
+                    )}
+                    {section.html && (
+                        // eslint-disable-next-line react/no-danger -- sanitized with DOMPurify in useContinuousChapterFeed
+                        <div dangerouslySetInnerHTML={{ __html: section.html }} />
+                    )}
+                </Box>
+            ))}
+        </>
     );
 
     return (
@@ -508,7 +676,7 @@ export const NovelReader = () => {
                     fontFamily: fontFamilyCss,
                 }}
             >
-                {renderChapterContent()}
+                {isPaged ? renderPagedContent() : renderContinuousContent()}
             </Box>
 
             {isPaged && !htmlLoading && html && (

@@ -59,6 +59,22 @@ export const useReaderBehaviour = (
     chapterIndex1Based: number,
     markRead: () => void,
     isChapterRead: boolean,
+    /**
+     * Bounds of the active chapter's own section within `contentRef`, when
+     * continuous mode has more than one chapter mounted (true infinite
+     * scroll) — progress/mark-read/reading-rate are measured against this
+     * chapter's slice of the pane rather than the whole (possibly
+     * multi-chapter) scrollable height. `undefined` falls back to treating
+     * the whole pane as the chapter (single-chapter pane, e.g. paged mode).
+     */
+    activeSectionRef?: RefObject<HTMLElement | null>,
+    /**
+     * When true at the moment `chapterId` changes, this is a silent
+     * scroll-driven hand-off to a chapter whose section is already in view
+     * (not an explicit chapter jump) — skip the scroll-to-saved-position
+     * snap so continuous scrolling isn't interrupted.
+     */
+    silentTransitionRef?: RefObject<boolean>,
 ): ReaderBehaviourApi => {
     const settings = useNovelReaderSettings();
     const [api, setApi] = useState<ReaderBehaviourApi>({
@@ -78,12 +94,16 @@ export const useReaderBehaviour = (
             return;
         }
         firedMarkReadRef.current = false;
-        if (settings.restore_scroll_position) {
-            el.scrollTop = getScrollPosition(chapterId);
-        } else {
-            el.scrollTop = 0;
+        const silent = silentTransitionRef?.current ?? false;
+        if (!silent) {
+            if (settings.restore_scroll_position) {
+                el.scrollTop = getScrollPosition(chapterId);
+            } else {
+                el.scrollTop = 0;
+            }
         }
-        startRef.current = { at: Date.now(), scrollTop: el.scrollTop, chars: el.textContent?.length ?? 0 };
+        const sectionEl = activeSectionRef?.current ?? el;
+        startRef.current = { at: Date.now(), scrollTop: el.scrollTop, chars: sectionEl.textContent?.length ?? 0 };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [chapterId, settings.restore_scroll_position]);
 
@@ -93,13 +113,20 @@ export const useReaderBehaviour = (
             return undefined;
         }
         const onScroll = () => {
-            const { scrollTop } = el;
-            const scrollHeight = el.scrollHeight - el.clientHeight || 1;
+            const sectionEl = activeSectionRef?.current ?? el;
+            // Section-relative bounds so progress/screen counters reflect only the
+            // active chapter's slice of the pane when several chapters are
+            // concatenated in continuous mode, not the whole scrollable height.
+            const sectionTop = sectionEl === el ? 0 : sectionEl.offsetTop;
+            const sectionScrollHeight = sectionEl === el ? el.scrollHeight : sectionEl.offsetHeight;
+            const { scrollTop: paneScrollTop } = el;
+            const scrollTop = Math.min(Math.max(0, paneScrollTop - sectionTop), sectionScrollHeight);
+            const scrollHeight = sectionScrollHeight - el.clientHeight || 1;
             const frac = Math.min(1, Math.max(0, scrollTop / scrollHeight));
             const screen = Math.max(1, el.clientHeight);
-            const screenIndex = Math.min(Math.floor(scrollTop / screen), Math.ceil(el.scrollHeight / screen) - 1);
-            const screenCount = Math.max(1, Math.ceil(el.scrollHeight / screen));
-            const chars = el.textContent?.length ?? 0;
+            const screenIndex = Math.min(Math.floor(scrollTop / screen), Math.ceil(sectionScrollHeight / screen) - 1);
+            const screenCount = Math.max(1, Math.ceil(sectionScrollHeight / screen));
+            const chars = sectionEl.textContent?.length ?? 0;
             const rate = getReadingRateFor(chapterId);
             const remainingChars = Math.max(0, chars - frac * chars);
             const remainingChapters = totalChapters - chapterIndex1Based + (1 - frac);
