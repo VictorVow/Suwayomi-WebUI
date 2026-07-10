@@ -90,10 +90,12 @@ export const NovelReader = () => {
     const sortedChapters = useMemo(() => [...chapters].sort((a, b) => b.sourceOrder - a.sourceOrder), [chapters]);
     const currentIndex = sortedChapters.findIndex((c) => c.sourceOrder === chapterSourceOrder);
     const currentChapter = currentIndex >= 0 ? sortedChapters[currentIndex] : undefined;
-    const hasPrevChapter = currentIndex > 0;
-    const hasNextChapter = currentIndex >= 0 && currentIndex < sortedChapters.length - 1;
-    const prevChapter = hasPrevChapter ? sortedChapters[currentIndex - 1] : undefined;
-    const nextChapter = hasNextChapter ? sortedChapters[currentIndex + 1] : undefined;
+    // sortedChapters is sorted by descending sourceOrder (index 0 = latest chapter),
+    // so moving to the next chapter (higher sourceOrder) means a lower array index.
+    const hasNextChapter = currentIndex > 0;
+    const hasPrevChapter = currentIndex >= 0 && currentIndex < sortedChapters.length - 1;
+    const nextChapter = hasNextChapter ? sortedChapters[currentIndex - 1] : undefined;
+    const prevChapter = hasPrevChapter ? sortedChapters[currentIndex + 1] : undefined;
 
     const settings = useNovelReaderSettings();
     const colors = resolveColorScheme(settings.current_color_scheme, settings.user_color_schemes);
