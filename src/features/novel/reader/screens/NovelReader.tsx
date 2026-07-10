@@ -24,6 +24,7 @@ import { NovelReaderToc } from '@/features/novel/reader/components/NovelReaderTo
 import { NovelReaderSearch } from '@/features/novel/reader/components/NovelReaderSearch.tsx';
 import { NovelReaderChrome } from '@/features/novel/reader/components/NovelReaderChrome.tsx';
 import { NovelReaderSelectionBar } from '@/features/novel/reader/components/NovelReaderSelectionBar.tsx';
+import { useAppTitle } from '@/features/navigation-bar/hooks/useAppTitle.ts';
 import {
     resolveColorScheme,
     updateNovelReaderSettings,
@@ -98,6 +99,8 @@ export const NovelReader = () => {
 
     const mangaId = Number(paramMangaId);
     const chapterSourceOrder = Number(paramChapterSourceOrder);
+
+    useAppTitle(t`Miruyomi`);
 
     const mangaResponse = requestManager.useGetManga<GetMangaReaderQuery>(GET_MANGA_READER, mangaId);
     const chaptersResponse = requestManager.useGetMangaChapters<GetChaptersReaderQuery>(GET_CHAPTERS_READER, mangaId);

@@ -2736,6 +2736,10 @@ msgstr "Minty Miracles"
 msgid "Minute"
 msgstr "Minute"
 
+#: src/features/novel/reader/screens/NovelReader.tsx
+msgid "Miruyomi"
+msgstr "Miruyomi"
+
 #: src/features/settings/screens/ServerSettings.tsx
 msgid "Misc"
 msgstr "Misc"

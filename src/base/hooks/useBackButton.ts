@@ -12,7 +12,8 @@ import { AppRoutes } from '@/base/AppRoute.constants.ts';
 import { useAppPageHistoryContext } from '@/base/contexts/AppPageHistoryContext.tsx';
 
 const READER_REGEX = /\/manga\/[0-9]+\/chapter\/[0-9]+/g;
-const PAGES_TO_IGNORE: readonly RegExp[] = [READER_REGEX];
+const NOVEL_READER_REGEX = /\/novel\/[0-9]+\/chapter\/[0-9]+/g;
+const PAGES_TO_IGNORE: readonly RegExp[] = [READER_REGEX, NOVEL_READER_REGEX];
 
 export const useBackButton = () => {
     const navigate = useNavigate();
