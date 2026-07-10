@@ -489,17 +489,27 @@ export function SourceMangas() {
 
     const EmptyViewComponent = mangas.length ? EmptyView : EmptyViewAbsoluteCentered;
 
+    // Cloudstream ("show") sources have no real popular/latest distinction -
+    // getMainPage() returns arbitrary named rows (handled by the dedicated
+    // ShowSourceHomepage screen), not two fixed feeds. This screen is only
+    // reached for a show source via a search query, so only the Filter tab
+    // makes sense here; Popular/Latest would just hit the source's first
+    // homepage row regardless of which button is pressed.
+    const isShowScope = sourceBrowseScope === 'show';
+
     return (
         <StyledGridWrapper>
             <ContentTypeMenu sx={{ top: `${appBarHeight}px` }}>
-                <ContentTypeButton
-                    variant={contentType === SourceContentType.POPULAR ? 'contained' : 'outlined'}
-                    startIcon={<FavoriteIcon />}
-                    onClick={() => updateContentType(SourceContentType.POPULAR)}
-                >
-                    {t`Popular`}
-                </ContentTypeButton>
-                {source?.supportsLatest === undefined || source.supportsLatest ? (
+                {!isShowScope && (
+                    <ContentTypeButton
+                        variant={contentType === SourceContentType.POPULAR ? 'contained' : 'outlined'}
+                        startIcon={<FavoriteIcon />}
+                        onClick={() => updateContentType(SourceContentType.POPULAR)}
+                    >
+                        {t`Popular`}
+                    </ContentTypeButton>
+                )}
+                {!isShowScope && (source?.supportsLatest === undefined || source.supportsLatest) ? (
                     <ContentTypeButton
                         disabled={!source?.supportsLatest}
                         variant={contentType === SourceContentType.LATEST ? 'contained' : 'outlined'}
