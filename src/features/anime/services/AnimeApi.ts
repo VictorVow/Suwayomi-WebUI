@@ -63,8 +63,8 @@ interface AnimeQueryResult<TData> {
 
 /**
  * The set of anime source ids, derived from the shared source list by reading
- * `kind === ANIME`. Used to filter the library/updates/history/downloads feeds
- * (which expose only `sourceId`, not `kind`) down to anime content. Apollo
+ * `kind === ANIME`. Used to filter the history/downloads feeds (which expose
+ * only `sourceId`, not `kind`) down to anime content. Apollo
  * caches the source list, so the first hook to mount pays the fetch and the
  * rest reuse the cache.
  */
@@ -130,13 +130,14 @@ export const useAnimeExtensionList = (): AnimeQueryResult<AnimeExtension[]> => {
 };
 
 /*
- * The library / updates / history / downloads views are anime-scoped slices of
- * the user's manga data (anime titles are manga rows whose source has
- * kind === ANIME). Miruyomi-Server has no source predicate on the
- * chapter/download queries, so we reuse the existing manga queries and filter
- * client-side by membership in the anime source-id set. The updates/history
- * feeds are paginated on the server; we filter the currently loaded window, so
- * their contents track however many pages the shared hook has fetched.
+ * The library / history / downloads views are anime-scoped slices of the
+ * user's manga data (anime titles are manga rows whose source has
+ * kind === ANIME). The updates feed is server-scoped via
+ * `ChapterConditionInput.contentType` (see `Updates` screen); history/
+ * download-queue queries have no such predicate yet, so we reuse the existing
+ * manga queries and filter client-side by membership in the anime source-id
+ * set. Those feeds are paginated on the server, so their contents track
+ * however many pages the shared hook has fetched.
  */
 
 type LibraryMangaNode = GetMangasLibraryQuery['mangas']['nodes'][number];
@@ -165,9 +166,8 @@ const chapterToRow = (chapter: UpdateOrHistoryChapter): AnimeEpisodeRow => ({
 export const useAnimeLibrary = (): AnimeQueryResult<LibraryMangaNode[]> => {
     // The server `contentType: ANIME` condition scopes the result to Aniyomi
     // anime sources, so the library no longer needs the client-side
-    // `useAnimeSourceIdSet` filter. That set is still used by the updates/
-    // history/downloads hooks below, whose queries have no `contentType`
-    // predicate yet.
+    // `useAnimeSourceIdSet` filter. That set is still used by the history/
+    // downloads hooks below, whose queries have no `contentType` predicate yet.
     const { data, loading, error, refetch } = requestManager.useGetMangas<
         GetMangasLibraryQuery,
         GetMangasLibraryQueryVariables
@@ -181,27 +181,6 @@ export const useAnimeLibrary = (): AnimeQueryResult<LibraryMangaNode[]> => {
         error,
         available: !error,
         refetch: () => refetch?.(),
-    };
-};
-
-/** Recent episode updates across the anime library. */
-export const useAnimeUpdates = (): AnimeQueryResult<AnimeEpisodeRow[]> => {
-    const { ids, error: sourceError, refetch: refetchSources } = useAnimeSourceIdSet();
-    const { data, loading, error, refetch } = requestManager.useGetRecentlyUpdatedChapters();
-
-    const rows = (data?.chapters.nodes ?? STABLE_EMPTY_ARRAY)
-        .filter((chapter) => ids.has(chapter.manga.sourceId))
-        .map(chapterToRow);
-
-    return {
-        data: rows,
-        loading,
-        error: error ?? sourceError,
-        available: !error && !sourceError,
-        refetch: () => {
-            refetch?.();
-            refetchSources();
-        },
     };
 };
 

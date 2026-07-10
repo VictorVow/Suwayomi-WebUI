@@ -7,15 +7,26 @@
  */
 
 import { useLingui } from '@lingui/react/macro';
-import { useAppTitle } from '@/features/navigation-bar/hooks/useAppTitle.ts';
-import { useAnimeUpdates } from '@/features/anime/services/AnimeApi.ts';
-import { AnimeEpisodeList } from '@/features/anime/components/AnimeEpisodeList.tsx';
+import { Updates } from '@/features/updates/screens/Updates.tsx';
+import { MangaRouteContext } from '@/features/manga/components/MangaRouteContext.ts';
+import { ChapterRouteContext } from '@/features/chapter/components/ChapterRouteContext.ts';
+import { Chapters } from '@/features/chapter/services/Chapters.ts';
+import { AppRoutes } from '@/base/AppRoute.constants.ts';
+import { ContentType } from '@/lib/graphql/generated/graphql-base.types.ts';
 
 export function AnimeUpdates() {
     const { t } = useLingui();
-    useAppTitle(t`Anime Updates`);
 
-    const { data, loading, available } = useAnimeUpdates();
-
-    return <AnimeEpisodeList rows={data} loading={loading} available={available} emptyMessage={t`No anime updates`} />;
+    return (
+        <MangaRouteContext.Provider value={AppRoutes.anime.path}>
+            <ChapterRouteContext.Provider value={Chapters.getPlayerUrl}>
+                <Updates
+                    contentType={ContentType.Anime}
+                    title={t`Anime Updates`}
+                    emptyMessage={t`No anime updates`}
+                    emptyMessageExtra={t`Add an Aniyomi extension repository under Settings → Browse, then install an anime source from the Extensions tab.`}
+                />
+            </ChapterRouteContext.Provider>
+        </MangaRouteContext.Provider>
+    );
 }

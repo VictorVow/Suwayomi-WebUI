@@ -100,13 +100,13 @@ export const useNovelExtensionList = (): NovelQueryResult<NovelExtension[]> => {
 };
 
 /*
- * The library / updates / history / downloads views are novel-scoped slices of
- * the user's manga data (novels are manga rows with a negative source id).
- * Miruyomi-Server has no source predicate on the chapter/download queries, so we
- * reuse the existing manga queries and filter client-side by `isNovelSourceId`.
- * The updates/history feeds are paginated on the server; we filter the currently
- * loaded window, so their contents track however many pages the shared hook has
- * fetched.
+ * The library / history / downloads views are novel-scoped slices of the
+ * user's manga data (novels are manga rows with a negative source id). The
+ * updates feed is server-scoped via `ChapterConditionInput.contentType` (see
+ * `Updates` screen); history/download-queue queries have no such predicate
+ * yet, so we reuse the existing manga queries and filter client-side by
+ * `isNovelSourceId`. Those feeds are paginated on the server, so their
+ * contents track however many pages the shared hook has fetched.
  */
 
 type LibraryMangaNode = GetMangasLibraryQuery['mangas']['nodes'][number];
@@ -142,22 +142,11 @@ export const useNovelLibrary = (): NovelQueryResult<LibraryMangaNode[]> => {
 
     // The server `contentType: NOVEL` condition already scopes the result to
     // lnreader plugin sources (negative source ids), so no client-side filter
-    // is needed here. `isNovelSourceId` remains in use by the updates/history/
+    // is needed here. `isNovelSourceId` remains in use by the history/
     // downloads hooks below, whose queries have no `contentType` predicate yet.
     const mangas = data?.mangas.nodes ?? STABLE_EMPTY_ARRAY;
 
     return { data: mangas, loading, error, available: !error, refetch: () => refetch?.() };
-};
-
-/** Recent chapter updates across the novel library. */
-export const useNovelUpdates = (): NovelQueryResult<NovelChapterRow[]> => {
-    const { data, loading, error, refetch } = requestManager.useGetRecentlyUpdatedChapters();
-
-    const rows = (data?.chapters.nodes ?? STABLE_EMPTY_ARRAY)
-        .filter((chapter) => isNovelSourceId(chapter.manga.sourceId))
-        .map(chapterToRow);
-
-    return { data: rows, loading, error, available: !error, refetch: () => refetch?.() };
 };
 
 /** Reading history for novels. */

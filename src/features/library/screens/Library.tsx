@@ -51,6 +51,16 @@ import { AppRoutes } from '@/base/AppRoute.constants.ts';
 import { SearchParam } from '@/base/Base.types.ts';
 import { STABLE_EMPTY_ARRAY } from '@/base/Base.constants.ts';
 import type { MangaIdInfo } from '@/features/manga/Manga.types.ts';
+import { ContentType } from '@/lib/graphql/generated/graphql-base.types.ts';
+
+export interface LibraryProps {
+    contentType?: ContentType;
+    title?: string;
+    searchAllPath?: (query?: string | null) => string;
+    emptyLibraryMessage?: string;
+    emptyCategoryMessage?: string;
+    failedToLoadMessage?: string;
+}
 
 const TitleWithSizeTag = styled('span')({
     display: 'flex',
@@ -61,7 +71,14 @@ const TitleSizeTag = ({ sx, ...props }: ChipProps) => (
     <Chip {...props} size="small" sx={{ ...sx, marginLeft: '5px' }} />
 );
 
-export function Library() {
+export function Library({
+    contentType = ContentType.Manga,
+    title,
+    searchAllPath,
+    emptyLibraryMessage,
+    emptyCategoryMessage,
+    failedToLoadMessage,
+}: LibraryProps = {}) {
     const { t } = useLingui();
     const theme = useTheme();
 
@@ -76,17 +93,19 @@ export function Library() {
         refetch: refetchCategories,
     } = requestManager.useGetCategories<GetCategoriesLibraryQuery, GetCategoriesLibraryQueryVariables>(
         GET_CATEGORIES_LIBRARY,
+        undefined,
+        { mangaContentType: contentType },
     );
-    // `category.mangas.totalCount` is scoped to MANGA content on the server
-    // (see CategoryType.mangas resolver), so a category holding only novels
-    // or anime — or an empty category — is hidden from the manga library.
+    // `category.mangas.totalCount` is scoped to `contentType` on the server
+    // (see CategoryType.mangas resolver), so a category holding only the other
+    // two content types — or an empty category — is hidden from this library.
     const tabsData = categoriesResponse?.categories.nodes.filter((category) => category.mangas.totalCount > 0);
     const tabs = tabsData ?? STABLE_EMPTY_ARRAY;
 
     const librarySizeResponse = requestManager.useGetMangas<
         GetLibraryMangaCountQuery,
         GetLibraryMangaCountQueryVariables
-    >(GET_LIBRARY_MANGA_COUNT, {});
+    >(GET_LIBRARY_MANGA_COUNT, { contentType });
 
     const librarySize = librarySizeResponse.data?.mangas.totalCount ?? 0;
 
@@ -100,7 +119,7 @@ export function Library() {
         error: mangaError,
         loading: mangaLoading,
         refetch: refetchCategoryMangas,
-    } = requestManager.useGetCategoryMangas(activeTab?.id, { skip: !activeTab });
+    } = requestManager.useGetCategoryMangas(activeTab?.id, { skip: !activeTab }, contentType);
     const categoryMangas = categoryMangaResponse?.mangas.nodes ?? STABLE_EMPTY_ARRAY;
     const {
         visibleMangas: mangas,
@@ -173,6 +192,7 @@ export function Library() {
         );
     }, [isSelectModeActive, selectedMangas]);
 
+    const resolveSearchAllPath = searchAllPath ?? AppRoutes.sources.children.searchAll.path;
     const triggerGlobalSearchButton = useMemo(
         () =>
             !!query && (
@@ -180,19 +200,20 @@ export function Library() {
                     <Button
                         size="large"
                         component={Link}
-                        to={AppRoutes.sources.children.searchAll.path(query)}
+                        to={resolveSearchAllPath(query)}
                         sx={{ textTransform: 'none', width: '100%' }}
                     >
                         {t`Search for "${query}" globally`}
                     </Button>
                 </Box>
             ),
-        [query],
+        [query, resolveSearchAllPath],
     );
 
+    const libraryTitle = title ?? t`Library`;
     useAppTitle(
         <TitleWithSizeTag>
-            {t`Library`}
+            {libraryTitle}
             {showTabSize && (
                 <TitleSizeTag
                     sx={{ ...theme.applyStyles('light', { backgroundColor: 'background.paper' }) }}
@@ -200,8 +221,8 @@ export function Library() {
                 />
             )}
         </TitleWithSizeTag>,
-        t`Library`,
-        [t, showTabSize, librarySize],
+        libraryTitle,
+        [t, showTabSize, librarySize, libraryTitle],
     );
     useAppAction(
         <>
@@ -262,7 +283,7 @@ export function Library() {
     }
 
     if (tabs.length === 0) {
-        return <EmptyViewAbsoluteCentered message={t`Your library is empty`} />;
+        return <EmptyViewAbsoluteCentered message={emptyLibraryMessage ?? t`Your library is empty`} />;
     }
 
     if (tabs.length === 1) {
@@ -273,7 +294,11 @@ export function Library() {
                     // the key needs to include filters and query to force a re-render of the virtuoso grid to prevent https://github.com/petyosi/react-virtuoso/issues/1242
                     key={filterKey}
                     mangas={mangas}
-                    message={mangaError ? t`Could not load manga` : t`Your library is empty`}
+                    message={
+                        mangaError
+                            ? (failedToLoadMessage ?? t`Could not load manga`)
+                            : (emptyLibraryMessage ?? t`Your library is empty`)
+                    }
                     messageExtra={mangaError?.message}
                     isLoading={mangaLoading}
                     selectedMangaIds={selectedItemIds}
@@ -312,7 +337,11 @@ export function Library() {
                             // the key needs to include filters and query to force a re-render of the virtuoso grid to prevent https://github.com/petyosi/react-virtuoso/issues/1242
                             key={filterKey}
                             mangas={mangas}
-                            message={mangaError ? t`Could not load manga` : t`The category is empty`}
+                            message={
+                                mangaError
+                                    ? (failedToLoadMessage ?? t`Could not load manga`)
+                                    : (emptyCategoryMessage ?? t`The category is empty`)
+                            }
                             messageExtra={mangaError?.message}
                             isLoading={mangaLoading}
                             selectedMangaIds={selectedItemIds}

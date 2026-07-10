@@ -28,7 +28,19 @@ import { GROUPED_VIRTUOSO_Z_INDEX } from '@/lib/virtuoso/Virtuoso.constants.ts';
 import { STABLE_EMPTY_ARRAY } from '@/base/Base.constants.ts';
 import { ContentType } from '@/lib/graphql/generated/graphql-base.types.ts';
 
-export const Updates: React.FC = () => {
+export interface UpdatesProps {
+    contentType?: ContentType;
+    title?: string;
+    emptyMessage?: string;
+    emptyMessageExtra?: string;
+}
+
+export const Updates: React.FC<UpdatesProps> = ({
+    contentType = ContentType.Manga,
+    title,
+    emptyMessage,
+    emptyMessageExtra,
+}) => {
     const { t } = useLingui();
     const { appBarHeight } = useNavBarContext();
 
@@ -40,7 +52,7 @@ export const Updates: React.FC = () => {
         refetch,
     } = requestManager.useGetRecentlyUpdatedChapters(
         undefined,
-        { contentType: ContentType.Manga },
+        { contentType },
         {
             fetchPolicy: 'cache-and-network',
         },
@@ -78,7 +90,7 @@ export const Updates: React.FC = () => {
     const lastUpdateTimestamp = lastUpdateTimestampData?.lastUpdateTimestamp.timestamp;
     const date = lastUpdateTimestamp ? dateTimeFormatter.format(+lastUpdateTimestamp) : '-';
 
-    useAppTitleAndAction(t`Updates`, <UpdateChecker />);
+    useAppTitleAndAction(title ?? t`Updates`, <UpdateChecker />);
 
     const loadMore = useCallback(() => {
         if (!hasNextPage) {
@@ -99,7 +111,12 @@ export const Updates: React.FC = () => {
     }
 
     if (!isLoading && updateEntries.length === 0) {
-        return <EmptyViewAbsoluteCentered message={t`You don't have any updates yet.`} />;
+        return (
+            <EmptyViewAbsoluteCentered
+                message={emptyMessage ?? t`You don't have any updates yet.`}
+                messageExtra={emptyMessageExtra}
+            />
+        );
     }
 
     return (

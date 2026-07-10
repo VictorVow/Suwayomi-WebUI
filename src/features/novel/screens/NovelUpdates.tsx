@@ -7,15 +7,26 @@
  */
 
 import { useLingui } from '@lingui/react/macro';
-import { useAppTitle } from '@/features/navigation-bar/hooks/useAppTitle.ts';
-import { useNovelUpdates } from '@/features/novel/services/NovelApi.ts';
-import { NovelChapterList } from '@/features/novel/components/NovelChapterList.tsx';
+import { Updates } from '@/features/updates/screens/Updates.tsx';
+import { MangaRouteContext } from '@/features/manga/components/MangaRouteContext.ts';
+import { ChapterRouteContext } from '@/features/chapter/components/ChapterRouteContext.ts';
+import { Chapters } from '@/features/chapter/services/Chapters.ts';
+import { AppRoutes } from '@/base/AppRoute.constants.ts';
+import { ContentType } from '@/lib/graphql/generated/graphql-base.types.ts';
 
 export function NovelUpdates() {
     const { t } = useLingui();
-    useAppTitle(t`Novel Updates`);
 
-    const { data, loading, available } = useNovelUpdates();
-
-    return <NovelChapterList rows={data} loading={loading} available={available} emptyMessage={t`No novel updates`} />;
+    return (
+        <MangaRouteContext.Provider value={AppRoutes.novelDetail.path}>
+            <ChapterRouteContext.Provider value={Chapters.getNovelReaderUrl}>
+                <Updates
+                    contentType={ContentType.Novel}
+                    title={t`Novel Updates`}
+                    emptyMessage={t`No novel updates`}
+                    emptyMessageExtra={t`Add an LNReader plugin repository under Settings → Browse, then install a novel source from the Extensions tab.`}
+                />
+            </ChapterRouteContext.Provider>
+        </MangaRouteContext.Provider>
+    );
 }

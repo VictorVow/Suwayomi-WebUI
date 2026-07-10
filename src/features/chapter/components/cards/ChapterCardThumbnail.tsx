@@ -7,8 +7,8 @@
  */
 
 import { Link } from 'react-router-dom';
-import { AppRoutes } from '@/base/AppRoute.constants.ts';
 import { Mangas } from '@/features/manga/services/Mangas.ts';
+import { useMangaRoute } from '@/features/manga/components/MangaRouteContext.ts';
 import type { MangaIdInfo, MangaThumbnailInfo, MangaTitleInfo } from '@/features/manga/Manga.types.ts';
 import { ListCardAvatar } from '@/base/components/lists/cards/ListCardAvatar.tsx';
 
@@ -20,12 +20,16 @@ export const ChapterCardThumbnail = ({
 }: MangaThumbnailInfo & {
     mangaId: MangaIdInfo['id'];
     mangaTitle: MangaTitleInfo['title'];
-}) => (
-    <Link to={AppRoutes.manga.path(mangaId)} style={{ textDecoration: 'none' }}>
-        <ListCardAvatar
-            iconUrl={Mangas.getThumbnailUrl({ thumbnailUrl, thumbnailUrlLastFetched })}
-            alt={mangaTitle}
-            slots={{ spinnerImageProps: { imgStyle: { imageRendering: 'pixelated' } } }}
-        />
-    </Link>
-);
+}) => {
+    const getMangaRoute = useMangaRoute();
+
+    return (
+        <Link to={getMangaRoute(mangaId)} style={{ textDecoration: 'none' }}>
+            <ListCardAvatar
+                iconUrl={Mangas.getThumbnailUrl({ thumbnailUrl, thumbnailUrlLastFetched })}
+                alt={mangaTitle}
+                slots={{ spinnerImageProps: { imgStyle: { imageRendering: 'pixelated' } } }}
+            />
+        </Link>
+    );
+};

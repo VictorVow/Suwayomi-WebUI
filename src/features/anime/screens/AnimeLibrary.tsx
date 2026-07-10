@@ -6,34 +6,24 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback } from 'react';
 import { useLingui } from '@lingui/react/macro';
-import { useAppTitle } from '@/features/navigation-bar/hooks/useAppTitle.ts';
-import { BaseMangaGrid } from '@/features/manga/components/BaseMangaGrid.tsx';
+import { Library } from '@/features/library/screens/Library.tsx';
 import { MangaRouteContext } from '@/features/manga/components/MangaRouteContext.ts';
 import { AppRoutes } from '@/base/AppRoute.constants.ts';
-import { useAnimeLibrary } from '@/features/anime/services/AnimeApi.ts';
-
-const noop = () => {};
+import { ContentType } from '@/lib/graphql/generated/graphql-base.types.ts';
 
 export function AnimeLibrary() {
     const { t } = useLingui();
-    useAppTitle(t`Anime Library`);
-
-    const { data: mangas, loading, error, refetch } = useAnimeLibrary();
-
-    const getAnimeRouteUrl = useCallback((id: number) => AppRoutes.anime.path(id), []);
 
     return (
-        <MangaRouteContext.Provider value={getAnimeRouteUrl}>
-            <BaseMangaGrid
-                mangas={mangas}
-                hasNextPage={false}
-                loadMore={noop}
-                isLoading={loading}
-                message={error ? t`Failed to load the anime library` : t`Your anime library is empty`}
-                messageExtra={error?.message}
-                retry={error ? () => refetch() : undefined}
+        <MangaRouteContext.Provider value={AppRoutes.anime.path}>
+            <Library
+                contentType={ContentType.Anime}
+                title={t`Anime Library`}
+                searchAllPath={AppRoutes.animeSources.children.searchAll.path}
+                emptyLibraryMessage={t`Your anime library is empty`}
+                emptyCategoryMessage={t`The category is empty`}
+                failedToLoadMessage={t`Could not load anime`}
             />
         </MangaRouteContext.Provider>
     );
