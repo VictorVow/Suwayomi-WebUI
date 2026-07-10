@@ -33,6 +33,7 @@ import type {
 } from '@/lib/graphql/generated/graphql.ts';
 import { useSelectableCollection } from '@/base/collection/hooks/useSelectableCollection.ts';
 import { SelectableCollectionSelectAll } from '@/base/collection/components/SelectableCollectionSelectAll.tsx';
+import { SelectableCollectionSelectAllAboveBelow } from '@/base/collection/components/SelectableCollectionSelectAllAboveBelow.tsx';
 import { Chapters } from '@/features/chapter/services/Chapters.ts';
 import { ChapterActionMenuItems } from '@/features/chapter/components/actions/ChapterActionMenuItems.tsx';
 import { defaultPromiseErrorHandler } from '@/lib/DefaultPromiseErrorHandler.ts';
@@ -163,6 +164,30 @@ export const ChapterList = ({
         [handleSelection],
     );
 
+    const selectedIndices = useMemo(
+        () => selectedItemIds.map((id) => visibleChapterIds.indexOf(id)).filter((index) => index !== -1),
+        [selectedItemIds, visibleChapterIds],
+    );
+    const topMostSelectedIndex = selectedIndices.length ? Math.min(...selectedIndices) : -1;
+    const bottomMostSelectedIndex = selectedIndices.length ? Math.max(...selectedIndices) : -1;
+
+    const handleSelectAllBelow = useCallback(() => {
+        if (topMostSelectedIndex < 0) {
+            return;
+        }
+        handleSelectAll(true, visibleChapterIds.slice(topMostSelectedIndex));
+    }, [handleSelectAll, topMostSelectedIndex, visibleChapterIds]);
+
+    const handleSelectAllAbove = useCallback(() => {
+        if (bottomMostSelectedIndex < 0) {
+            return;
+        }
+        handleSelectAll(true, visibleChapterIds.slice(0, bottomMostSelectedIndex + 1));
+    }, [handleSelectAll, bottomMostSelectedIndex, visibleChapterIds]);
+
+    const canSelectBelow = topMostSelectedIndex >= 0 && topMostSelectedIndex < visibleChapterIds.length - 1;
+    const canSelectAbove = bottomMostSelectedIndex > 0;
+
     if (isLoading || (noChaptersFound && isRefreshing)) {
         return (
             <Stack sx={{ justifyContent: 'center', alignItems: 'center', position: 'relative', flexGrow: 1 }}>
@@ -224,11 +249,21 @@ export const ChapterList = ({
                             />
                         )}
                         {!!visibleChapterIds.length && (
-                            <SelectableCollectionSelectAll
-                                areAllItemsSelected={areAllItemsSelected}
-                                areNoItemsSelected={areNoItemsSelected}
-                                onChange={(checked) => handleSelectAll(checked, checked ? visibleChapterIds : [])}
-                            />
+                            <>
+                                {!areNoItemsSelected && (
+                                    <SelectableCollectionSelectAllAboveBelow
+                                        canSelectAbove={canSelectAbove}
+                                        canSelectBelow={canSelectBelow}
+                                        onSelectAllAbove={handleSelectAllAbove}
+                                        onSelectAllBelow={handleSelectAllBelow}
+                                    />
+                                )}
+                                <SelectableCollectionSelectAll
+                                    areAllItemsSelected={areAllItemsSelected}
+                                    areNoItemsSelected={areNoItemsSelected}
+                                    onChange={(checked) => handleSelectAll(checked, checked ? visibleChapterIds : [])}
+                                />
+                            </>
                         )}
                     </Stack>
                 </ChapterListHeader>

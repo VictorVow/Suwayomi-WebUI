@@ -3669,6 +3669,14 @@ msgstr "Select a device to use its server stored UI settings"
 msgid "Select all"
 msgstr "Select all"
 
+#: src/base/collection/components/SelectableCollectionSelectAllAboveBelow.tsx
+msgid "Select all above"
+msgstr "Select all above"
+
+#: src/base/collection/components/SelectableCollectionSelectAllAboveBelow.tsx
+msgid "Select all below"
+msgstr "Select all below"
+
 #: src/features/migration/screens/MigrationSelectDestinationSources.tsx
 msgid "Select destination sources"
 msgstr "Select destination sources"
