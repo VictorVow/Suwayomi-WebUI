@@ -100,6 +100,11 @@ const SOURCE_CONTENT_TYPE_TO_ERROR_MSG_KEY: Record<
         [SourceContentType.LATEST]: msg`No novels found`,
         [SourceContentType.SEARCH]: msg`No novels matches this filter`,
     },
+    show: {
+        [SourceContentType.POPULAR]: msg`No shows found`,
+        [SourceContentType.LATEST]: msg`No shows found`,
+        [SourceContentType.SEARCH]: msg`No shows matches this filter`,
+    },
 };
 
 const getUniqueMangas = <Manga extends MangaIdInfo>(mangas: Manga[]): Manga[] => {
@@ -462,6 +467,9 @@ export function SourceMangas() {
                                 }
                                 if (sourceBrowseScope === 'novel') {
                                     return AppRoutes.novelSources.children.configure.path(sourceId);
+                                }
+                                if (sourceBrowseScope === 'show') {
+                                    return AppRoutes.showSources.children.configure.path(sourceId);
                                 }
                                 return AppRoutes.sources.children.configure.path(sourceId);
                             })();

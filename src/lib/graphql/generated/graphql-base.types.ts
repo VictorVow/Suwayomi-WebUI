@@ -888,6 +888,47 @@ export enum FetchSourceMangaType {
     Search = 'SEARCH',
 }
 
+export type FetchShowHomepageInput = {
+    clientMutationId?: InputMaybe<Scalars['String']['input']>;
+    page: Scalars['Int']['input'];
+    source: Scalars['LongString']['input'];
+};
+
+export type FetchShowHomepagePayload = {
+    __typename?: 'FetchShowHomepagePayload';
+    clientMutationId?: Maybe<Scalars['String']['output']>;
+    hasNextPage: Scalars['Boolean']['output'];
+    mainPage: Array<ShowMainPageDataType>;
+    rows: Array<ShowHomePageRowType>;
+};
+
+export type FetchShowHomepageRowInput = {
+    clientMutationId?: InputMaybe<Scalars['String']['input']>;
+    page: Scalars['Int']['input'];
+    row: Scalars['Int']['input'];
+    source: Scalars['LongString']['input'];
+};
+
+export type FetchShowHomepageRowPayload = {
+    __typename?: 'FetchShowHomepageRowPayload';
+    clientMutationId?: Maybe<Scalars['String']['output']>;
+    row?: Maybe<ShowHomePageRowType>;
+};
+
+export type ShowHomePageRowType = {
+    __typename?: 'ShowHomePageRowType';
+    hasNextPage: Scalars['Boolean']['output'];
+    items: Array<MangaType>;
+    name: Scalars['String']['output'];
+};
+
+export type ShowMainPageDataType = {
+    __typename?: 'ShowMainPageDataType';
+    data: Scalars['String']['output'];
+    horizontalImages: Scalars['Boolean']['output'];
+    name: Scalars['String']['output'];
+};
+
 export type FetchTrackInput = {
     clientMutationId?: InputMaybe<Scalars['String']['input']>;
     recordId: Scalars['Int']['input'];
@@ -1388,6 +1429,8 @@ export type Mutation = {
     fetchChapters?: Maybe<FetchChaptersPayload>;
     fetchExtensions?: Maybe<FetchExtensionsPayload>;
     fetchManga?: Maybe<FetchMangaPayload>;
+    fetchShowHomepage?: Maybe<FetchShowHomepagePayload>;
+    fetchShowHomepageRow?: Maybe<FetchShowHomepageRowPayload>;
     fetchSourceManga?: Maybe<FetchSourceMangaPayload>;
     fetchTrack: FetchTrackPayload;
     installExternalExtension?: Maybe<InstallExternalExtensionPayload>;
@@ -1545,6 +1588,14 @@ export type MutationFetchExtensionsArgs = {
 
 export type MutationFetchMangaArgs = {
     input: FetchMangaInput;
+};
+
+export type MutationFetchShowHomepageArgs = {
+    input: FetchShowHomepageInput;
+};
+
+export type MutationFetchShowHomepageRowArgs = {
+    input: FetchShowHomepageRowInput;
 };
 
 export type MutationFetchSourceMangaArgs = {

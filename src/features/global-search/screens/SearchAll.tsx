@@ -125,12 +125,14 @@ const NO_RESULTS_MESSAGE_BY_SCOPE: Record<SourceBrowseScope, MacroMessageDescrip
     manga: msg`No manga found`,
     anime: msg`No anime found`,
     novel: msg`No novels found`,
+    show: msg`No shows found`,
 };
 
 const CONTENT_TYPE_BY_SCOPE: Record<SourceBrowseScope, ContentType> = {
     manga: ContentType.Manga,
     anime: ContentType.Anime,
     novel: ContentType.Novel,
+    show: ContentType.Show,
 };
 
 const SourceSearchPreview = React.memo(

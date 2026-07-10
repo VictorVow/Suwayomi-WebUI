@@ -2980,6 +2980,16 @@ msgstr "No show updates"
 msgid "No show watching history"
 msgstr "No show watching history"
 
+#: src/features/global-search/screens/SearchAll.tsx
+#: src/features/show/screens/ShowSourceHomepage.tsx
+#: src/features/source/browse/screens/SourceMangas.tsx
+msgid "No shows found"
+msgstr "No shows found"
+
+#: src/features/source/browse/screens/SourceMangas.tsx
+msgid "No shows matches this filter"
+msgstr "No shows matches this filter"
+
 #: src/features/show/components/ShowUnavailableView.tsx
 msgid "No shows yet"
 msgstr "No shows yet"
@@ -3152,6 +3162,7 @@ msgstr "Open in browser"
 #: src/features/manga/components/details/MangaDetails.tsx
 #: src/features/reader/overlay/mobile/ReaderOverlayHeaderMobile.tsx
 #: src/features/reader/overlay/navigation/desktop/components/ReaderNavBarDesktopActions.tsx
+#: src/features/show/screens/ShowSourceHomepage.tsx
 #: src/features/source/browse/screens/SourceMangas.tsx
 msgid "Open in WebView"
 msgstr "Open in WebView"
@@ -3849,6 +3860,7 @@ msgstr "Setting can not be changed while the reader is opened"
 #: src/features/settings/screens/Settings.tsx
 #: src/features/show/components/ShowExtensionsTab.tsx
 #: src/features/show/player/components/PlayerOverlay.tsx
+#: src/features/show/screens/ShowSourceHomepage.tsx
 #: src/features/source/browse/screens/SourceMangas.tsx
 #: src/features/source/components/SourceLanguageSelect.tsx
 msgid "Settings"
@@ -4042,6 +4054,7 @@ msgstr "Sort"
 #: src/features/manga/components/details/MangaDetails.tsx
 #: src/features/novel/screens/NovelBrowse.tsx
 #: src/features/show/screens/ShowBrowse.tsx
+#: src/features/show/screens/ShowSourceHomepage.tsx
 #: src/features/source/browse/screens/SourceMangas.tsx
 msgid "Source"
 msgstr "Source"
@@ -4454,6 +4467,7 @@ msgstr "Unable to load chapter text"
 #: src/features/settings/screens/ServerSettings.tsx
 #: src/features/settings/screens/WebUISettings.tsx
 #: src/features/show/components/ShowSourcesTab.tsx
+#: src/features/show/screens/ShowSourceHomepage.tsx
 #: src/features/source/browse/screens/SourceMangas.tsx
 #: src/features/source/configuration/screens/SourceConfigure.tsx
 #: src/features/theme/components/CreateThemeDialog.tsx

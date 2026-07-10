@@ -100,6 +100,10 @@ import type {
     GetServerSettingsQueryVariables,
     GetSourceMangasFetchMutation,
     GetSourceMangasFetchMutationVariables,
+    FetchShowHomepageMutation,
+    FetchShowHomepageMutationVariables,
+    FetchShowHomepageRowMutation,
+    FetchShowHomepageRowMutationVariables,
     GetSourcesListQuery,
     GetSourcesListQueryVariables,
     GetUpdateStatusQuery,
@@ -259,6 +263,8 @@ import {
 } from '@/lib/graphql/category/CategoryQuery.ts';
 import {
     GET_SOURCE_MANGAS_FETCH,
+    FETCH_SHOW_HOMEPAGE,
+    FETCH_SHOW_HOMEPAGE_ROW,
     UPDATE_SOURCE_METADATA,
     UPDATE_SOURCE_PREFERENCES,
 } from '@/lib/graphql/source/SourceMutation.ts';
@@ -2164,6 +2170,28 @@ export class RequestManager {
         return this.useGetSourceMangas(
             { type: FetchSourceMangaType.Search, source, query, filters, page: 1 },
             initialPages,
+            options,
+        );
+    }
+
+    public useFetchShowHomepage(
+        source: string,
+        page: number = 1,
+        options?: MutationHookOptions<FetchShowHomepageMutation, FetchShowHomepageMutationVariables>,
+    ): AbortableApolloUseMutationResponse<FetchShowHomepageMutation, FetchShowHomepageMutationVariables> {
+        return this.doRequest(GQLMethod.USE_MUTATION, FETCH_SHOW_HOMEPAGE, { input: { source, page } }, options);
+    }
+
+    public fetchShowHomepageRow(
+        source: string,
+        page: number,
+        row: number,
+        options?: MutationOptions<FetchShowHomepageRowMutation, FetchShowHomepageRowMutationVariables>,
+    ): AbortableApolloMutationResponse<FetchShowHomepageRowMutation> {
+        return this.doRequest<FetchShowHomepageRowMutation, FetchShowHomepageRowMutationVariables>(
+            GQLMethod.MUTATION,
+            FETCH_SHOW_HOMEPAGE_ROW,
+            { input: { source, page, row } },
             options,
         );
     }

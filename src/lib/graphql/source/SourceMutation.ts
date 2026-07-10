@@ -23,6 +23,44 @@ export const GET_SOURCE_MANGAS_FETCH = gql`
     }
 `;
 
+export const FETCH_SHOW_HOMEPAGE = gql`
+    ${MANGA_BASE_FIELDS}
+
+    mutation FETCH_SHOW_HOMEPAGE($input: FetchShowHomepageInput!) {
+        fetchShowHomepage(input: $input) {
+            hasNextPage
+            rows {
+                name
+                hasNextPage
+                items {
+                    ...MANGA_BASE_FIELDS
+                }
+            }
+            mainPage {
+                name
+                data
+                horizontalImages
+            }
+        }
+    }
+`;
+
+export const FETCH_SHOW_HOMEPAGE_ROW = gql`
+    ${MANGA_BASE_FIELDS}
+
+    mutation FETCH_SHOW_HOMEPAGE_ROW($input: FetchShowHomepageRowInput!) {
+        fetchShowHomepageRow(input: $input) {
+            row {
+                name
+                hasNextPage
+                items {
+                    ...MANGA_BASE_FIELDS
+                }
+            }
+        }
+    }
+`;
+
 export const GET_MIGRATION_SOURCE_MANGAS_FETCH = gql`
     ${MANGA_MIGRATION_FIELDS}
 

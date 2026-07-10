@@ -3347,6 +3347,65 @@ export type GetSourceMangasFetchMutation = {
     } | null;
 };
 
+export type FetchShowHomepageMutationVariables = Exact<{
+    input: Types.FetchShowHomepageInput;
+}>;
+
+export type FetchShowHomepageMutation = {
+    __typename: 'Mutation';
+    fetchShowHomepage: {
+        __typename: 'FetchShowHomepagePayload';
+        hasNextPage: boolean;
+        rows: Array<{
+            __typename: 'ShowHomePageRowType';
+            name: string;
+            hasNextPage: boolean;
+            items: Array<{
+                __typename: 'MangaType';
+                id: number;
+                title: string;
+                thumbnailUrl: string | null;
+                thumbnailUrlLastFetched: string | null;
+                inLibrary: boolean;
+                initialized: boolean;
+                sourceId: string;
+            }>;
+        }>;
+        mainPage: Array<{
+            __typename: 'ShowMainPageDataType';
+            name: string;
+            data: string;
+            horizontalImages: boolean;
+        }>;
+    } | null;
+};
+
+export type FetchShowHomepageRowMutationVariables = Exact<{
+    input: Types.FetchShowHomepageRowInput;
+}>;
+
+export type FetchShowHomepageRowMutation = {
+    __typename: 'Mutation';
+    fetchShowHomepageRow: {
+        __typename: 'FetchShowHomepageRowPayload';
+        row: {
+            __typename: 'ShowHomePageRowType';
+            name: string;
+            hasNextPage: boolean;
+            items: Array<{
+                __typename: 'MangaType';
+                id: number;
+                title: string;
+                thumbnailUrl: string | null;
+                thumbnailUrlLastFetched: string | null;
+                inLibrary: boolean;
+                initialized: boolean;
+                sourceId: string;
+            }>;
+        } | null;
+    } | null;
+};
+
 export type GetMigrationSourceMangasFetchMutationVariables = Exact<{
     input: Types.FetchSourceMangaInput;
 }>;

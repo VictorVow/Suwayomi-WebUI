@@ -61,6 +61,7 @@ const { SourceConfigure } = loadable(
     lazyLoadFallback,
 );
 const { SourceMangas } = loadable(() => import('@/features/source/browse/screens/SourceMangas.tsx'), lazyLoadFallback);
+const { ShowSourceBrowse } = loadable(() => import('@/features/show/screens/ShowSourceHomepage.tsx'), lazyLoadFallback);
 const { ExtensionInfo } = loadable(
     () => import('@/features/extension/info/screens/ExtensionInfo.tsx'),
     lazyLoadFallback,
@@ -430,7 +431,7 @@ const MainApp = () => {
                                 path={AppRoutes.showSources.children.browse.match}
                                 element={
                                     <MangaRouteContext.Provider value={getShowSourceMangaRouteUrl}>
-                                        <SourceMangas />
+                                        <ShowSourceBrowse />
                                     </MangaRouteContext.Provider>
                                 }
                             />
