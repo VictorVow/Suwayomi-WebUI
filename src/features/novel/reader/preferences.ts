@@ -30,6 +30,8 @@ export type NovelReaderReadingMode = 'continuous' | 'paged';
 
 export type NovelReaderTheme = 'system' | 'light' | 'dark' | 'sepia';
 
+export type NovelReaderChapterNumberSource = 'chapterNumber' | 'sourceOrder';
+
 export interface NovelReaderColorScheme {
     background: string;
     foreground: string;
@@ -152,6 +154,7 @@ export interface NovelReaderSettings {
     mark_read_policy: 'on_open' | 'past_threshold';
     mark_read_threshold: number; // 0–1, fraction of chapter scrolled
     reading_mode: NovelReaderReadingMode;
+    toc_chapter_number_source: NovelReaderChapterNumberSource;
     /** Tracks per-chapter reading rates (chars/sec) used for time-to-read estimates. */
     reading_rates: Record<number, number[]>; // keyed by chapterId
 }
@@ -182,6 +185,7 @@ export const NOVEL_READER_DEFAULT_SETTINGS: NovelReaderSettings = {
     mark_read_policy: 'past_threshold',
     mark_read_threshold: 0.95,
     reading_mode: 'continuous',
+    toc_chapter_number_source: 'chapterNumber',
     reading_rates: {},
 };
 

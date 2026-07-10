@@ -7,6 +7,7 @@
  */
 
 import { useEffect, useRef } from 'react';
+import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
@@ -15,11 +16,13 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
 import { useLingui } from '@lingui/react/macro';
+import { useNovelReaderSettings } from '@/features/novel/reader/preferences.ts';
 
 export interface NovelReaderTocChapter {
     id: number;
     name: string;
     sourceOrder: number;
+    chapterNumber: number;
     isRead: boolean;
     isBookmarked: boolean;
 }
@@ -45,41 +48,72 @@ export const NovelReaderToc = ({
     onSelectChapter: (sourceOrder: number) => void;
 }) => {
     const { t } = useLingui();
+    const settings = useNovelReaderSettings();
     const listRef = useRef<HTMLUListElement>(null);
+    const rafRef = useRef<number | undefined>(undefined);
 
     useEffect(() => {
         if (!open || !currentChapterId || !listRef.current) {
-            return;
+            return undefined;
         }
-        const selected = listRef.current.querySelector('[data-selected="true"]') as HTMLElement | null;
-        if (selected) {
-            selected.scrollIntoView({ block: 'center', behavior: 'auto' });
-        }
+        const list = listRef.current;
+        const raf1 = requestAnimationFrame(() => {
+            rafRef.current = requestAnimationFrame(() => {
+                const selected = list.querySelector('[data-selected="true"]') as HTMLElement | null;
+                if (!selected) {
+                    return;
+                }
+                const listRect = list.getBoundingClientRect();
+                const itemRect = selected.getBoundingClientRect();
+                const offset = itemRect.top - listRect.top;
+                const target = list.scrollTop + offset - (list.clientHeight - selected.offsetHeight) / 2;
+                list.scrollTo({ top: target, behavior: 'auto' });
+            });
+        });
+        return () => {
+            cancelAnimationFrame(raf1);
+            if (rafRef.current != null) {
+                cancelAnimationFrame(rafRef.current);
+                rafRef.current = undefined;
+            }
+        };
     }, [open, currentChapterId]);
+
+    const labelFor = (chapter: NovelReaderTocChapter) => {
+        const num =
+            settings.toc_chapter_number_source === 'chapterNumber' ? chapter.chapterNumber : chapter.sourceOrder;
+        return `${num}. ${chapter.name}`;
+    };
 
     return (
         <Drawer anchor="left" open={open} onClose={onClose}>
-            <Toolbar sx={{ minWidth: 280 }}>
-                <Typography variant="h6">{t`Table of Contents`}</Typography>
-            </Toolbar>
-            <List ref={listRef} sx={{ width: 320, overflowY: 'auto' }}>
-                {chapters.map((chapter) => (
-                    <ListItemButton
-                        key={chapter.id}
-                        selected={chapter.id === currentChapterId}
-                        data-selected={chapter.id === currentChapterId}
-                        onClick={() => {
-                            onSelectChapter(chapter.sourceOrder);
-                            onClose();
-                        }}
-                    >
-                        <ListItemText
-                            primary={<Typography sx={{ opacity: chapter.isRead ? 0.6 : 1 }}>{chapter.name}</Typography>}
-                        />
-                        {chapter.isBookmarked && <BookmarkIcon fontSize="small" sx={{ ml: 1, opacity: 0.7 }} />}
-                    </ListItemButton>
-                ))}
-            </List>
+            <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', minWidth: 280 }}>
+                <Toolbar>
+                    <Typography variant="h6">{t`Table of Contents`}</Typography>
+                </Toolbar>
+                <List ref={listRef} sx={{ flex: 1, minHeight: 0, overflowY: 'auto', width: 320 }}>
+                    {chapters.map((chapter) => (
+                        <ListItemButton
+                            key={chapter.id}
+                            selected={chapter.id === currentChapterId}
+                            data-selected={chapter.id === currentChapterId}
+                            onClick={() => {
+                                onSelectChapter(chapter.sourceOrder);
+                                onClose();
+                            }}
+                        >
+                            <ListItemText
+                                primary={
+                                    <Typography sx={{ opacity: chapter.isRead ? 0.6 : 1 }}>
+                                        {labelFor(chapter)}
+                                    </Typography>
+                                }
+                            />
+                            {chapter.isBookmarked && <BookmarkIcon fontSize="small" sx={{ ml: 1, opacity: 0.7 }} />}
+                        </ListItemButton>
+                    ))}
+                </List>
+            </Box>
         </Drawer>
     );
 };

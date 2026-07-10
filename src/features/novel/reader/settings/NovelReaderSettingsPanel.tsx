@@ -398,6 +398,21 @@ export const NovelReaderSettingsPanel = ({ onClose }: { onClose: () => void }) =
                     unit="ms"
                     onChange={(v) => updateNovelReaderSettings({ auto_hide_chrome_ms: v })}
                 />
+                <Typography variant="caption" sx={{ opacity: 0.7, display: 'block', mt: 1 }}>
+                    {t`TOC chapter number source`}
+                </Typography>
+                <Stack direction="row" sx={{ gap: 1, mt: 0.5 }}>
+                    {(['chapterNumber', 'sourceOrder'] as const).map((source) => (
+                        <Button
+                            key={source}
+                            color="inherit"
+                            variant={settings.toc_chapter_number_source === source ? 'contained' : 'outlined'}
+                            onClick={() => updateNovelReaderSettings({ toc_chapter_number_source: source })}
+                        >
+                            {source === 'chapterNumber' ? t`Chapter number` : t`Source order`}
+                        </Button>
+                    ))}
+                </Stack>
 
                 {/* Custom CSS */}
                 <Typography variant="subtitle1" sx={{ mt: 3 }}>

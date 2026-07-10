@@ -919,6 +919,7 @@ msgid "Chapter list"
 msgstr "Chapter list"
 
 #: src/features/chapter/components/ChapterOptions.tsx
+#: src/features/novel/reader/settings/NovelReaderSettingsPanel.tsx
 msgid "Chapter number"
 msgstr "Chapter number"
 
@@ -4067,6 +4068,10 @@ msgstr "Source Configuration"
 msgid "Source entry - {sourceTitle}"
 msgstr "Source entry - {sourceTitle}"
 
+#: src/features/novel/reader/settings/NovelReaderSettingsPanel.tsx
+msgid "Source order"
+msgstr "Source order"
+
 #: src/features/chapter/components/ChapterOptions.tsx
 msgid "Source title"
 msgstr "Source title"
@@ -4335,6 +4340,10 @@ msgstr "This will remove the tracking locally."
 #: src/features/reader/settings/behaviour/components/ReaderSettingScrollAmount.tsx
 msgid "Tiny"
 msgstr "Tiny"
+
+#: src/features/novel/reader/settings/NovelReaderSettingsPanel.tsx
+msgid "TOC chapter number source"
+msgstr "TOC chapter number source"
 
 #: src/base/utils/DateHelper.ts
 msgid "Today"
