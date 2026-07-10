@@ -79,6 +79,13 @@ const { AnimeDownloads } = loadable(() => import('@/features/anime/screens/Anime
 const { AnimeBrowse } = loadable(() => import('@/features/anime/screens/AnimeBrowse.tsx'), lazyLoadFallback);
 const { Anime } = loadable(() => import('@/features/anime/screens/Anime.tsx'), lazyLoadFallback);
 const { Player } = loadable(() => import('@/features/anime/player/screens/Player.tsx'), lazyLoadFallback);
+const { ShowLibrary } = loadable(() => import('@/features/show/screens/ShowLibrary.tsx'), lazyLoadFallback);
+const { ShowUpdates } = loadable(() => import('@/features/show/screens/ShowUpdates.tsx'), lazyLoadFallback);
+const { ShowHistory } = loadable(() => import('@/features/show/screens/ShowHistory.tsx'), lazyLoadFallback);
+const { ShowDownloads } = loadable(() => import('@/features/show/screens/ShowDownloads.tsx'), lazyLoadFallback);
+const { ShowBrowse } = loadable(() => import('@/features/show/screens/ShowBrowse.tsx'), lazyLoadFallback);
+const { Show } = loadable(() => import('@/features/show/screens/Show.tsx'), lazyLoadFallback);
+const { Player: ShowPlayer } = loadable(() => import('@/features/show/player/screens/Player.tsx'), lazyLoadFallback);
 const { Updates } = loadable(() => import('@/features/updates/screens/Updates.tsx'), lazyLoadFallback);
 const { Recommended } = loadable(() => import('@/features/recommended/screens/Recommended.tsx'), lazyLoadFallback);
 const { History } = loadable(() => import('@/features/history/screens/History.tsx'), lazyLoadFallback);
@@ -121,6 +128,7 @@ const { HistorySettings } = loadable(() => import('@/features/history/screens/Hi
 // Stable MangaRouteContext values for the content-scoped source browse routes.
 // Module-level so the provider value never changes identity across renders.
 const getAnimeSourceMangaRouteUrl = (id: number) => AppRoutes.anime.path(id);
+const getShowSourceMangaRouteUrl = (id: number) => AppRoutes.show.path(id);
 const getNovelSourceMangaRouteUrl = (id: number) => AppRoutes.novelDetail.path(id);
 
 if (import.meta.env.DEV) {
@@ -417,6 +425,28 @@ const MainApp = () => {
                                 }
                             />
                         </Route>
+                        <Route path={AppRoutes.showSources.match}>
+                            <Route
+                                path={AppRoutes.showSources.children.browse.match}
+                                element={
+                                    <MangaRouteContext.Provider value={getShowSourceMangaRouteUrl}>
+                                        <SourceMangas />
+                                    </MangaRouteContext.Provider>
+                                }
+                            />
+                            <Route
+                                path={AppRoutes.showSources.children.configure.match}
+                                element={<SourceConfigure />}
+                            />
+                            <Route
+                                path={AppRoutes.showSources.children.searchAll.match}
+                                element={
+                                    <MangaRouteContext.Provider value={getShowSourceMangaRouteUrl}>
+                                        <SearchAll />
+                                    </MangaRouteContext.Provider>
+                                }
+                            />
+                        </Route>
                         <Route path={AppRoutes.extension.match}>
                             {/* TODO: deprecated - "source" and "extension" page got merged into "browse" */}
                             <Route
@@ -473,6 +503,17 @@ const MainApp = () => {
                             <Route path={AppRoutes.anime.children.player.match} element={null} />
                             <Route index element={<Anime />} />
                         </Route>
+
+                        {/* Show Routes (flat, mirroring the anime structure) */}
+                        <Route path={AppRoutes.showLibrary.match} element={<ShowLibrary />} />
+                        <Route path={AppRoutes.showUpdates.match} element={<ShowUpdates />} />
+                        {!hideHistory && <Route path={AppRoutes.showHistory.match} element={<ShowHistory />} />}
+                        <Route path={AppRoutes.showBrowse.match} element={<ShowBrowse />} />
+                        <Route path={AppRoutes.showDownloads.match} element={<ShowDownloads />} />
+                        <Route path={AppRoutes.show.match}>
+                            <Route path={AppRoutes.show.children.player.match} element={null} />
+                            <Route index element={<Show />} />
+                        </Route>
                     </Route>
                 </Routes>
             </ErrorBoundary>
@@ -495,6 +536,16 @@ const PlayerApp = () => (
         <Routes>
             <Route element={<PrivateRoutes />}>
                 <Route path={AppRoutes.matchAll.match} element={<Player />} />
+            </Route>
+        </Routes>
+    </ErrorBoundary>
+);
+
+const ShowPlayerApp = () => (
+    <ErrorBoundary>
+        <Routes>
+            <Route element={<PrivateRoutes />}>
+                <Route path={AppRoutes.matchAll.match} element={<ShowPlayer />} />
             </Route>
         </Routes>
     </ErrorBoundary>
@@ -535,6 +586,7 @@ export const App: React.FC = () => (
                         <Route path={AppRoutes.matchAll.match} element={<MainApp />} />
                         <Route path={AppRoutes.reader.match} element={<ReaderApp />} />
                         <Route path={AppRoutes.player.match} element={<PlayerApp />} />
+                        <Route path={AppRoutes.showPlayer.match} element={<ShowPlayerApp />} />
                         <Route path={AppRoutes.novelReader.match} element={<NovelReaderApp />} />
                     </Routes>
                 </Box>

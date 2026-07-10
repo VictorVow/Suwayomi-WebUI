@@ -371,6 +371,11 @@ msgstr "Active setting ({title})"
 msgid "Add"
 msgstr "Add"
 
+#: src/features/show/components/ShowUnavailableView.tsx
+#: src/features/show/screens/ShowUpdates.tsx
+msgid "Add a Cloudstream extension repository under Settings → Browse, then install a show source from the Extensions tab."
+msgstr "Add a Cloudstream extension repository under Settings → Browse, then install a show source from the Extensions tab."
+
 #: src/features/novel/reader/components/NovelReaderWordActions.tsx
 msgid "Add a custom lookup"
 msgstr "Add a custom lookup"
@@ -515,6 +520,7 @@ msgid "Ascending"
 msgstr "Ascending"
 
 #: src/features/anime/player/components/PlayerOverlay.tsx
+#: src/features/show/player/components/PlayerOverlay.tsx
 msgid "Audio"
 msgstr "Audio"
 
@@ -750,6 +756,10 @@ msgstr "Browse anime"
 msgid "Browse novels"
 msgstr "Browse novels"
 
+#: src/features/show/screens/ShowBrowse.tsx
+msgid "Browse shows"
+msgstr "Browse shows"
+
 #: src/features/settings/Settings.constants.ts
 msgid "Browser"
 msgstr "Browser"
@@ -820,6 +830,7 @@ msgstr "Can't migrate an entry to itself"
 #: src/features/novel/reader/components/NovelReaderWordActions.tsx
 #: src/features/reader/hotkeys/settings/components/RecordHotkey.tsx
 #: src/features/settings/components/globalUpdate/GlobalUpdateSettingsEntries.tsx
+#: src/features/show/components/QualityPickerDialog.tsx
 #: src/features/source/browse/components/SourceOptions.tsx
 #: src/features/source/components/SourceLanguageSelect.tsx
 #: src/features/source/configuration/components/EditTextPreference.tsx
@@ -1189,6 +1200,14 @@ msgstr "Could not load novel"
 #: src/features/novel/screens/NovelLibrary.tsx
 msgid "Could not load novels"
 msgstr "Could not load novels"
+
+#: src/features/show/screens/Show.tsx
+msgid "Could not load show"
+msgstr "Could not load show"
+
+#: src/features/show/screens/ShowLibrary.tsx
+msgid "Could not load shows"
+msgstr "Could not load shows"
 
 #: src/features/theme/components/ThemePreview.tsx
 msgid "Could not load theme fonts"
@@ -1576,6 +1595,7 @@ msgstr "Doujinshi"
 #: src/features/chapter/Chapter.constants.ts
 #: src/features/chapter/components/buttons/ChapterDownloadButton.tsx
 #: src/features/chapter/components/ChaptersToolbarMenu.tsx
+#: src/features/show/components/QualityPickerDialog.tsx
 msgid "Download"
 msgstr "Download"
 
@@ -1713,6 +1733,7 @@ msgid "Entry \"{id}\" not found"
 msgstr "Entry \"{id}\" not found"
 
 #: src/features/anime/player/screens/Player.tsx
+#: src/features/show/player/screens/Player.tsx
 msgid "Episode not found"
 msgstr "Episode not found"
 
@@ -1758,6 +1779,7 @@ msgstr "Exit to previous page"
 #: src/features/anime/screens/AnimeBrowse.tsx
 #: src/features/browse/screens/Browse.tsx
 #: src/features/novel/screens/NovelBrowse.tsx
+#: src/features/show/screens/ShowBrowse.tsx
 msgid "Extension"
 msgstr "Extension"
 
@@ -1774,6 +1796,7 @@ msgid "Extension repositories"
 msgstr "Extension repositories"
 
 #: src/features/anime/services/AnimeDownloads.ts
+#: src/features/show/services/ShowDownloads.ts
 msgid "Failed to add episode to download queue"
 msgstr "Failed to add episode to download queue"
 
@@ -1790,6 +1813,7 @@ msgid "Failed to load"
 msgstr "Failed to load"
 
 #: src/features/anime/services/AnimeDownloads.ts
+#: src/features/show/services/ShowDownloads.ts
 msgid "Failed to load video qualities"
 msgstr "Failed to load video qualities"
 
@@ -1957,6 +1981,7 @@ msgid "Forward"
 msgstr "Forward"
 
 #: src/features/anime/player/components/PlayerOverlay.tsx
+#: src/features/show/player/components/PlayerOverlay.tsx
 msgid "Forward 10 seconds"
 msgstr "Forward 10 seconds"
 
@@ -1965,6 +1990,7 @@ msgid "Fourth to last read chapter"
 msgstr "Fourth to last read chapter"
 
 #: src/features/anime/player/components/PlayerOverlay.tsx
+#: src/features/show/player/components/PlayerOverlay.tsx
 msgid "Fullscreen"
 msgstr "Fullscreen"
 
@@ -1985,6 +2011,7 @@ msgstr "GitHub WebUI"
 #: src/features/browse/sources/Sources.tsx
 #: src/features/global-search/screens/SearchAll.tsx
 #: src/features/novel/components/NovelSourcesTab.tsx
+#: src/features/show/components/ShowSourcesTab.tsx
 msgid "Global Search"
 msgstr "Global Search"
 
@@ -2752,6 +2779,7 @@ msgid "Multiply"
 msgstr "Multiply"
 
 #: src/features/anime/player/components/PlayerOverlay.tsx
+#: src/features/show/player/components/PlayerOverlay.tsx
 msgid "Mute"
 msgstr "Mute"
 
@@ -2798,6 +2826,7 @@ msgid "Next chapter"
 msgstr "Next chapter"
 
 #: src/features/anime/player/components/PlayerOverlay.tsx
+#: src/features/show/player/components/PlayerOverlay.tsx
 msgid "Next episode"
 msgstr "Next episode"
 
@@ -2864,6 +2893,7 @@ msgid "No chapters matching filter"
 msgstr "No chapters matching filter"
 
 #: src/features/anime/services/AnimeDownloads.ts
+#: src/features/show/services/ShowDownloads.ts
 msgid "No downloadable video for this episode"
 msgstr "No downloadable video for this episode"
 
@@ -2873,6 +2903,7 @@ msgstr "No downloads"
 
 #: src/features/anime/components/AnimeExtensionsTab.tsx
 #: src/features/novel/components/NovelExtensionsTab.tsx
+#: src/features/show/components/ShowExtensionsTab.tsx
 msgid "No extensions found"
 msgstr "No extensions found"
 
@@ -2929,12 +2960,37 @@ msgstr "No novels matches this filter"
 msgid "No pages found"
 msgstr "No pages found"
 
+#: src/features/show/screens/ShowDownloads.tsx
+msgid "No show downloads"
+msgstr "No show downloads"
+
+#: src/features/show/components/ShowExtensionsTab.tsx
+msgid "No show extensions"
+msgstr "No show extensions"
+
+#: src/features/show/components/ShowSourcesTab.tsx
+msgid "No show sources"
+msgstr "No show sources"
+
+#: src/features/show/screens/ShowUpdates.tsx
+msgid "No show updates"
+msgstr "No show updates"
+
+#: src/features/show/screens/ShowHistory.tsx
+msgid "No show watching history"
+msgstr "No show watching history"
+
+#: src/features/show/components/ShowUnavailableView.tsx
+msgid "No shows yet"
+msgstr "No shows yet"
+
 #: src/features/migration/components/MigrationDestinationSourceList.tsx
 msgid "No sources available to migrate to"
 msgstr "No sources available to migrate to"
 
 #: src/features/anime/components/AnimeSourcesTab.tsx
 #: src/features/novel/components/NovelSourcesTab.tsx
+#: src/features/show/components/ShowSourcesTab.tsx
 msgid "No sources found"
 msgstr "No sources found"
 
@@ -3020,6 +3076,7 @@ msgid "OEL"
 msgstr "OEL"
 
 #: src/features/anime/player/components/PlayerOverlay.tsx
+#: src/features/show/player/components/PlayerOverlay.tsx
 msgid "Off"
 msgstr "Off"
 
@@ -3200,10 +3257,12 @@ msgid "Pinned"
 msgstr "Pinned"
 
 #: src/features/anime/player/components/PlayerOverlay.tsx
+#: src/features/show/player/components/PlayerOverlay.tsx
 msgid "Play/Pause"
 msgstr "Play/Pause"
 
 #: src/features/anime/player/screens/Player.tsx
+#: src/features/show/player/screens/Player.tsx
 msgid "Playback error"
 msgstr "Playback error"
 
@@ -3255,6 +3314,7 @@ msgid "Previous chapter"
 msgstr "Previous chapter"
 
 #: src/features/anime/player/components/PlayerOverlay.tsx
+#: src/features/show/player/components/PlayerOverlay.tsx
 msgid "Previous episode"
 msgstr "Previous episode"
 
@@ -3310,6 +3370,8 @@ msgstr "px"
 
 #: src/features/anime/components/QualityPickerDialog.tsx
 #: src/features/anime/player/components/PlayerOverlay.tsx
+#: src/features/show/components/QualityPickerDialog.tsx
+#: src/features/show/player/components/PlayerOverlay.tsx
 msgid "Quality"
 msgstr "Quality"
 
@@ -3497,6 +3559,7 @@ msgid "Retry errored pages"
 msgstr "Retry errored pages"
 
 #: src/features/anime/player/components/PlayerOverlay.tsx
+#: src/features/show/player/components/PlayerOverlay.tsx
 msgid "Rewind 10 seconds"
 msgstr "Rewind 10 seconds"
 
@@ -3701,6 +3764,7 @@ msgid "Select pinned sources"
 msgstr "Select pinned sources"
 
 #: src/features/anime/components/QualityPickerDialog.tsx
+#: src/features/show/components/QualityPickerDialog.tsx
 msgid "Select quality"
 msgstr "Select quality"
 
@@ -3783,6 +3847,8 @@ msgstr "Setting can not be changed while the reader is opened"
 #: src/features/reader/overlay/navigation/desktop/quick-settings/ReaderNavBarDesktopQuickSettings.tsx
 #: src/features/reader/overlay/navigation/mobile/ReaderBottomBarMobile.tsx
 #: src/features/settings/screens/Settings.tsx
+#: src/features/show/components/ShowExtensionsTab.tsx
+#: src/features/show/player/components/PlayerOverlay.tsx
 #: src/features/source/browse/screens/SourceMangas.tsx
 #: src/features/source/components/SourceLanguageSelect.tsx
 msgid "Settings"
@@ -3792,6 +3858,11 @@ msgstr "Settings"
 msgid "Share"
 msgstr "Share"
 
+#: src/features/navigation-bar/NavigationBar.constants.ts
+#: src/features/show/screens/Show.tsx
+msgid "Show"
+msgstr "Show"
+
 #: src/features/library/screens/LibrarySettings.tsx
 msgid "Show all duplicated entries in your library"
 msgstr "Show all duplicated entries in your library"
@@ -3800,11 +3871,19 @@ msgstr "Show all duplicated entries in your library"
 msgid "Show continue reading button"
 msgstr "Show continue reading button"
 
+#: src/features/show/screens/ShowDownloads.tsx
+msgid "Show Downloads"
+msgstr "Show Downloads"
+
 #: src/features/manga/components/cards/MangaCard.tsx
 #: src/features/manga/hooks/useManageMangaLibraryState.tsx
 #: src/features/migration/components/MigrationOptionsDialog.tsx
 msgid "Show entry"
 msgstr "Show entry"
+
+#: src/features/show/screens/ShowHistory.tsx
+msgid "Show History"
+msgstr "Show History"
 
 #: src/features/settings/screens/ServerSettings.tsx
 msgid "Show icon in system tray"
@@ -3818,6 +3897,10 @@ msgstr "Show in sources and extensions lists"
 #: src/features/tracker/components/cards/TrackerMangaCard.tsx
 msgid "Show less"
 msgstr "Show less"
+
+#: src/features/show/screens/ShowLibrary.tsx
+msgid "Show Library"
+msgstr "Show Library"
 
 #: src/base/components/feedback/EmptyView.tsx
 #: src/base/components/feedback/SnackbarWithDescription.tsx
@@ -3866,6 +3949,10 @@ msgstr "Show the category selection dialog when adding a manga to the library"
 #: src/features/reader/settings/behaviour/ReaderBehaviourSettings.tsx
 msgid "Show transition page"
 msgstr "Show transition page"
+
+#: src/features/show/screens/ShowUpdates.tsx
+msgid "Show Updates"
+msgstr "Show Updates"
 
 #: src/features/settings/screens/ServerSettings.tsx
 #: src/features/settings/screens/WebUISettings.tsx
@@ -3954,6 +4041,7 @@ msgstr "Sort"
 #: src/features/browse/screens/BrowseSettings.tsx
 #: src/features/manga/components/details/MangaDetails.tsx
 #: src/features/novel/screens/NovelBrowse.tsx
+#: src/features/show/screens/ShowBrowse.tsx
 #: src/features/source/browse/screens/SourceMangas.tsx
 msgid "Source"
 msgstr "Source"
@@ -4044,6 +4132,7 @@ msgid "Submit"
 msgstr "Submit"
 
 #: src/features/anime/player/components/PlayerOverlay.tsx
+#: src/features/show/player/components/PlayerOverlay.tsx
 msgid "Subtitles"
 msgstr "Subtitles"
 
@@ -4110,6 +4199,7 @@ msgstr "The cache of the client (browser, electron) should get cleared alongside
 #: src/features/anime/screens/AnimeLibrary.tsx
 #: src/features/library/screens/Library.tsx
 #: src/features/novel/screens/NovelLibrary.tsx
+#: src/features/show/screens/ShowLibrary.tsx
 msgid "The category is empty"
 msgstr "The category is empty"
 
@@ -4363,6 +4453,7 @@ msgstr "Unable to load chapter text"
 #: src/features/settings/screens/ImageProcessingSetting.tsx
 #: src/features/settings/screens/ServerSettings.tsx
 #: src/features/settings/screens/WebUISettings.tsx
+#: src/features/show/components/ShowSourcesTab.tsx
 #: src/features/source/browse/screens/SourceMangas.tsx
 #: src/features/source/configuration/screens/SourceConfigure.tsx
 #: src/features/theme/components/CreateThemeDialog.tsx
@@ -4380,6 +4471,7 @@ msgid "Unable to load sources"
 msgstr "Unable to load sources"
 
 #: src/features/anime/player/screens/Player.tsx
+#: src/features/show/player/screens/Player.tsx
 msgid "Unable to load video"
 msgstr "Unable to load video"
 
@@ -4694,3 +4786,7 @@ msgstr "Your manga library is empty"
 #: src/features/novel/screens/NovelLibrary.tsx
 msgid "Your novel library is empty"
 msgstr "Your novel library is empty"
+
+#: src/features/show/screens/ShowLibrary.tsx
+msgid "Your show library is empty"
+msgstr "Your show library is empty"

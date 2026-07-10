@@ -27,6 +27,8 @@ import MenuBookIcon from '@mui/icons-material/MenuBook';
 import MenuBookOutlinedIcon from '@mui/icons-material/MenuBookOutlined';
 import MovieIcon from '@mui/icons-material/Movie';
 import MovieOutlinedIcon from '@mui/icons-material/MovieOutlined';
+import LiveTvIcon from '@mui/icons-material/LiveTv';
+import LiveTvOutlinedIcon from '@mui/icons-material/LiveTvOutlined';
 import AutoStoriesIcon from '@mui/icons-material/AutoStories';
 import AutoStoriesOutlinedIcon from '@mui/icons-material/AutoStoriesOutlined';
 import { useLingui } from '@lingui/react/macro';
@@ -263,6 +265,55 @@ export const NAVIGATION_BAR_ANIME_ITEMS = [
     },
 ] as const satisfies RestrictedNavBarItem<'desktop'>[];
 
+/**
+ * Real, navigable items for the "Show" section. They mirror the Anime content
+ * items but point at the `/show/*` routes backed by
+ * `src/features/show/services/ShowApi.ts`. Declared here (and included in
+ * NAVIGATION_BAR_ITEMS) so the desktop sidebar treats their paths as visible.
+ */
+export const NAVIGATION_BAR_SHOW_ITEMS = [
+    {
+        path: AppRoutes.showLibrary.path,
+        title: msg`Library`,
+        SelectedIconComponent: CollectionsBookmarkIcon,
+        IconComponent: CollectionsOutlinedBookmarkIcon,
+        show: 'desktop',
+        moreGroup: NavBarItemMoreGroup.HIDDEN_ITEM,
+    },
+    {
+        path: AppRoutes.showUpdates.path,
+        title: msg`Updates`,
+        SelectedIconComponent: NewReleasesIcon,
+        IconComponent: NewReleasesOutlinedIcon,
+        show: 'desktop',
+        moreGroup: NavBarItemMoreGroup.HIDDEN_ITEM,
+    },
+    {
+        path: AppRoutes.showHistory.path,
+        title: msg`History`,
+        SelectedIconComponent: HistoryIcon,
+        IconComponent: HistoryOutlinedIcon,
+        show: 'desktop',
+        moreGroup: NavBarItemMoreGroup.HIDDEN_ITEM,
+    },
+    {
+        path: AppRoutes.showBrowse.path,
+        title: msg`Browse`,
+        SelectedIconComponent: ExploreIcon,
+        IconComponent: ExploreOutlinedIcon,
+        show: 'desktop',
+        moreGroup: NavBarItemMoreGroup.HIDDEN_ITEM,
+    },
+    {
+        path: AppRoutes.showDownloads.path,
+        title: msg`Downloads`,
+        SelectedIconComponent: GetAppIcon,
+        IconComponent: GetAppOutlinedIcon,
+        show: 'desktop',
+        moreGroup: NavBarItemMoreGroup.HIDDEN_ITEM,
+    },
+] as const satisfies RestrictedNavBarItem<'desktop'>[];
+
 export const NAVIGATION_BAR_HOME_ITEMS = [
     {
         path: AppRoutes.root.path,
@@ -281,6 +332,7 @@ export const NAVIGATION_BAR_ITEMS = [
     ...NAVIGATION_BAR_MOBILE_ITEMS,
     ...NAVIGATION_BAR_NOVEL_ITEMS,
     ...NAVIGATION_BAR_ANIME_ITEMS,
+    ...NAVIGATION_BAR_SHOW_ITEMS,
 ] as const satisfies NavbarItem[];
 
 // Named references to the individual items, used to compose the desktop sidebar sections below.
@@ -304,6 +356,14 @@ const ANIME_SECTION: NavbarSection = {
     items: [...NAVIGATION_BAR_ANIME_ITEMS],
 };
 
+const SHOW_SECTION: NavbarSection = {
+    id: 'show',
+    title: msg`Show`,
+    SelectedIconComponent: LiveTvIcon,
+    IconComponent: LiveTvOutlinedIcon,
+    items: [...NAVIGATION_BAR_SHOW_ITEMS],
+};
+
 const NOVEL_SECTION: NavbarSection = {
     id: 'novel',
     title: msg`Novel`,
@@ -316,7 +376,7 @@ const NOVEL_SECTION: NavbarSection = {
  * Ordered layout of the desktop sidebar:
  *  - Recommended (standalone, at the very top)
  *  - Manga (collapsible section holding every real item except Settings/About)
- *  - Anime / Novel (collapsible placeholder sections)
+ *  - Anime / Show / Novel (collapsible placeholder sections)
  *  - Settings (standalone, pinned to the very bottom)
  *  - About (standalone, pinned below Settings)
  */
@@ -325,6 +385,7 @@ export const DESKTOP_NAV_ENTRIES: NavbarEntry[] = [
     { kind: 'item', item: RECOMMENDED_ITEM },
     { kind: 'section', section: MANGA_SECTION },
     { kind: 'section', section: ANIME_SECTION },
+    { kind: 'section', section: SHOW_SECTION },
     { kind: 'section', section: NOVEL_SECTION },
     { kind: 'item', item: SETTINGS_ITEM },
     { kind: 'item', item: ABOUT_ITEM },

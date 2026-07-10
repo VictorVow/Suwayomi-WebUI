@@ -346,18 +346,20 @@ export type ConnectKoSyncAccountInput = {
 /**
  * The kind of content a manga row represents, derived from its source.
  *
- * Miruyomi-Server stores manga, light-novel and anime titles in the same `manga`
- * table. This enum is the single discriminator used to scope library/category
- * queries to one content type:
+ * Miruyomi-Server stores manga, light-novel, anime and show titles in the same
+ * `manga` table. This enum is the single discriminator used to scope
+ * library/category queries to one content type:
  *
  *   * `MANGA` - Tachiyomi manga sources (`source.kind = MANGA`, positive source id)
  *   * `NOVEL` - LNReader light-novel plugins (negative source id)
  *   * `ANIME` - Aniyomi anime sources (`source.kind = ANIME`)
+ *   * `SHOW` - Cloudstream show sources (`source.kind = SHOW`)
  */
 export enum ContentType {
     Anime = 'ANIME',
     Manga = 'MANGA',
     Novel = 'NOVEL',
+    Show = 'SHOW',
 }
 
 export type CreateBackupInput = {
@@ -2721,6 +2723,7 @@ export type SourceFilterInput = {
 export enum SourceKind {
     Anime = 'ANIME',
     Manga = 'MANGA',
+    Show = 'SHOW',
 }
 
 export type SourceMetaType = MetaType & {

@@ -11,15 +11,16 @@ import { SourceKind } from '@/lib/graphql/generated/graphql-base.types.ts';
 /*
  * Shared content-type discrimination for the unified `manga` table.
  *
- * Miruyomi stores manga, light novels and anime in one `manga` table. The
- * content type of a title is derived from its source:
+ * Miruyomi stores manga, light novels, anime and shows in one `manga` table.
+ * The content type of a title is derived from its source:
  *
  *   - Novel  -> source id is a negative Long (LNReader plugin sources)
  *   - Anime  -> source `kind === ANIME` (Aniyomi sources)
+ *   - Show   -> source `kind === SHOW` (Cloudstream sources)
  *   - Manga  -> everything else
  *
- * Centralised here so all feature areas (library, novel, anime, browse, ...)
- * agree on the rule. The server exposes the same discriminator as the
+ * Centralised here so all feature areas (library, novel, anime, show, browse,
+ * ...) agree on the rule. The server exposes the same discriminator as the
  * `ContentType` GraphQL enum / `MangaConditionInput.contentType` condition.
  */
 
@@ -29,7 +30,7 @@ export const isNovelSourceId = (id: string): boolean => id.startsWith('-');
 /** An extension is an LNReader (novel) plugin when its pkgName is `lnreader:<id>`. */
 export const isNovelExtensionPkg = (pkgName: string): boolean => pkgName.startsWith('lnreader:');
 
-export type ContentKind = 'MANGA' | 'NOVEL' | 'ANIME';
+export type ContentKind = 'MANGA' | 'NOVEL' | 'ANIME' | 'SHOW';
 
 /** The content kind of a title, derived from its source id and source kind. */
 export const contentKindOf = (sourceId: string, sourceKind?: SourceKind | null): ContentKind => {
@@ -38,6 +39,9 @@ export const contentKindOf = (sourceId: string, sourceKind?: SourceKind | null):
     }
     if (sourceKind === SourceKind.Anime) {
         return 'ANIME';
+    }
+    if (sourceKind === SourceKind.Show) {
+        return 'SHOW';
     }
     return 'MANGA';
 };
@@ -49,6 +53,9 @@ export const extensionContentKindOf = (kind: SourceKind, pkgName: string): Conte
     }
     if (kind === SourceKind.Anime) {
         return 'ANIME';
+    }
+    if (kind === SourceKind.Show) {
+        return 'SHOW';
     }
     return 'MANGA';
 };

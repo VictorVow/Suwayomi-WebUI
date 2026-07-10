@@ -321,6 +321,64 @@ export const AppRoutes = {
             },
         },
     },
+    // Show routes mirror the flat Anime structure (shows have a detail page +
+    // a full-screen player, so it cannot use Novel's parent-with-children form).
+    showLibrary: {
+        match: 'show/library',
+        path: '/show/library',
+    },
+    showUpdates: {
+        match: 'show/updates',
+        path: '/show/updates',
+    },
+    showHistory: {
+        match: 'show/history',
+        path: '/show/history',
+    },
+    showBrowse: {
+        match: 'show/browse',
+        path: '/show/browse',
+    },
+    showDownloads: {
+        match: 'show/downloads',
+        path: '/show/downloads',
+    },
+    show: {
+        match: 'show/:id',
+        path: (mangaId: MangaIdInfo['id']) => `/show/${mangaId}`,
+        children: {
+            // Registered as `null` in the router; the real player is the
+            // top-level `showPlayer` route below (outside MainApp, like `reader`).
+            player: {
+                match: 'chapter/:chapterNum',
+                path: (mangaId: MangaIdInfo['id'], chapterNum: ChapterSourceOrderInfo['sourceOrder']) =>
+                    `/show/${mangaId}/chapter/${chapterNum}`,
+            },
+        },
+    },
+    showSources: {
+        match: 'show/sources',
+        path: '/show/sources',
+        children: {
+            browse: {
+                match: ':sourceId',
+                path: (sourceId: SourceIdInfo['id'], query?: string | null | undefined) =>
+                    UrlUtil.addQueryParam(`/show/sources/${sourceId}`, query),
+                state: (state: RouteStateSourceBrowse) => ({
+                    ...state,
+                }),
+            },
+            configure: {
+                match: ':sourceId/configure',
+                path: (sourceId: SourceIdInfo['id']) => `/show/sources/${sourceId}/configure`,
+            },
+            searchAll: {
+                match: 'all/search',
+                path: (query?: string | null | undefined) => UrlUtil.addQueryParam('/show/sources/all/search', query),
+                state: (state: RouteStateSourcesSearchAll) => ({ ...state }),
+            },
+        },
+    },
     migrate: {
         match: 'migrate/*',
         path: '/migrate',
@@ -355,6 +413,12 @@ export const AppRoutes = {
         match: '/anime/:mangaId/chapter/:chapterSourceOrder/*',
         path: (mangaId: MangaIdInfo['id'], chapterSourceOrder: ChapterSourceOrderInfo['sourceOrder']) =>
             `/anime/${mangaId}/chapter/${chapterSourceOrder}`,
+        state: (state: RouteStateReader) => ({ ...state }),
+    },
+    showPlayer: {
+        match: '/show/:mangaId/chapter/:chapterSourceOrder/*',
+        path: (mangaId: MangaIdInfo['id'], chapterSourceOrder: ChapterSourceOrderInfo['sourceOrder']) =>
+            `/show/${mangaId}/chapter/${chapterSourceOrder}`,
         state: (state: RouteStateReader) => ({ ...state }),
     },
     novelReader: {
