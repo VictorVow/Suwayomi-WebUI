@@ -280,8 +280,8 @@ export const GET_MIGRATABLE_SOURCE_MANGAS = gql`
 `;
 
 export const GET_LIBRARY_MANGA_COUNT = gql`
-    query GET_LIBRARY_MANGA_COUNT {
-        mangas(condition: { inLibrary: true, contentType: MANGA }) {
+    query GET_LIBRARY_MANGA_COUNT($contentType: ContentType = MANGA) {
+        mangas(condition: { inLibrary: true, contentType: $contentType }) {
             totalCount
         }
     }

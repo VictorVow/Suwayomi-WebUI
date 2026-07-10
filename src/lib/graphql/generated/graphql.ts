@@ -251,6 +251,7 @@ export type GetCategoriesLibraryQueryVariables = Exact<{
     last?: number | null | undefined;
     offset?: number | null | undefined;
     order?: Array<Types.CategoryOrderInput> | Types.CategoryOrderInput | null | undefined;
+    mangaContentType?: Types.ContentType | null | undefined;
 }>;
 
 export type GetCategoriesLibraryQuery = {
@@ -314,6 +315,7 @@ export type GetCategoriesSettingsQuery = {
 
 export type GetCategoryMangasQueryVariables = Exact<{
     id: number;
+    contentType?: Types.ContentType | null | undefined;
 }>;
 
 export type GetCategoryMangasQuery = {
@@ -2546,7 +2548,9 @@ export type GetMigratableSourceMangasQuery = {
     };
 };
 
-export type GetLibraryMangaCountQueryVariables = Exact<{ [key: string]: never }>;
+export type GetLibraryMangaCountQueryVariables = Exact<{
+    contentType?: Types.ContentType | null | undefined;
+}>;
 
 export type GetLibraryMangaCountQuery = {
     __typename: 'Query';

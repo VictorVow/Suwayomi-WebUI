@@ -376,10 +376,12 @@ msgid "Add a custom lookup"
 msgstr "Add a custom lookup"
 
 #: src/features/anime/components/AnimeUnavailableView.tsx
+#: src/features/anime/screens/AnimeUpdates.tsx
 msgid "Add an Aniyomi extension repository under Settings → Browse, then install an anime source from the Extensions tab."
 msgstr "Add an Aniyomi extension repository under Settings → Browse, then install an anime source from the Extensions tab."
 
 #: src/features/novel/components/NovelUnavailableView.tsx
+#: src/features/novel/screens/NovelUpdates.tsx
 msgid "Add an LNReader plugin repository under Settings → Browse, then install a novel source from the Extensions tab."
 msgstr "Add an LNReader plugin repository under Settings → Browse, then install a novel source from the Extensions tab."
 
@@ -1153,6 +1155,7 @@ msgid "Could not install the extension"
 msgstr "Could not install the extension"
 
 #: src/features/anime/screens/Anime.tsx
+#: src/features/anime/screens/AnimeLibrary.tsx
 msgid "Could not load anime"
 msgstr "Could not load anime"
 
@@ -1177,6 +1180,10 @@ msgstr "Could not load manga"
 #: src/features/novel/screens/Novel.tsx
 msgid "Could not load novel"
 msgstr "Could not load novel"
+
+#: src/features/novel/screens/NovelLibrary.tsx
+msgid "Could not load novels"
+msgstr "Could not load novels"
 
 #: src/features/theme/components/ThemePreview.tsx
 msgid "Could not load theme fonts"
@@ -1776,14 +1783,6 @@ msgstr "Failed to disconnect from KOReader Sync server."
 #: src/features/home/components/HomeLibraryRow.tsx
 msgid "Failed to load"
 msgstr "Failed to load"
-
-#: src/features/anime/screens/AnimeLibrary.tsx
-msgid "Failed to load the anime library"
-msgstr "Failed to load the anime library"
-
-#: src/features/novel/screens/NovelLibrary.tsx
-msgid "Failed to load the novel library"
-msgstr "Failed to load the novel library"
 
 #: src/features/anime/services/AnimeDownloads.ts
 msgid "Failed to load video qualities"
@@ -4089,7 +4088,9 @@ msgstr "The address of the FlareSolverr server"
 msgid "The cache of the client (browser, electron) should get cleared alongside it, otherwise, the client cache will keep getting used"
 msgstr "The cache of the client (browser, electron) should get cleared alongside it, otherwise, the client cache will keep getting used"
 
+#: src/features/anime/screens/AnimeLibrary.tsx
 #: src/features/library/screens/Library.tsx
+#: src/features/novel/screens/NovelLibrary.tsx
 msgid "The category is empty"
 msgstr "The category is empty"
 

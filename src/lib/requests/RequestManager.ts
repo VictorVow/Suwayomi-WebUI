@@ -2849,12 +2849,14 @@ export class RequestManager {
     public useGetCategories<Data, Variables extends OperationVariables>(
         document: DocumentNode | TypedDocumentNode<Data, Variables>,
         options?: QueryHookOptions<Data, Variables>,
+        extraVariables?: Partial<Variables>,
     ): AbortableApolloUseQueryResponse<Data, Variables> {
         return this.doRequest<Data, Variables>(
             GQLMethod.USE_QUERY,
             document,
             {
                 order: [{ by: CategoryOrderBy.Order }],
+                ...extraVariables,
             } satisfies GetCategoriesSettingsQueryVariables as unknown as Variables,
             options,
         );
@@ -2955,6 +2957,7 @@ export class RequestManager {
     public useGetCategoryMangas(
         id: number,
         options?: QueryHookOptions<GetMangasLibraryQuery, GetMangasLibraryQueryVariables>,
+        contentType: ContentType = ContentType.Manga,
     ): AbortableApolloUseQueryResponse<GetMangasLibraryQuery, GetMangasLibraryQueryVariables> {
         const isDefaultCategory = id === 0;
         if (isDefaultCategory) {
@@ -2963,7 +2966,7 @@ export class RequestManager {
             const { data, ...result } = this.doRequest<GetCategoryMangasQuery, GetCategoryMangasQueryVariables>(
                 GQLMethod.USE_QUERY,
                 GET_CATEGORY_MANGAS,
-                { id },
+                { id, contentType },
                 options as QueryHookOptions<GetCategoryMangasQuery, GetCategoryMangasQueryVariables>,
             );
 
@@ -2978,13 +2981,11 @@ export class RequestManager {
             } as unknown as AbortableApolloUseQueryResponse<GetMangasLibraryQuery, GetMangasLibraryQueryVariables>;
         }
 
-        // The manga library (the only consumer of category manga listings —
-        // novel/anime libraries query `mangas` directly with a `contentType`
-        // condition) is scoped to MANGA content so novel/anime titles that
-        // share the category don't leak into the manga library tabs/grid.
+        // Category membership works identically for manga/anime/novel content;
+        // the caller selects which slice of a mixed-content category to see.
         return this.useGetMangas(
             GET_MANGAS_LIBRARY,
-            { condition: { inLibrary: true, categoryIds: [id], contentType: ContentType.Manga } },
+            { condition: { inLibrary: true, categoryIds: [id], contentType } },
             options,
         );
     }

@@ -7,13 +7,9 @@ export type Scalars = {
     Boolean: { input: boolean; output: boolean };
     Int: { input: number; output: number };
     Float: { input: number; output: number };
-    /** A location in a connection that can be used for resuming pagination. */
     Cursor: { input: string; output: string };
-    /** An ISO-8601 encoded duration string */
     Duration: { input: string; output: string };
-    /** A 64-bit signed integer as a String */
     LongString: { input: string; output: string };
-    /** A file part in a multipart request */
     Upload: { input: unknown; output: unknown };
 };
 
@@ -160,10 +156,15 @@ export type CategoryType = {
     id: Scalars['Int']['output'];
     includeInDownload: IncludeOrExclude;
     includeInUpdate: IncludeOrExclude;
+    /** Defaults to MANGA, preserving the manga library's historical behavior. */
     mangas: MangaNodeList;
     meta: Array<CategoryMetaType>;
     name: Scalars['String']['output'];
     order: Scalars['Int']['output'];
+};
+
+export type CategoryTypeMangasArgs = {
+    contentType?: InputMaybe<ContentType>;
 };
 
 export type CategoryUpdateType = {
