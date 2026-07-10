@@ -60,16 +60,43 @@ export interface PagedReaderApi {
 }
 
 /**
- * Paged reading mode for the novel reader. Uses CSS multi-column layout to
- * split the chapter HTML into viewport-sized pages. The caller sets
- * `column-width: 100%` / `height: 100%` on the inner content element (the
- * direct child of the scroll container); this hook tracks the page count
- * (from `scrollWidth / clientWidth`), saves/restores the page position per
- * chapter, and exposes `nextPage`/`prevPage`/`goToPage` with auto-advance
- * to adjacent chapters.
+ * Paged reading mode for the novel reader.
  *
- * The scroll container itself has `overflow: hidden` in paged mode — the
- * horizontal translate is done by the caller via `scrollTo({ left })`.
+ * CURRENT STATUS — DORMANT (kept wired for potential future revival):
+ * This hook was originally built to drive a CSS multi-column paged layout
+ * that split a chapter into viewport-sized horizontal page columns. The
+ * caller set `column-width: 100%` / `height: 100%` on the inner content
+ * element, and this hook tracked the page count from
+ * `scrollWidth / clientWidth`, saved/restored the page index per chapter,
+ * and exposed `nextPage`/`prevPage`/`goToPage` with auto-advance to adjacent
+ * chapters at the last/first page.
+ *
+ * Paged mode now renders a single chapter as a normal vertically-scrolling
+ * column (see `NovelReader.tsx`), with wheel-at-boundary chapter changes
+ * handled directly in the reader screen. As a result this hook is no longer
+ * the source of truth for paged navigation, progress, or scroll position:
+ *   - `pageCount` / `pageIndex` / `frac` are not read by the chrome (the
+ *     shared `useReaderBehaviour` hook drives progress/screen counters in
+ *     both modes now);
+ *   - `nextPage` / `prevPage` are not called by the wheel/keyboard handler;
+ *   - the per-chapter page position is still saved to
+ *     `miruyomi.novelReader.pagePositions.v2`, but nothing reads it back for
+ *     navigation (scroll position is instead saved/restored by
+ *     `useReaderBehaviour` under its own localStorage key).
+ *
+ * It is intentionally left in place so a future true multi-column / paginated
+ * layout can revive it without re-plumbing the chapter-nav callbacks. When
+ * you are confident the multi-column paged layout will not return, ASK THE
+ * USER whether this hook (and the `miruyomi.novelReader.pagePositions.v2`
+ * localStorage key) should be removed entirely.
+ *
+ * Original mechanics (for reference if revived):
+ * - The scroll container has `overflow: hidden` in paged mode and the caller
+ *   applies the horizontal translate via `scrollTo({ left })` based on
+ *   `pageIndex * clientWidth`.
+ * - `recalc` derives `pageCount = Math.ceil(scrollWidth / clientWidth)`.
+ * - `nextPage`/`prevPage` auto-advance to the next/previous chapter when at
+ *   the last/first page, guarded by `advancingRef` until the route change.
  */
 export const usePagedReader = (
     contentRef: RefObject<HTMLElement | null>,

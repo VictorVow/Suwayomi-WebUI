@@ -66,9 +66,13 @@ const SCROLL_BOUNDARY_PX = 600;
  *     the loaded range's edge (see `useContinuousChapterFeed`), so scrolling
  *     flows straight from one chapter's text into the next with no
  *     page-swap.
- *   - `paged`: CSS multi-column layout that splits the text into
- *     viewport-sized pages navigated via tap zones, mouse wheel, and arrow
- *     keys. At the last page, advancing moves to the next chapter.
+ *   - `paged`: the single current chapter rendered as a normal vertically
+ *     scrolling column. Native wheel/trackpad/keyboard scrolling moves
+ *     through the chapter text; only when the reader is already at the
+ *     top (and scrolls up) or the bottom (and scrolls down) does a further
+ *     wheel tick cross into the previous/next chapter, so exactly one
+ *     chapter is ever visible. Left/right tap zones and ArrowLeft/ArrowRight
+ *     step the viewport up/down by ~one screen.
  *
  * Ported:
  *
@@ -186,6 +190,10 @@ export const NovelReader = () => {
 
     // ── Refs + chrome auto-hide (declared above callbacks that depend on them) ──
     const contentRef = useRef<HTMLDivElement>(null);
+    // Guards paged mode's wheel-at-boundary chapter change from re-firing on
+    // inertial wheel events before the route change commits and rebinds the
+    // handler. Reset on chapter change (see the effect below the wheel block).
+    const pagedAdvancingRef = useRef(false);
     const chrome = useChromeAutohide(contentRef);
     const chromeReveal = chrome.reveal;
 
@@ -284,6 +292,18 @@ export const NovelReader = () => {
     }, [currentChapter?.id]);
 
     // ── Paged mode ────────────────────────────────────────────────────────
+    // NOTE: `usePagedReader` was originally built for a CSS multi-column paged
+    // layout (horizontal page columns + `scrollWidth`-based page counting +
+    // `nextPage`/`prevPage` auto-advance). Paged mode now renders one chapter
+    // as a normal vertically-scrolling column with wheel-at-boundary chapter
+    // changes handled directly in the effect below, so this hook is currently
+    // DORMANT — it still tracks a (now-meaningless) pageCount/pageIndex and
+    // saves them to its own localStorage key, but nothing reads those values.
+    // It is kept wired so a future true-page layout can revive it without
+    // re-plumbing the chapter-nav callbacks. When you're confident the
+    // multi-column paged layout won't return, ask the user whether this hook
+    // (and its localStorage key `miruyomi.novelReader.pagePositions.v2`)
+    // should be removed entirely.
     const paged = usePagedReader(
         contentRef,
         currentChapter?.id ?? 0,
@@ -293,6 +313,8 @@ export const NovelReader = () => {
         hasNextChapter,
         hasPrevChapter,
     );
+    // Keep the reference live so linters don't flag the dormant hook as unused.
+    void paged;
 
     const gotoChapterByFraction = useCallback(
         (frac: number) => {
@@ -301,8 +323,10 @@ export const NovelReader = () => {
                 return;
             }
             if (isPaged) {
-                const page = Math.round(frac * (paged.pageCount - 1));
-                paged.goToPage(page);
+                // Paged mode is now a single vertically-scrolling chapter — seek
+                // within it by scrollTop fraction, mirroring the continuous path.
+                const target = (el.scrollHeight - el.clientHeight) * Math.min(1, Math.max(0, frac));
+                el.scrollTo({ top: target, behavior: 'smooth' });
             } else {
                 // Seek within the active chapter's own section, not the whole
                 // (possibly multi-chapter) pane.
@@ -314,20 +338,8 @@ export const NovelReader = () => {
             }
             closeAll();
         },
-        [closeAll, isPaged, paged],
+        [closeAll, isPaged],
     );
-
-    // Apply horizontal scroll for paged mode.
-    useEffect(() => {
-        if (!isPaged) {
-            return;
-        }
-        const el = contentRef.current;
-        if (!el) {
-            return;
-        }
-        el.scrollTo({ left: paged.pageIndex * el.clientWidth, top: 0 });
-    }, [isPaged, paged.pageIndex]);
 
     // ── Continuous mode: lazy-load the neighbour chapter + track which
     // chapter is active ─────────────────────────────────────────────────────
@@ -408,7 +420,12 @@ export const NovelReader = () => {
         return () => ro.disconnect();
     }, [isPaged, beforeActiveIndicesKey]);
 
-    // ── Paged mode: keyboard + wheel navigation ───────────────────────────
+    // ── Paged mode: vertical native scroll with boundary chapter changes ──
+    // Paged mode renders one chapter at a time as a normal vertically-scrolling
+    // column. Native wheel/trackpad scroll moves through the chapter text; only
+    // when the reader is already parked at the top (and scrolls up) or the
+    // bottom (and scrolls down) does a further wheel tick cross into the
+    // previous/next chapter — so exactly one chapter is ever visible.
     useEffect(() => {
         if (!isPaged) {
             return undefined;
@@ -418,31 +435,40 @@ export const NovelReader = () => {
             return undefined;
         }
         const onWheel = (e: WheelEvent) => {
-            e.preventDefault();
-            if (e.deltaY > 0 || e.deltaX > 0) {
-                paged.nextPage();
-            } else if (e.deltaY < 0 || e.deltaX < 0) {
-                paged.prevPage();
+            if (pagedAdvancingRef.current) {
+                e.preventDefault();
+                return;
             }
+            const atTop = el.scrollTop <= 0;
+            const atBottom = el.scrollTop >= el.scrollHeight - el.clientHeight - 1;
+            if (e.deltaY < 0 && atTop && hasPrevChapter) {
+                e.preventDefault();
+                pagedAdvancingRef.current = true;
+                goToChapter(prevChapter?.sourceOrder);
+            } else if (e.deltaY > 0 && atBottom && hasNextChapter) {
+                e.preventDefault();
+                pagedAdvancingRef.current = true;
+                goToChapter(nextChapter?.sourceOrder);
+            }
+            // Otherwise let the browser scroll the chapter natively.
         };
         const onKey = (e: KeyboardEvent) => {
             // Don't hijack when a panel/overlay or search is open.
             if (panelStack.length > 0 || isSearchOpen || isTocOpen) {
                 return;
             }
+            // Up / Down / PageUp / PageDown / Space scroll the chapter natively
+            // (no preventDefault). Left / Right step the viewport up / down by
+            // ~one screen with slight overlap so no lines are skipped.
+            const step = Math.round(el.clientHeight * 0.9);
             switch (e.key) {
-                case 'ArrowRight':
-                case 'ArrowDown':
-                case 'PageDown':
-                case ' ':
-                    e.preventDefault();
-                    paged.nextPage();
-                    break;
                 case 'ArrowLeft':
-                case 'ArrowUp':
-                case 'PageUp':
                     e.preventDefault();
-                    paged.prevPage();
+                    el.scrollBy({ top: -step, behavior: 'smooth' });
+                    break;
+                case 'ArrowRight':
+                    e.preventDefault();
+                    el.scrollBy({ top: step, behavior: 'smooth' });
                     break;
                 default:
                     break;
@@ -454,7 +480,25 @@ export const NovelReader = () => {
             el.removeEventListener('wheel', onWheel);
             window.removeEventListener('keydown', onKey);
         };
-    }, [isPaged, contentRef, paged, panelStack.length, isSearchOpen, isTocOpen]);
+    }, [
+        isPaged,
+        contentRef,
+        panelStack.length,
+        isSearchOpen,
+        isTocOpen,
+        hasPrevChapter,
+        hasNextChapter,
+        prevChapter?.sourceOrder,
+        nextChapter?.sourceOrder,
+        goToChapter,
+    ]);
+
+    // Clear the paged advance guard once the route's anchor chapter changes.
+    useEffect(() => {
+        if (isPaged) {
+            pagedAdvancingRef.current = false;
+        }
+    }, [isPaged, currentChapter?.id]);
 
     // ── 3a: reset scroll to top on explicit chapter change (continuous mode) ──
     // Skipped for silent scroll-driven hand-offs (see `silentTransitionRef`):
@@ -521,10 +565,10 @@ export const NovelReader = () => {
 
     const fontFamilyCss = fontFamilyCssMap[settings.font_family];
 
-    const chapterProgress = isPaged ? paged.frac : behaviour.chapterProgress;
-    const bookProgress = isPaged
-        ? Math.min(1, (currentIndex + paged.frac) / Math.max(1, sortedChapters.length))
-        : behaviour.bookProgress;
+    // Both modes now use vertical native scroll, so `behaviour` drives progress
+    // and screen counters in either mode. (`usePagedReader` is kept wired but
+    // dormant — see its comment block — and no longer feeds the chrome.)
+    const { chapterProgress, bookProgress } = behaviour;
 
     const chromeCtx: HeadFootRenderCtx = {
         mangaTitle: manga.title,
@@ -535,8 +579,8 @@ export const NovelReader = () => {
         chapterCount: sortedChapters.length,
         timeChapterSeconds: behaviour.timeChapterSeconds,
         timeBookSeconds: behaviour.timeBookSeconds,
-        screenIndex: isPaged ? paged.pageIndex : behaviour.screenIndex,
-        screenCount: isPaged ? paged.pageCount : behaviour.screenCount,
+        screenIndex: behaviour.screenIndex,
+        screenCount: behaviour.screenCount,
         readingMode: settings.reading_mode,
     };
 
@@ -578,23 +622,22 @@ export const NovelReader = () => {
         pb: `${settings.margin_bottom}px`,
         fontSize: `${settings.base_font_size}px`,
         lineHeight: settings.line_height,
+        // Prevent wide/nowrap content in scraped chapter HTML from growing the
+        // scroll width and leaking into a horizontal scrollbar — content must
+        // only ever flow vertically in both reading modes.
+        overflowWrap: 'break-word' as const,
+        wordBreak: 'break-word' as const,
         '& p': { mb: `${settings.paragraph_spacing}px` },
         '& img': { maxWidth: '100%', height: 'auto' },
         '& a': { color: colors.link ?? colors.foreground },
         '& br': { display: 'block', content: '""', mt: 0, mb: 1 },
     } as const;
 
+    // Paged mode renders the single current chapter as a normal vertically
+    // flowing column (no CSS multi-column) — identical inner styling to
+    // continuous mode's per-section Box, just without the sliding feed.
     const renderPagedContent = () => (
-        <Box
-            sx={{
-                ...contentInnerSx,
-                columnWidth: '100vw',
-                columnGap: '0px',
-                height: '100%',
-                mx: 0,
-                maxWidth: 'none',
-            }}
-        >
+        <Box sx={contentInnerSx}>
             {htmlLoading && <LoadingPlaceholder />}
             {htmlError && (
                 <EmptyViewAbsoluteCentered message={t`Unable to load chapter text`} messageExtra={htmlError.message} />
@@ -668,8 +711,9 @@ export const NovelReader = () => {
                 sx={{
                     position: 'absolute',
                     inset: 0,
-                    overflowY: isPaged ? 'hidden' : 'auto',
-                    overflowX: isPaged ? 'hidden' : 'hidden',
+                    overflowY: 'auto',
+                    overflowX: 'hidden',
+                    overscrollBehavior: 'none',
                     scrollbarGutter: 'stable',
                     color: colors.foreground,
                     userSelect: 'text',
@@ -682,7 +726,12 @@ export const NovelReader = () => {
             {isPaged && !htmlLoading && html && (
                 <>
                     <Box
-                        onClick={() => paged.prevPage()}
+                        onClick={() => {
+                            const el = contentRef.current;
+                            if (el) {
+                                el.scrollBy({ top: -Math.round(el.clientHeight * 0.9), behavior: 'smooth' });
+                            }
+                        }}
                         sx={{
                             position: 'absolute',
                             left: 0,
@@ -694,7 +743,12 @@ export const NovelReader = () => {
                         }}
                     />
                     <Box
-                        onClick={() => paged.nextPage()}
+                        onClick={() => {
+                            const el = contentRef.current;
+                            if (el) {
+                                el.scrollBy({ top: Math.round(el.clientHeight * 0.9), behavior: 'smooth' });
+                            }
+                        }}
                         sx={{
                             position: 'absolute',
                             right: 0,
