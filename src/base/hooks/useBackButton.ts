@@ -55,7 +55,10 @@ export const useBackButton = () => {
 
         const canNavigateBack = backDelta < 0;
         if (!canNavigateBack) {
-            navigate(AppRoutes.library.path());
+            const fallback = location.pathname.startsWith('/novel/')
+                ? AppRoutes.novel.children.library.path
+                : AppRoutes.library.path();
+            navigate(fallback);
             return;
         }
 
