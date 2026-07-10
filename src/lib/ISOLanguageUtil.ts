@@ -95,6 +95,37 @@ export function getISOLanguageFor(code: string, orgCode: string = code, isoCode:
     return null;
 }
 
+// Some sources (e.g. LNReader plugins) declare their language as a full
+// English name ("English", "Spanish") instead of an ISO code. Build a
+// lazy reverse lookup from lowercased name -> ISO code so those still
+// resolve. Shorter codes are preferred on name collisions (e.g. "zh" over
+// "zh-Hans") since entries are inserted in ascending code-length order.
+let nameToIsoCode: Map<string, string> | null = null;
+
+function getNameToIsoCode(): Map<string, string> {
+    if (nameToIsoCode) {
+        return nameToIsoCode;
+    }
+
+    nameToIsoCode = new Map();
+    const codes = Object.keys(IsoLanguages).toSorted((a, b) => a.length - b.length);
+    codes.forEach((code) => {
+        IsoLanguages[code].name.split(';').forEach((namePart) => {
+            const key = namePart.trim().toLowerCase();
+            if (key && !nameToIsoCode!.has(key)) {
+                nameToIsoCode!.set(key, code);
+            }
+        });
+    });
+
+    return nameToIsoCode;
+}
+
+function getISOLanguageForName(name: string, orgCode: string = name): LanguageObject | null {
+    const code = getNameToIsoCode().get(name.trim().toLowerCase());
+    return code ? getISOLanguageFor(code, orgCode, code) : null;
+}
+
 export function getISOLanguage(code: string): LanguageObject | null {
     return (
         getISOLanguageFor(code) ??
@@ -102,7 +133,8 @@ export function getISOLanguage(code: string): LanguageObject | null {
         getISOLanguageFor(code.replace('-', '_'), code) ??
         getISOLanguageFor(code.replace('_', '-'), code) ??
         getISOLanguageFor(code.split('-')[0], code) ??
-        getISOLanguageFor(code.split('_')[0], code)
+        getISOLanguageFor(code.split('_')[0], code) ??
+        getISOLanguageForName(code)
     );
 }
 
