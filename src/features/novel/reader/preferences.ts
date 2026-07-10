@@ -19,10 +19,14 @@ import { useEffect, useState } from 'react';
  *   - "section"/chapter == a single lnreader chapter (HTML body via REST)
  *   - paged-mode / CFI / spine / EPUB manifest options are absent: the server
  *     already returns single-chapter flowed HTML, so there is no spine and no
- *     epubcfi. Flow (continuous scroll) is the only layout.
+ *     epubcfi. Two layout modes are supported: `continuous` (vertical scroll,
+ *     the default) and `paged` (CSS multi-column with tap/keyboard/wheel
+ *     navigation between viewport-sized pages).
  *   - highlights/annotations persistence is deferred (no server endpoint);
  *     `selection_bar_actions` therefore defaults to the no-highlight subset.
  */
+
+export type NovelReaderReadingMode = 'continuous' | 'paged';
 
 export type NovelReaderTheme = 'system' | 'light' | 'dark' | 'sepia';
 
@@ -55,7 +59,7 @@ export type SectionType =
     | 'series' // manga series (if present)
     | 'top-section' // top-level TOC node title (≈ manga title here)
     | 'section' // current chapter name
-    | 'view-mode' // "Flow" (always, since paged mode is out of scope)
+    | 'view-mode' // "Paged" or "Continuous" depending on reading_mode setting
     | 'view-mode-icon'
     | 'clock' // wall-clock HH:MM, re-rendered every second
     | 'menu-icon-on-hover' // badge that opens the main overlay on click / reveals on hover
@@ -147,6 +151,7 @@ export interface NovelReaderSettings {
     restore_scroll_position: boolean;
     mark_read_policy: 'on_open' | 'past_threshold';
     mark_read_threshold: number; // 0–1, fraction of chapter scrolled
+    reading_mode: NovelReaderReadingMode;
     /** Tracks per-chapter reading rates (chars/sec) used for time-to-read estimates. */
     reading_rates: Record<number, number[]>; // keyed by chapterId
 }
@@ -176,6 +181,7 @@ export const NOVEL_READER_DEFAULT_SETTINGS: NovelReaderSettings = {
     restore_scroll_position: true,
     mark_read_policy: 'past_threshold',
     mark_read_threshold: 0.95,
+    reading_mode: 'continuous',
     reading_rates: {},
 };
 

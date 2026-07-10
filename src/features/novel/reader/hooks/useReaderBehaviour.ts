@@ -92,9 +92,9 @@ export const useReaderBehaviour = (
         if (!el) {
             return undefined;
         }
-        const scrollHeight = el.scrollHeight - el.clientHeight || 1;
         const onScroll = () => {
             const { scrollTop } = el;
+            const scrollHeight = el.scrollHeight - el.clientHeight || 1;
             const frac = Math.min(1, Math.max(0, scrollTop / scrollHeight));
             const screen = Math.max(1, el.clientHeight);
             const screenIndex = Math.min(Math.floor(scrollTop / screen), Math.ceil(el.scrollHeight / screen) - 1);
@@ -158,8 +158,15 @@ export const useReaderBehaviour = (
         };
         el.addEventListener('scroll', onScroll, { passive: true });
         onScroll();
+        // Recompute when the content height changes (e.g. async HTML load,
+        // font-size/margin adjustments) so the progress HUD and threshold
+        // check operate on the real scrollable height rather than a stale
+        // value captured at effect setup.
+        const ro = new ResizeObserver(() => onScroll());
+        ro.observe(el);
         return () => {
             el.removeEventListener('scroll', onScroll);
+            ro.disconnect();
             if (saveTimerRef.current) {
                 clearTimeout(saveTimerRef.current);
             }

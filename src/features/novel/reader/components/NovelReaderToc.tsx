@@ -6,6 +6,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
+import { useEffect, useRef } from 'react';
 import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
@@ -27,7 +28,8 @@ export interface NovelReaderTocChapter {
  * Table of contents for the novel reader: the already-fetched chapter list,
  * presented as a jump-to-chapter drawer. No separate backend call — the
  * chapter list IS the TOC for lnreader novels (there is no dedicated TOC
- * endpoint server-side).
+ * endpoint server-side). When opened, the current chapter is scrolled to the
+ * center of the list.
  */
 export const NovelReaderToc = ({
     open,
@@ -43,17 +45,29 @@ export const NovelReaderToc = ({
     onSelectChapter: (sourceOrder: number) => void;
 }) => {
     const { t } = useLingui();
+    const listRef = useRef<HTMLUListElement>(null);
+
+    useEffect(() => {
+        if (!open || !currentChapterId || !listRef.current) {
+            return;
+        }
+        const selected = listRef.current.querySelector('[data-selected="true"]') as HTMLElement | null;
+        if (selected) {
+            selected.scrollIntoView({ block: 'center', behavior: 'auto' });
+        }
+    }, [open, currentChapterId]);
 
     return (
         <Drawer anchor="left" open={open} onClose={onClose}>
             <Toolbar sx={{ minWidth: 280 }}>
                 <Typography variant="h6">{t`Table of Contents`}</Typography>
             </Toolbar>
-            <List sx={{ width: 320, overflowY: 'auto' }}>
+            <List ref={listRef} sx={{ width: 320, overflowY: 'auto' }}>
                 {chapters.map((chapter) => (
                     <ListItemButton
                         key={chapter.id}
                         selected={chapter.id === currentChapterId}
+                        data-selected={chapter.id === currentChapterId}
                         onClick={() => {
                             onSelectChapter(chapter.sourceOrder);
                             onClose();

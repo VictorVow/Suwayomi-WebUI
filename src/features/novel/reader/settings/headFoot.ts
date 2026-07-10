@@ -6,7 +6,12 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-import type { HeadFootRegion, HeadFootWhich, SectionType } from '@/features/novel/reader/preferences.ts';
+import type {
+    HeadFootRegion,
+    HeadFootWhich,
+    NovelReaderReadingMode,
+    SectionType,
+} from '@/features/novel/reader/preferences.ts';
 
 export const SECTION_TYPES: SectionType[] = [
     'empty',
@@ -49,6 +54,8 @@ export interface HeadFootRenderCtx {
     screenIndex?: number;
     /** total screens in the chapter. */
     screenCount?: number;
+    /** current reading mode (paged vs continuous) — used by `view-mode` section. */
+    readingMode?: NovelReaderReadingMode;
 }
 
 export interface HeadFootRegionOut {
@@ -95,7 +102,11 @@ export const renderSection = (section: SectionType, ctx: HeadFootRenderCtx): Hea
         case 'section':
             return { text: ctx.chapterName ?? '', ticking: false, showChromeControl: false };
         case 'view-mode':
-            return { text: 'Flow', ticking: false, showChromeControl: false };
+            return {
+                text: ctx.readingMode === 'paged' ? 'Paged' : 'Continuous',
+                ticking: false,
+                showChromeControl: false,
+            };
         case 'view-mode-icon':
             return { text: '☰', ticking: false, showChromeControl: false };
         case 'clock':

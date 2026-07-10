@@ -229,6 +229,21 @@ export const NovelReaderSettingsPanel = ({ onClose }: { onClose: () => void }) =
                 <Typography variant="subtitle1" sx={{ mt: 3 }}>
                     {t`Page layout`}
                 </Typography>
+                <Typography variant="caption" sx={{ opacity: 0.7, display: 'block', mt: 1 }}>
+                    {t`Reading mode`}
+                </Typography>
+                <Stack direction="row" sx={{ gap: 1, mt: 0.5 }}>
+                    {(['continuous', 'paged'] as const).map((mode) => (
+                        <Button
+                            key={mode}
+                            color="inherit"
+                            variant={settings.reading_mode === mode ? 'contained' : 'outlined'}
+                            onClick={() => updateNovelReaderSettings({ reading_mode: mode })}
+                        >
+                            {mode === 'continuous' ? t`Continuous` : t`Paged`}
+                        </Button>
+                    ))}
+                </Stack>
                 <LabeledSlider
                     label={t`Font size`}
                     value={settings.base_font_size}

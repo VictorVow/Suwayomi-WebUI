@@ -22,6 +22,8 @@ import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 import FormatSizeIcon from '@mui/icons-material/FormatSize';
 import SettingsIcon from '@mui/icons-material/Settings';
 import CloseIcon from '@mui/icons-material/Close';
+import ViewContinuousVerticalIcon from '@mui/icons-material/ViewAgenda';
+import ViewPagedIcon from '@mui/icons-material/ViewColumn';
 import { useLingui } from '@lingui/react/macro';
 import type { HeadFootRenderCtx } from '@/features/novel/reader/settings/headFoot.ts';
 import { renderSection } from '@/features/novel/reader/settings/headFoot.ts';
@@ -53,6 +55,7 @@ interface MainOverlayProps {
     onToggleBookmark: () => void;
     onFontSize: () => void;
     onPrefs: () => void;
+    onToggleReadingMode: () => void;
     onClose: () => void;
     settings: NovelReaderSettings;
     /** live clock + template-driven footer right/middle text. */
@@ -105,6 +108,7 @@ export const NovelReaderMainOverlay = ({
     onToggleBookmark,
     onFontSize,
     onPrefs,
+    onToggleReadingMode,
     onClose,
     settings,
     footerCtx,
@@ -185,6 +189,11 @@ export const NovelReaderMainOverlay = ({
                 </Stack>
 
                 <Stack direction="row" sx={{ flexWrap: 'wrap', rowGap: 2 }}>
+                    <ActionButton
+                        icon={settings.reading_mode === 'paged' ? <ViewContinuousVerticalIcon /> : <ViewPagedIcon />}
+                        label={settings.reading_mode === 'paged' ? t`Continuous` : t`Paged`}
+                        onClick={onToggleReadingMode}
+                    />
                     <ActionButton icon={<FormatSizeIcon />} label={t`Font size`} onClick={onFontSize} />
                     <ActionButton icon={<SettingsIcon />} label={t`Preferences`} onClick={onPrefs} />
                     <ActionButton icon={<CloseIcon />} label={t`Close`} onClick={onClose} />

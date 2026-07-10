@@ -34,6 +34,7 @@ export interface ReaderOverlayHandlers {
     onLookupWord: (word: string) => void;
     onFontSize: () => void;
     onPrefs: () => void;
+    onToggleReadingMode: () => void;
 }
 
 interface OverlayProps {
@@ -99,6 +100,7 @@ export const NovelReaderOverlay = (props: OverlayProps) => {
                         onToggleBookmark={onToggleBookmark}
                         onFontSize={handlers.onFontSize}
                         onPrefs={handlers.onPrefs}
+                        onToggleReadingMode={handlers.onToggleReadingMode}
                         onClose={onClose}
                         settings={settings}
                         footerCtx={footerCtx}

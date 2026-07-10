@@ -33,6 +33,7 @@ import { useChapterTextSearch } from '@/features/novel/reader/hooks/useChapterTe
 import { useReaderBehaviour } from '@/features/novel/reader/hooks/useReaderBehaviour.ts';
 import { useReaderKeyboard } from '@/features/novel/reader/hooks/useReaderKeyboard.ts';
 import { useChromeAutohide } from '@/features/novel/reader/hooks/useChromeAutohide.ts';
+import { usePagedReader } from '@/features/novel/reader/hooks/usePagedReader.ts';
 import type { HeadFootRenderCtx } from '@/features/novel/reader/settings/headFoot.ts';
 
 const fontFamilyCssMap: Record<'system' | 'serif' | 'sans', string> = {
@@ -46,14 +47,23 @@ const fontFamilyCssMap: Record<'system' | 'serif' | 'sans', string> = {
  * reader.
  *
  * The runtime differs from calibre's: Miruyomi serves single-chapter
- * sanitized HTML via REST (no EPUB spine, no iframe message bus), so paged
- * column layout / CFI anchoring / highlight annotations are out of scope;
- * flow (continuous scroll) is the only layout. Ported:
+ * sanitized HTML via REST (no EPUB spine, no iframe message bus), so CFI
+ * anchoring / highlight annotations are out of scope. Two layout modes are
+ * supported:
+ *
+ *   - `continuous` (default): vertical scroll, auto-advances to the next
+ *     chapter when scrolling past the bottom.
+ *   - `paged`: CSS multi-column layout that splits the text into
+ *     viewport-sized pages navigated via tap zones, mouse wheel, and arrow
+ *     keys. At the last page, advancing moves to the next chapter.
+ *
+ * Ported:
  *
  *   - Overlay panel-stack (calibre `Overlay`): right-click / Esc / hotkey
  *     pushes `{main}`; sub-panels (Font size, Go to, Word lookup, Preferences)
  *     push further; backdrops pop. The chrome header/footer strips persist
- *     above content (calibre's `head_foot`).
+ *     above content (calibre's `head_foot`). Opening the main overlay also
+ *     opens the TOC drawer.
  *   - MUI-friendly, with all settings stored as a single flat schema in
  *     localStorage (`miruyomi.novelReader.settings.v2`, documented in
  *     `preferences.ts`).
@@ -87,6 +97,7 @@ export const NovelReader = () => {
 
     const settings = useNovelReaderSettings();
     const colors = resolveColorScheme(settings.current_color_scheme, settings.user_color_schemes);
+    const isPaged = settings.reading_mode === 'paged';
 
     const { html, loading: htmlLoading, error: htmlError } = useNovelChapterText(currentChapter?.id);
 
@@ -125,6 +136,16 @@ export const NovelReader = () => {
     const [isTocOpen, setIsTocOpen] = useState(false);
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
+
+    // 3b: auto-open TOC when main overlay opens; auto-close when it closes.
+    const mainOverlayOpen = topPanel?.kind === 'main';
+    useEffect(() => {
+        if (mainOverlayOpen) {
+            setIsTocOpen(true);
+        } else {
+            setIsTocOpen(false);
+        }
+    }, [mainOverlayOpen]);
 
     // ── Reading behaviour: scroll save/restore, rate tracking, mark-read ──
     const markRead = useCallback(() => {
@@ -177,18 +198,134 @@ export const NovelReader = () => {
         requestManager.updateChapter(currentChapter.id, { isBookmarked: !currentChapter.isBookmarked });
     }, [currentChapter?.id]);
 
+    // ── Paged mode ────────────────────────────────────────────────────────
+    const paged = usePagedReader(
+        contentRef,
+        currentChapter?.id ?? 0,
+        settings.restore_scroll_position,
+        () => goToChapter(nextChapter?.sourceOrder),
+        () => goToChapter(prevChapter?.sourceOrder),
+        hasNextChapter,
+        hasPrevChapter,
+    );
+
     const gotoChapterByFraction = useCallback(
         (frac: number) => {
             const el = contentRef.current;
             if (!el) {
                 return;
             }
-            const target = (el.scrollHeight - el.clientHeight) * Math.min(1, Math.max(0, frac));
-            el.scrollTo({ top: target, behavior: 'smooth' });
+            if (isPaged) {
+                const page = Math.round(frac * (paged.pageCount - 1));
+                paged.goToPage(page);
+            } else {
+                const target = (el.scrollHeight - el.clientHeight) * Math.min(1, Math.max(0, frac));
+                el.scrollTo({ top: target, behavior: 'smooth' });
+            }
             closeAll();
         },
-        [closeAll],
+        [closeAll, isPaged, paged],
     );
+
+    // Apply horizontal scroll for paged mode.
+    useEffect(() => {
+        if (!isPaged) {
+            return;
+        }
+        const el = contentRef.current;
+        if (!el) {
+            return;
+        }
+        el.scrollTo({ left: paged.pageIndex * el.clientWidth, top: 0 });
+    }, [isPaged, paged.pageIndex]);
+
+    // ── Continuous mode auto-advance ──────────────────────────────────────
+    // When scrolled to the very bottom, auto-advance to the next chapter.
+    useEffect(() => {
+        if (isPaged) {
+            return undefined;
+        }
+        const el = contentRef.current;
+        if (!el) {
+            return undefined;
+        }
+        let advancing = false;
+        const onScroll = () => {
+            if (advancing) {
+                return;
+            }
+            const maxScroll = el.scrollHeight - el.clientHeight;
+            if (maxScroll <= 0) {
+                return;
+            }
+            if (el.scrollTop >= maxScroll - 2 && hasNextChapter) {
+                advancing = true;
+                goToChapter(nextChapter?.sourceOrder);
+            }
+        };
+        el.addEventListener('scroll', onScroll, { passive: true });
+        return () => el.removeEventListener('scroll', onScroll);
+    }, [isPaged, contentRef, hasNextChapter, nextChapter?.sourceOrder, goToChapter]);
+
+    // ── Paged mode: keyboard + wheel navigation ───────────────────────────
+    useEffect(() => {
+        if (!isPaged) {
+            return undefined;
+        }
+        const el = contentRef.current;
+        if (!el) {
+            return undefined;
+        }
+        const onWheel = (e: WheelEvent) => {
+            e.preventDefault();
+            if (e.deltaY > 0 || e.deltaX > 0) {
+                paged.nextPage();
+            } else if (e.deltaY < 0 || e.deltaX < 0) {
+                paged.prevPage();
+            }
+        };
+        const onKey = (e: KeyboardEvent) => {
+            // Don't hijack when a panel/overlay or search is open.
+            if (panelStack.length > 0 || isSearchOpen || isTocOpen) {
+                return;
+            }
+            switch (e.key) {
+                case 'ArrowRight':
+                case 'ArrowDown':
+                case 'PageDown':
+                case ' ':
+                    e.preventDefault();
+                    paged.nextPage();
+                    break;
+                case 'ArrowLeft':
+                case 'ArrowUp':
+                case 'PageUp':
+                    e.preventDefault();
+                    paged.prevPage();
+                    break;
+                default:
+                    break;
+            }
+        };
+        el.addEventListener('wheel', onWheel, { passive: false });
+        window.addEventListener('keydown', onKey);
+        return () => {
+            el.removeEventListener('wheel', onWheel);
+            window.removeEventListener('keydown', onKey);
+        };
+    }, [isPaged, contentRef, paged, panelStack.length, isSearchOpen, isTocOpen]);
+
+    // ── 3a: reset scroll to top on chapter change (continuous mode) ────────
+    useEffect(() => {
+        if (isPaged) {
+            return;
+        }
+        const el = contentRef.current;
+        if (!el) {
+            return;
+        }
+        el.scrollTop = 0;
+    }, [isPaged, currentChapter?.id]);
 
     // ── Keyboard shortcuts ────────────────────────────────────────────────
     useReaderKeyboard({
@@ -233,17 +370,23 @@ export const NovelReader = () => {
 
     const fontFamilyCss = fontFamilyCssMap[settings.font_family];
 
+    const chapterProgress = isPaged ? paged.frac : behaviour.chapterProgress;
+    const bookProgress = isPaged
+        ? Math.min(1, (currentIndex + paged.frac) / Math.max(1, sortedChapters.length))
+        : behaviour.bookProgress;
+
     const chromeCtx: HeadFootRenderCtx = {
         mangaTitle: manga.title,
         chapterName: currentChapter.name,
-        chapterProgress: behaviour.chapterProgress,
-        bookProgress: behaviour.bookProgress,
+        chapterProgress,
+        bookProgress,
         chapterIndex: currentIndex + 1,
         chapterCount: sortedChapters.length,
         timeChapterSeconds: behaviour.timeChapterSeconds,
         timeBookSeconds: behaviour.timeBookSeconds,
-        screenIndex: behaviour.screenIndex,
-        screenCount: behaviour.screenCount,
+        screenIndex: isPaged ? paged.pageIndex : behaviour.screenIndex,
+        screenCount: isPaged ? paged.pageCount : behaviour.screenCount,
+        readingMode: settings.reading_mode,
     };
 
     const overlayHandlers = {
@@ -258,7 +401,7 @@ export const NovelReader = () => {
             chrome.reveal();
         },
         onGoto: () => push({ kind: 'goto' }),
-        onToggleToc: () => setIsTocOpen(true),
+        onToggleToc: () => setIsTocOpen((prev) => !prev),
         onToggleBookmarks: () => setIsTocOpen(true),
         onToggleBookmark: handleToggleBookmark,
         onGotoChapterByFraction: gotoChapterByFraction,
@@ -267,9 +410,54 @@ export const NovelReader = () => {
         onLookupWord: (word: string) => push({ kind: 'word_actions', word }),
         onFontSize: () => push({ kind: 'font_size' }),
         onPrefs: () => push({ kind: 'prefs' }),
+        onToggleReadingMode: () =>
+            updateNovelReaderSettings({
+                reading_mode: settings.reading_mode === 'paged' ? 'continuous' : 'paged',
+            }),
     };
 
     const maxWidth = settings.max_text_width > 0 ? settings.max_text_width : undefined;
+
+    const contentInnerSx = {
+        mx: 'auto' as const,
+        maxWidth,
+        pl: `${settings.margin_left}px`,
+        pr: `${settings.margin_right}px`,
+        pt: `${settings.margin_top}px`,
+        pb: `${settings.margin_bottom}px`,
+        fontSize: `${settings.base_font_size}px`,
+        lineHeight: settings.line_height,
+        '& p': { mb: `${settings.paragraph_spacing}px` },
+        '& img': { maxWidth: '100%', height: 'auto' },
+        '& a': { color: colors.link ?? colors.foreground },
+        '& br': { display: 'block', content: '""', mt: 0, mb: 1 },
+    } as const;
+
+    const renderChapterContent = () => (
+        <Box
+            sx={
+                isPaged
+                    ? {
+                          ...contentInnerSx,
+                          columnWidth: '100vw',
+                          columnGap: '0px',
+                          height: '100%',
+                          mx: 0,
+                          maxWidth: 'none',
+                      }
+                    : contentInnerSx
+            }
+        >
+            {htmlLoading && <LoadingPlaceholder />}
+            {htmlError && (
+                <EmptyViewAbsoluteCentered message={t`Unable to load chapter text`} messageExtra={htmlError.message} />
+            )}
+            {html && (
+                // eslint-disable-next-line react/no-danger -- sanitized with DOMPurify in useNovelChapterText
+                <div dangerouslySetInnerHTML={{ __html: html }} />
+            )}
+        </Box>
+    );
 
     return (
         <Box
@@ -310,42 +498,45 @@ export const NovelReader = () => {
                 sx={{
                     position: 'absolute',
                     inset: 0,
-                    overflowY: 'auto',
+                    overflowY: isPaged ? 'hidden' : 'auto',
+                    overflowX: isPaged ? 'hidden' : 'hidden',
                     scrollbarGutter: 'stable',
                     color: colors.foreground,
                     userSelect: 'text',
                     fontFamily: fontFamilyCss,
                 }}
             >
-                <Box
-                    sx={{
-                        mx: 'auto',
-                        maxWidth,
-                        pl: `${settings.margin_left}px`,
-                        pr: `${settings.margin_right}px`,
-                        pt: `${settings.margin_top}px`,
-                        pb: `${settings.margin_bottom}px`,
-                        fontSize: `${settings.base_font_size}px`,
-                        lineHeight: settings.line_height,
-                        '& p': { mb: `${settings.paragraph_spacing}px` },
-                        '& img': { maxWidth: '100%', height: 'auto' },
-                        '& a': { color: colors.link ?? colors.foreground },
-                        '& br': { display: 'block', content: '""', mt: 0, mb: 1 },
-                    }}
-                >
-                    {htmlLoading && <LoadingPlaceholder />}
-                    {htmlError && (
-                        <EmptyViewAbsoluteCentered
-                            message={t`Unable to load chapter text`}
-                            messageExtra={htmlError.message}
-                        />
-                    )}
-                    {html && (
-                        // eslint-disable-next-line react/no-danger -- sanitized with DOMPurify in useNovelChapterText
-                        <div dangerouslySetInnerHTML={{ __html: html }} />
-                    )}
-                </Box>
+                {renderChapterContent()}
             </Box>
+
+            {isPaged && !htmlLoading && html && (
+                <>
+                    <Box
+                        onClick={() => paged.prevPage()}
+                        sx={{
+                            position: 'absolute',
+                            left: 0,
+                            top: 0,
+                            bottom: 0,
+                            width: '25%',
+                            cursor: 'pointer',
+                            zIndex: 5,
+                        }}
+                    />
+                    <Box
+                        onClick={() => paged.nextPage()}
+                        sx={{
+                            position: 'absolute',
+                            right: 0,
+                            top: 0,
+                            bottom: 0,
+                            width: '25%',
+                            cursor: 'pointer',
+                            zIndex: 5,
+                        }}
+                    />
+                </>
+            )}
 
             {settings.show_selection_bar && (
                 <NovelReaderSelectionBar

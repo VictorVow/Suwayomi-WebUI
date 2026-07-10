@@ -1064,6 +1064,11 @@ msgstr ""
 "#{chapterNumber} — {name}\n"
 "{scanlator}"
 
+#: src/features/novel/reader/components/NovelReaderMainOverlay.tsx
+#: src/features/novel/reader/settings/NovelReaderSettingsPanel.tsx
+msgid "Continuous"
+msgstr "Continuous"
+
 #: src/features/reader/settings/behaviour/ReaderBehaviourSettings.tsx
 msgid "Continuous chapter display"
 msgstr "Continuous chapter display"
@@ -3149,6 +3154,11 @@ msgstr "Page gap"
 msgid "Page layout"
 msgstr "Page layout"
 
+#: src/features/novel/reader/components/NovelReaderMainOverlay.tsx
+#: src/features/novel/reader/settings/NovelReaderSettingsPanel.tsx
+msgid "Paged"
+msgstr "Paged"
+
 #: src/features/novel/reader/settings/NovelReaderSettingsPanel.tsx
 msgid "Paragraph spacing"
 msgstr "Paragraph spacing"
@@ -3338,6 +3348,7 @@ msgstr "Reading"
 msgid "Reading direction"
 msgstr "Reading direction"
 
+#: src/features/novel/reader/settings/NovelReaderSettingsPanel.tsx
 #: src/features/reader/overlay/navigation/desktop/quick-settings/components/ReaderNavBarDesktopReadingMode.tsx
 #: src/features/reader/settings/layout/components/ReaderSettingReadingMode.tsx
 msgid "Reading mode"
