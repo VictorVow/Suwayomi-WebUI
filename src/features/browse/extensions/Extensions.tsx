@@ -176,7 +176,8 @@ export function Extensions({ tabsMenuHeight }: { tabsMenuHeight: number }) {
     const handleExtensionUpdate = useCallback(() => setRefetchExtensions({}), []);
 
     const submitExternalExtension = (file: File) => {
-        if (!file.name.toLowerCase().endsWith('apk')) {
+        const name = file.name.toLowerCase();
+        if (!name.endsWith('apk') && !name.endsWith('cs3')) {
             makeToast(t`Invalid filetype`, 'error');
             return;
         }
@@ -204,6 +205,7 @@ export function Extensions({ tabsMenuHeight }: { tabsMenuHeight: number }) {
                         const input = document.createElement('input');
                         input.style.display = 'none';
                         input.type = 'file';
+                        input.accept = '.apk,.cs3';
                         input.onchange = () => {
                             const file = input.files?.[0];
                             if (file) {
