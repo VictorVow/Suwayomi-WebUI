@@ -6,7 +6,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
@@ -50,34 +50,28 @@ export const NovelReaderToc = ({
     const { t } = useLingui();
     const settings = useNovelReaderSettings();
     const listRef = useRef<HTMLUListElement>(null);
-    const rafRef = useRef<number | undefined>(undefined);
+
+    const scrollToCurrent = useCallback(() => {
+        const list = listRef.current;
+        if (!list || !currentChapterId) {
+            return;
+        }
+        const selected = list.querySelector('[data-selected="true"]') as HTMLElement | null;
+        if (!selected) {
+            return;
+        }
+        const listRect = list.getBoundingClientRect();
+        const itemRect = selected.getBoundingClientRect();
+        const offset = itemRect.top - listRect.top;
+        const target = list.scrollTop + offset - (list.clientHeight - selected.offsetHeight) / 2;
+        list.scrollTo({ top: target, behavior: 'auto' });
+    }, [currentChapterId]);
 
     useEffect(() => {
-        if (!open || !currentChapterId || !listRef.current) {
-            return undefined;
+        if (open) {
+            scrollToCurrent();
         }
-        const list = listRef.current;
-        const raf1 = requestAnimationFrame(() => {
-            rafRef.current = requestAnimationFrame(() => {
-                const selected = list.querySelector('[data-selected="true"]') as HTMLElement | null;
-                if (!selected) {
-                    return;
-                }
-                const listRect = list.getBoundingClientRect();
-                const itemRect = selected.getBoundingClientRect();
-                const offset = itemRect.top - listRect.top;
-                const target = list.scrollTop + offset - (list.clientHeight - selected.offsetHeight) / 2;
-                list.scrollTo({ top: target, behavior: 'auto' });
-            });
-        });
-        return () => {
-            cancelAnimationFrame(raf1);
-            if (rafRef.current != null) {
-                cancelAnimationFrame(rafRef.current);
-                rafRef.current = undefined;
-            }
-        };
-    }, [open, currentChapterId]);
+    }, [currentChapterId, open, scrollToCurrent]);
 
     const labelFor = (chapter: NovelReaderTocChapter) => {
         const num =
@@ -86,8 +80,8 @@ export const NovelReaderToc = ({
     };
 
     return (
-        <Drawer anchor="left" open={open} onClose={onClose}>
-            <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', minWidth: 280 }}>
+        <Drawer anchor="left" open={open} onClose={onClose} slotProps={{ transition: { onEntered: scrollToCurrent } }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', position: 'absolute', inset: 0, minWidth: 280 }}>
                 <Toolbar>
                     <Typography variant="h6">{t`Table of Contents`}</Typography>
                 </Toolbar>
