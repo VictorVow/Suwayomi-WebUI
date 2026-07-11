@@ -6,7 +6,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import { useLingui } from '@lingui/react/macro';
@@ -20,6 +20,7 @@ import { useEpisodeVideos } from '@/features/show/player/hooks/useEpisodeVideos.
 import { AppRoutes } from '@/base/AppRoute.constants.ts';
 import { EmptyViewAbsoluteCentered } from '@/base/components/feedback/EmptyViewAbsoluteCentered.tsx';
 import { LoadingPlaceholder } from '@/base/components/feedback/LoadingPlaceholder.tsx';
+import { useNavBarContext } from '@/features/navigation-bar/NavbarContext.tsx';
 
 const PLAYER_QUALITY_LS_KEY = 'miruyomi.showPlayer.defaultQuality';
 
@@ -40,6 +41,7 @@ const PLAYER_QUALITY_LS_KEY = 'miruyomi.showPlayer.defaultQuality';
 export const Player = () => {
     const { t } = useLingui();
     const navigate = useNavigate();
+    const { setOverride } = useNavBarContext();
     const { mangaId: paramMangaId, chapterSourceOrder: paramChapterSourceOrder } = useParams<{
         mangaId: string;
         chapterSourceOrder: string;
@@ -89,6 +91,11 @@ export const Player = () => {
         },
         [mangaId, navigate],
     );
+
+    useLayoutEffect(() => {
+        setOverride({ status: true, value: <Box sx={{ position: 'absolute' }} /> });
+        return () => setOverride({ status: false, value: null });
+    }, [setOverride]);
 
     const safeQualityIndex = videos.length ? Math.min(qualityIndex, videos.length - 1) : 0;
     const controller = useVideoPlayer({
