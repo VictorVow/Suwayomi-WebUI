@@ -80,8 +80,14 @@ export const NovelReaderToc = ({
     };
 
     return (
-        <Drawer anchor="left" open={open} onClose={onClose} slotProps={{ transition: { onEntered: scrollToCurrent } }}>
-            <Box sx={{ display: 'flex', flexDirection: 'column', position: 'absolute', inset: 0, minWidth: 280 }}>
+        <Drawer
+            anchor="left"
+            open={open}
+            onClose={onClose}
+            hideBackdrop
+            slotProps={{ transition: { onEntered: scrollToCurrent } }}
+        >
+            <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', minWidth: 280 }}>
                 <Toolbar>
                     <Typography variant="h6">{t`Table of Contents`}</Typography>
                 </Toolbar>
