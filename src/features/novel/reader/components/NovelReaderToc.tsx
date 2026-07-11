@@ -82,10 +82,10 @@ export const NovelReaderToc = ({
     return (
         <Drawer
             anchor="left"
+            variant="persistent"
             open={open}
             onClose={onClose}
-            hideBackdrop
-            slotProps={{ transition: { onEntered: scrollToCurrent } }}
+            slotProps={{ transition: { onEntered: scrollToCurrent, unmountOnExit: true } }}
         >
             <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', minWidth: 280 }}>
                 <Toolbar>

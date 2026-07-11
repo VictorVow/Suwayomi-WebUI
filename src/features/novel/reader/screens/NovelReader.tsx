@@ -236,11 +236,15 @@ export const NovelReader = () => {
         setPanelStack((prev) => (prev.length ? prev.slice(0, -1) : prev));
     }, []);
     const pushMain = useCallback(() => {
-        // Toggle off the main overlay when already the top panel — calibre's `show_chrome` semantics.
+        // Toggle off the main overlay when a `main` panel already exists anywhere
+        // in the stack — calibre's `show_chrome` semantics, hardened so a stray
+        // double-invocation within one gesture can't leave two `main` panels
+        // stacked (which would independently reproduce the "two clicks / two
+        // layers" feel).
         setPanelStack((prev) => {
-            const top = prev[prev.length - 1];
-            if (top && top.kind === 'main') {
-                return prev.slice(0, -1);
+            const mainIndex = prev.findIndex((p) => p.kind === 'main');
+            if (mainIndex >= 0) {
+                return prev.filter((_, i) => i !== mainIndex);
             }
             return [...prev, { kind: 'main' }];
         });
