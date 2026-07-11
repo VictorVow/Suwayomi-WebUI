@@ -143,6 +143,8 @@ export const NovelReader = () => {
     const settings = useNovelReaderSettings();
     const colors = resolveColorScheme(settings.current_color_scheme, settings.user_color_schemes);
     const isPaged = settings.reading_mode === 'paged';
+    const scrollAdvanceNotches = settings.paged_scroll_advance_notches;
+    const scrollNotchDeltaY = settings.paged_scroll_notch_delta_y;
 
     // Only paged mode uses this — continuous mode fetches chapter bodies
     // through `useContinuousChapterFeed` instead, so this stays idle there
@@ -230,6 +232,12 @@ export const NovelReader = () => {
     // start a new scroll before another advance is possible.
     const advanceUsedRef = useRef(false);
     const lastWheelTsRef = useRef(0);
+    // Accumulated `e.deltaY` within the current scroll gesture. Reset on the
+    // same gesture-gap that re-arms `advanceUsedRef`. The chapter advance only
+    // fires once |accumulated| crosses the configured notch threshold, so a
+    // feather-touch or single trackpad tick at the boundary is ignored while a
+    // deliberate multi-notch scroll advances.
+    const wheelAccumRef = useRef(0);
     // Continuous mode: prevent a single inertial scroll gesture from cascading
     // multiple loadPrev/loadNext calls (each extends the window by one
     // chapter). Same gesture-gap pattern as the paged advance guard above.
@@ -561,9 +569,11 @@ export const NovelReader = () => {
         const onWheel = (e: WheelEvent) => {
             const now = performance.now();
             // A gap longer than WHEEL_GESTURE_GAP_MS means the reader started a
-            // new scroll gesture — re-arm the one-advance-per-gesture gate.
+            // new scroll gesture — re-arm the one-advance-per-gesture gate and
+            // reset the deltaY accumulator.
             if (now - lastWheelTsRef.current > SCROLL_GESTURE_GAP_MS) {
                 advanceUsedRef.current = false;
+                wheelAccumRef.current = 0;
             }
             lastWheelTsRef.current = now;
             if (pagedAdvancingRef.current || (!html && !htmlError)) {
@@ -572,15 +582,38 @@ export const NovelReader = () => {
             }
             const atTop = el.scrollTop <= 0;
             const atBottom = el.scrollTop >= el.scrollHeight - el.clientHeight - 1;
-            if (e.deltaY < 0 && atTop && hasPrevChapter && !advanceUsedRef.current) {
+            // Only accumulate scroll intent while parked at a boundary; normal
+            // in-chapter scrolling is left to the browser and does not count.
+            const atBoundary = (atTop && e.deltaY < 0) || (atBottom && e.deltaY > 0);
+            if (atBoundary) {
+                wheelAccumRef.current += e.deltaY;
+            } else {
+                wheelAccumRef.current = 0;
+            }
+            const advanceThreshold = scrollAdvanceNotches * scrollNotchDeltaY;
+            if (
+                e.deltaY < 0 &&
+                atTop &&
+                hasPrevChapter &&
+                !advanceUsedRef.current &&
+                Math.abs(wheelAccumRef.current) >= advanceThreshold
+            ) {
                 e.preventDefault();
                 advanceUsedRef.current = true;
+                wheelAccumRef.current = 0;
                 pagedAdvancingRef.current = true;
                 pagedLandingRef.current = 'bottom';
                 goToChapter(prevChapter?.sourceOrder);
-            } else if (e.deltaY > 0 && atBottom && hasNextChapter && !advanceUsedRef.current) {
+            } else if (
+                e.deltaY > 0 &&
+                atBottom &&
+                hasNextChapter &&
+                !advanceUsedRef.current &&
+                wheelAccumRef.current >= advanceThreshold
+            ) {
                 e.preventDefault();
                 advanceUsedRef.current = true;
+                wheelAccumRef.current = 0;
                 pagedAdvancingRef.current = true;
                 goToChapter(nextChapter?.sourceOrder);
             }
@@ -627,6 +660,8 @@ export const NovelReader = () => {
         goToChapter,
         html,
         htmlError,
+        scrollAdvanceNotches,
+        scrollNotchDeltaY,
     ]);
 
     // ── Single scroll controller (the only `scrollTop` writer on chapter change) ──

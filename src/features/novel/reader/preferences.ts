@@ -155,6 +155,15 @@ export interface NovelReaderSettings {
     mark_read_threshold: number; // 0–1, fraction of chapter scrolled
     reading_mode: NovelReaderReadingMode;
     toc_chapter_number_source: NovelReaderChapterNumberSource;
+    /** Paged mode: how many notch-equivalents of accumulated scroll wheel deltaY
+     * are required at a chapter boundary before advancing to the next/previous
+     * chapter. Higher = more deliberate scroll needed. 1 = hair-trigger. */
+    paged_scroll_advance_notches: number; // 1–10
+    /** Paged mode: the wheel deltaY magnitude representing one "notch" of scroll
+     * intent. A typical mouse wheel notch is ~100px; trackpads produce smaller
+     * per-event deltas but fire many events rapidly (accumulated). The advance
+     * threshold is `paged_scroll_advance_notches * paged_scroll_notch_delta_y`. */
+    paged_scroll_notch_delta_y: number; // 10–300
     /** Tracks per-chapter reading rates (chars/sec) used for time-to-read estimates. */
     reading_rates: Record<number, number[]>; // keyed by chapterId
 }
@@ -186,6 +195,8 @@ export const NOVEL_READER_DEFAULT_SETTINGS: NovelReaderSettings = {
     mark_read_threshold: 0.95,
     reading_mode: 'continuous',
     toc_chapter_number_source: 'chapterNumber',
+    paged_scroll_advance_notches: 3,
+    paged_scroll_notch_delta_y: 100,
     reading_rates: {},
 };
 

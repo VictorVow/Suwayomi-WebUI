@@ -927,6 +927,11 @@ msgstr "Chapter number"
 msgid "Chapter sort order"
 msgstr "Chapter sort order"
 
+#. placeholder {0}: settings.paged_scroll_advance_notches * settings.paged_scroll_notch_delta_y
+#: src/features/novel/reader/settings/NovelReaderSettingsPanel.tsx
+msgid "Chapter switch requires {0}px of scroll at a boundary"
+msgstr "Chapter switch requires {0}px of scroll at a boundary"
+
 #: src/features/reader/services/ReaderControls.ts
 msgid "Chapter transition warning"
 msgstr "Chapter transition warning"
@@ -3030,6 +3035,10 @@ msgstr "Not yet published"
 msgid "Not yet released"
 msgstr "Not yet released"
 
+#: src/features/novel/reader/settings/NovelReaderSettingsPanel.tsx
+msgid "Notch size"
+msgstr "Notch size"
+
 #: src/features/recommended/screens/Recommended.tsx
 #: src/features/tracker/components/MangaRelated.tsx
 msgid "Nothing found"
@@ -3231,6 +3240,10 @@ msgstr "Page layout"
 #: src/features/novel/reader/settings/NovelReaderSettingsPanel.tsx
 msgid "Paged"
 msgstr "Paged"
+
+#: src/features/novel/reader/settings/NovelReaderSettingsPanel.tsx
+msgid "Paged mode — scroll-to-change-chapter sensitivity"
+msgstr "Paged mode — scroll-to-change-chapter sensitivity"
 
 #: src/features/novel/reader/settings/NovelReaderSettingsPanel.tsx
 msgid "Paragraph spacing"
@@ -3661,6 +3674,10 @@ msgstr "Scroll backward"
 #: src/features/reader/hotkeys/settings/components/ReaderSettingHotkey.tsx
 msgid "Scroll forward"
 msgstr "Scroll forward"
+
+#: src/features/novel/reader/settings/NovelReaderSettingsPanel.tsx
+msgid "Scroll notches to advance"
+msgstr "Scroll notches to advance"
 
 #: src/base/components/AppbarSearch.tsx
 #: src/features/migration/components/MigrationBulkSearchOptionsDialog.tsx

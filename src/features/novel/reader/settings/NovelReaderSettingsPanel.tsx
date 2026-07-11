@@ -244,6 +244,32 @@ export const NovelReaderSettingsPanel = ({ onClose }: { onClose: () => void }) =
                         </Button>
                     ))}
                 </Stack>
+                {settings.reading_mode === 'paged' && (
+                    <Box sx={{ mt: 1, opacity: 0.9 }}>
+                        <Typography variant="caption" sx={{ opacity: 0.7, display: 'block' }}>
+                            {t`Paged mode — scroll-to-change-chapter sensitivity`}
+                        </Typography>
+                        <LabeledSlider
+                            label={t`Scroll notches to advance`}
+                            value={settings.paged_scroll_advance_notches}
+                            min={1}
+                            max={10}
+                            onChange={(v) => updateNovelReaderSettings({ paged_scroll_advance_notches: v })}
+                        />
+                        <LabeledSlider
+                            label={t`Notch size`}
+                            value={settings.paged_scroll_notch_delta_y}
+                            min={10}
+                            max={300}
+                            step={5}
+                            unit="px"
+                            onChange={(v) => updateNovelReaderSettings({ paged_scroll_notch_delta_y: v })}
+                        />
+                        <Typography variant="caption" sx={{ opacity: 0.55, display: 'block', mt: 0.5 }}>
+                            {t`Chapter switch requires ${settings.paged_scroll_advance_notches * settings.paged_scroll_notch_delta_y}px of scroll at a boundary`}
+                        </Typography>
+                    </Box>
+                )}
                 <LabeledSlider
                     label={t`Font size`}
                     value={settings.base_font_size}
