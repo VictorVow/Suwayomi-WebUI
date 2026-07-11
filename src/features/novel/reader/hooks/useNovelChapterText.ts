@@ -27,23 +27,26 @@ export interface UseNovelChapterTextResult {
  * the chapter body isn't part of the shared GraphQL cache.
  */
 export const useNovelChapterText = (chapterId: number | undefined): UseNovelChapterTextResult => {
-    const [html, setHtml] = useState<string | undefined>(undefined);
+    // Key the result by chapter id so a stale html/error from the previous
+    // chapter (or an out-of-order fetch) is never returned against the wrong
+    // chapter. `current` is undefined until the in-flight fetch for *this*
+    // chapter resolves, which makes `!!html` mean exactly "the current
+    // chapter's html is ready" — synchronous at commit, unlike `loading`
+    // which only flips in a passive effect.
+    const [result, setResult] = useState<{ chapterId: number; html?: string; error?: Error } | undefined>();
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<Error | undefined>();
 
     const load = useCallback(async () => {
         if (chapterId == null) {
-            setHtml(undefined);
+            setResult(undefined);
             return;
         }
         setLoading(true);
-        setError(undefined);
         try {
             const rawHtml = await NovelReaderApi.fetchChapterHtml(chapterId);
-            setHtml(DOMPurify.sanitize(rawHtml));
+            setResult({ chapterId, html: DOMPurify.sanitize(rawHtml) });
         } catch (e) {
-            setError(e instanceof Error ? e : new Error(String(e)));
-            setHtml(undefined);
+            setResult({ chapterId, error: e instanceof Error ? e : new Error(String(e)) });
         } finally {
             setLoading(false);
         }
@@ -53,5 +56,11 @@ export const useNovelChapterText = (chapterId: number | undefined): UseNovelChap
         void load();
     }, [load]);
 
-    return { html, loading, error, refetch: () => void load() };
+    const current = result?.chapterId === chapterId ? result : undefined;
+    return {
+        html: current?.html,
+        loading,
+        error: current?.error,
+        refetch: () => void load(),
+    };
 };

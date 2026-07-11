@@ -217,8 +217,12 @@ export const NovelReader = () => {
     // ── Refs + chrome auto-hide (declared above callbacks that depend on them) ──
     const contentRef = useRef<HTMLDivElement>(null);
     // Guards paged mode's wheel-at-boundary chapter change from re-firing on
-    // inertial wheel events before the route change commits and rebinds the
-    // handler. Reset on chapter change (see the effect below the wheel block).
+    // inertial wheel events before the new chapter's HTML has loaded. Held
+    // until the target chapter's html is ready (or its fetch errored) —
+    // releasing earlier leaves the pane at spinner height, where `atBottom`
+    // is trivially true and a slow fetch (>350 ms quiet gap) re-arms
+    // `advanceUsedRef` so the next inertial tick advances again (skipping a
+    // chapter). See the release effect below the wheel block.
     const pagedAdvancingRef = useRef(false);
     // Tracks whether a chapter advance has already fired in the current scroll
     // gesture. Reset only when a quiet gap separates wheel events, so a single
@@ -238,10 +242,18 @@ export const NovelReader = () => {
     // the old `NovelReader` reset effect) that clobbered each other against
     // a stale `scrollHeight`.
     //   - `'top'` → target `0` (every explicit in-reader chapter switch).
+    //   - `'bottom'` → target `scrollHeight - clientHeight` (wheel-up at a
+    //     chapter's top advances to the previous chapter and lands at its
+    //     bottom, so the reader keeps scrolling backwards through it).
     //   - `'restore'` → target `getScrollPosition(chapterId)` (initial entry
     //     into the reader when `restore_scroll_position` is on).
     //   - `null` → leave scroll alone (silent continuous hand-off).
-    const pendingScrollRef = useRef<{ kind: 'top' | 'restore' } | null>(null);
+    const pendingScrollRef = useRef<{ kind: 'top' | 'restore' | 'bottom' } | null>(null);
+    // Remembers where a paged chapter switch should land: `'bottom'` when the
+    // reader wheeled up past the current chapter's top (scrolling backwards),
+    // `'top'` for every other navigation. Read and reset by the producer effect
+    // on `currentChapter.id` change; defaults to `'top'`.
+    const pagedLandingRef = useRef<'top' | 'bottom'>('top');
     // Flipped false after the first chapter has settled, so only the very
     // first entry restores (when the pref is on); every later explicit
     // switch lands at the top.
@@ -554,7 +566,7 @@ export const NovelReader = () => {
                 advanceUsedRef.current = false;
             }
             lastWheelTsRef.current = now;
-            if (pagedAdvancingRef.current) {
+            if (pagedAdvancingRef.current || (!html && !htmlError)) {
                 e.preventDefault();
                 return;
             }
@@ -564,6 +576,7 @@ export const NovelReader = () => {
                 e.preventDefault();
                 advanceUsedRef.current = true;
                 pagedAdvancingRef.current = true;
+                pagedLandingRef.current = 'bottom';
                 goToChapter(prevChapter?.sourceOrder);
             } else if (e.deltaY > 0 && atBottom && hasNextChapter && !advanceUsedRef.current) {
                 e.preventDefault();
@@ -612,6 +625,8 @@ export const NovelReader = () => {
         prevChapter?.sourceOrder,
         nextChapter?.sourceOrder,
         goToChapter,
+        html,
+        htmlError,
     ]);
 
     // ── Single scroll controller (the only `scrollTop` writer on chapter change) ──
@@ -645,6 +660,16 @@ export const NovelReader = () => {
                 el.scrollTop = 0;
                 pendingScrollRef.current = null;
                 initialEntryRef.current = false;
+            } else if (intent.kind === 'bottom') {
+                // Land at the bottom of the previous chapter after a wheel-up
+                // advance — only once the real chapter height exists, so this
+                // targets the loaded content rather than a spinner pane. A
+                // negative target (short chapter) clamps to 0, which is fine.
+                if (htmlReady) {
+                    el.scrollTop = el.scrollHeight - el.clientHeight;
+                    pendingScrollRef.current = null;
+                    initialEntryRef.current = false;
+                }
             } else if (intent.kind === 'restore') {
                 const saved = getScrollPosition(chapterId);
                 if (el.scrollHeight - el.clientHeight >= saved) {
@@ -668,9 +693,17 @@ export const NovelReader = () => {
     useEffect(() => {
         if (silentTransitionRef.current) {
             pendingScrollRef.current = null;
+            pagedLandingRef.current = 'top';
             return;
         }
-        if (initialEntryRef.current && settings.restore_scroll_position) {
+        // A wheel-up advance set this to 'bottom' just before the route
+        // change; it wins over the default 'top' / 'restore' intent so the
+        // reader lands at the previous chapter's bottom (continuing the
+        // backwards scroll). Reset to 'top' for every other navigation.
+        if (isPaged && pagedLandingRef.current === 'bottom') {
+            pendingScrollRef.current = { kind: 'bottom' };
+            pagedLandingRef.current = 'top';
+        } else if (initialEntryRef.current && settings.restore_scroll_position) {
             pendingScrollRef.current = { kind: 'restore' };
         } else {
             pendingScrollRef.current = { kind: 'top' };
@@ -678,12 +711,18 @@ export const NovelReader = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentChapter?.id]);
 
-    // Clear the paged advance guard once the route's anchor chapter changes.
+    // Release the paged advance guard only once the new chapter's HTML has
+    // loaded (or its fetch errored). Releasing at route commit — before the
+    // HTML arrives — leaves the pane at spinner height, where `atBottom` is
+    // trivially true and a slow fetch (>350 ms quiet gap) re-arms
+    // `advanceUsedRef` so the next inertial wheel tick advances again,
+    // skipping a chapter. As a passive effect this runs after the layout
+    // controller has positioned scroll for the same `htmlReady` flip.
     useEffect(() => {
-        if (isPaged) {
+        if (isPaged && (htmlReady || !!htmlError)) {
             pagedAdvancingRef.current = false;
         }
-    }, [isPaged, currentChapter?.id]);
+    }, [isPaged, htmlReady, htmlError, currentChapter?.id]);
 
     // Consumed by every effect above keyed on `currentChapter?.id` — declared
     // last among them so it always clears the flag only after they've all
