@@ -26,6 +26,7 @@ import { NovelReaderChrome } from '@/features/novel/reader/components/NovelReade
 import { NovelReaderSelectionBar } from '@/features/novel/reader/components/NovelReaderSelectionBar.tsx';
 import { useAppTitle } from '@/features/navigation-bar/hooks/useAppTitle.ts';
 import {
+    getScrollPosition,
     resolveColorScheme,
     updateNovelReaderSettings,
     useNovelReaderSettings,
@@ -35,7 +36,6 @@ import { useChapterTextSearch } from '@/features/novel/reader/hooks/useChapterTe
 import { useReaderBehaviour } from '@/features/novel/reader/hooks/useReaderBehaviour.ts';
 import { useReaderKeyboard } from '@/features/novel/reader/hooks/useReaderKeyboard.ts';
 import { useChromeAutohide } from '@/features/novel/reader/hooks/useChromeAutohide.ts';
-import { usePagedReader } from '@/features/novel/reader/hooks/usePagedReader.ts';
 import type { HeadFootRenderCtx } from '@/features/novel/reader/settings/headFoot.ts';
 
 const fontFamilyCssMap: Record<'system' | 'serif' | 'sans', string> = {
@@ -220,6 +220,26 @@ export const NovelReader = () => {
     // chapter). Same gesture-gap pattern as the paged advance guard above.
     const feedLoadUsedRef = useRef(false);
     const lastScrollTsRef = useRef(0);
+    // Single owner of `scrollTop` writes on chapter change. Producers set
+    // an intent; the controller below applies it once the target chapter's
+    // height has loaded, then clears the ref. This replaces the two
+    // competing writers (the old `useReaderBehaviour` restore effect and
+    // the old `NovelReader` reset effect) that clobbered each other against
+    // a stale `scrollHeight`.
+    //   - `'top'` → target `0` (every explicit in-reader chapter switch).
+    //   - `'restore'` → target `getScrollPosition(chapterId)` (initial entry
+    //     into the reader when `restore_scroll_position` is on).
+    //   - `null` → leave scroll alone (silent continuous hand-off).
+    const pendingScrollRef = useRef<{ kind: 'top' | 'restore' } | null>(null);
+    // Flipped false after the first chapter has settled, so only the very
+    // first entry restores (when the pref is on); every later explicit
+    // switch lands at the top.
+    const initialEntryRef = useRef(true);
+    // Tracks the index of a section freshly prepended by `loadPrev` so the
+    // compensation observer below can hold the reading position stable as
+    // that section grows (placeholder → sanitized HTML). Cleared once the
+    // section's height has stabilized.
+    const prependAnchorRef = useRef<number | null>(null);
     const chrome = useChromeAutohide(contentRef);
     const chromeReveal = chrome.reveal;
 
@@ -284,7 +304,6 @@ export const NovelReader = () => {
         markRead,
         currentChapter?.isRead ?? false,
         activeSectionElRef,
-        silentTransitionRef,
     );
 
     // Re-fire mark-read on chapter mount only when policy is `on_open`.
@@ -322,29 +341,12 @@ export const NovelReader = () => {
     }, [currentChapter?.id]);
 
     // ── Paged mode ────────────────────────────────────────────────────────
-    // NOTE: `usePagedReader` was originally built for a CSS multi-column paged
-    // layout (horizontal page columns + `scrollWidth`-based page counting +
-    // `nextPage`/`prevPage` auto-advance). Paged mode now renders one chapter
-    // as a normal vertically-scrolling column with wheel-at-boundary chapter
-    // changes handled directly in the effect below, so this hook is currently
-    // DORMANT — it still tracks a (now-meaningless) pageCount/pageIndex and
-    // saves them to its own localStorage key, but nothing reads those values.
-    // It is kept wired so a future true-page layout can revive it without
-    // re-plumbing the chapter-nav callbacks. When you're confident the
-    // multi-column paged layout won't return, ask the user whether this hook
-    // (and its localStorage key `miruyomi.novelReader.pagePositions.v2`)
-    // should be removed entirely.
-    const paged = usePagedReader(
-        contentRef,
-        currentChapter?.id ?? 0,
-        settings.restore_scroll_position,
-        () => goToChapter(nextChapter?.sourceOrder),
-        () => goToChapter(prevChapter?.sourceOrder),
-        hasNextChapter,
-        hasPrevChapter,
-    );
-    // Keep the reference live so linters don't flag the dormant hook as unused.
-    void paged;
+    // Paged mode renders one chapter as a normal vertically-scrolling column
+    // with wheel-at-boundary chapter changes handled in the effect below.
+    // (The former CSS multi-column paged hook `usePagedReader` and its
+    // `miruyomi.novelReader.pagePositions.v2` localStorage key have been
+    // removed — see the single scroll controller below for scroll-position
+    // ownership.)
 
     const gotoChapterByFraction = useCallback(
         (frac: number) => {
@@ -405,7 +407,10 @@ export const NovelReader = () => {
                 const boundary = Math.min(SCROLL_BOUNDARY_PX, maxScroll / 3);
                 if (el.scrollTop <= boundary && feed.hasMorePrev && !feedLoadUsedRef.current) {
                     feedLoadUsedRef.current = true;
-                    feed.loadPrev();
+                    const newStart = feed.loadPrev();
+                    if (newStart != null) {
+                        prependAnchorRef.current = newStart;
+                    }
                 }
                 if (el.scrollTop >= maxScroll - boundary && feed.hasMoreNext && !feedLoadUsedRef.current) {
                     feedLoadUsedRef.current = true;
@@ -432,40 +437,59 @@ export const NovelReader = () => {
     }, [isPaged, feed.hasMorePrev, feed.hasMoreNext, feed.loadPrev, feed.loadNext, anchorIndex]);
 
     // Prepending an earlier chapter (scrolling up past the loaded range)
-    // grows content above the viewport — compensate scrollTop by the same
-    // delta as those sections resize (placeholder → sanitized HTML) so the
-    // reader's current view doesn't jump.
-    const beforeActiveIndicesKey = feed.sections
-        .filter((section) => section.index < activeIndex)
-        .map((section) => section.index)
-        .join(',');
+    // grows content above the viewport — compensate `scrollTop` by the same
+    // delta as the newly-prepended section resizes (placeholder → sanitized
+    // HTML) so the reader's current view doesn't jump. Scoped to that one
+    // section (identified by the index `loadPrev` returned) rather than a
+    // key derived from `activeIndex`, so growth deltas that land during the
+    // swap aren't lost to mid-growth teardown.
     useLayoutEffect(() => {
-        if (isPaged || !beforeActiveIndicesKey) {
+        if (isPaged) {
+            return undefined;
+        }
+        const prependIndex = prependAnchorRef.current;
+        if (prependIndex == null) {
             return undefined;
         }
         const el = contentRef.current;
         if (!el) {
             return undefined;
         }
-        const nodes = beforeActiveIndicesKey
-            .split(',')
-            .map((key) => sectionRefs.current.get(Number(key)))
-            .filter((node): node is HTMLElement => node != null);
-        if (nodes.length === 0) {
+        const node = sectionRefs.current.get(prependIndex);
+        if (!node) {
             return undefined;
         }
-        let prevHeight = nodes.reduce((sum, node) => sum + node.offsetHeight, 0);
+        // Only compensate while the prepended section is still loading —
+        // once its HTML is in and the height has stabilized, disconnect so
+        // later unrelated resizes (e.g. font-size change) don't shift the
+        // reader. The section's loading flag comes from the feed's section
+        // list; find it to check.
+        const section = feed.sections.find((s) => s.index === prependIndex);
+        if (section && !section.loading) {
+            prependAnchorRef.current = null;
+            return undefined;
+        }
+        let prevHeight = node.offsetHeight;
         const ro = new ResizeObserver(() => {
-            const newHeight = nodes.reduce((sum, node) => sum + node.offsetHeight, 0);
+            const newHeight = node.offsetHeight;
             const delta = newHeight - prevHeight;
             if (delta !== 0) {
                 el.scrollTop += delta;
                 prevHeight = newHeight;
             }
+            // Once the section has finished loading and a final resize has
+            // settled, tear down so subsequent resizes don't fight the reader.
+            const current = feed.sections.find((s) => s.index === prependIndex);
+            if (current && !current.loading) {
+                prependAnchorRef.current = null;
+                ro.disconnect();
+            }
         });
-        nodes.forEach((node) => ro.observe(node));
+        ro.observe(node);
         return () => ro.disconnect();
-    }, [isPaged, beforeActiveIndicesKey]);
+        // `prependAnchorRef` is a ref (not reactive); re-run when the feed's
+        // section list changes so the `loading` check stays current.
+    }, [isPaged, feed.sections]);
 
     // ── Paged mode: vertical native scroll with boundary chapter changes ──
     // Paged mode renders one chapter at a time as a normal vertically-scrolling
@@ -549,26 +573,75 @@ export const NovelReader = () => {
         goToChapter,
     ]);
 
+    // ── Single scroll controller (the only `scrollTop` writer on chapter change) ──
+    // Producers set an intent in `pendingScrollRef`; this controller applies it
+    // once the target chapter's content height exists (so the target position
+    // lands against the real `scrollHeight`, not a stale one), and re-applies
+    // on each `ResizeObserver` fire until settled, then clears the ref. This
+    // folds in and replaces the old reset effect (which wrote `scrollTop = 0`
+    // against a not-yet-loaded height) and the old `useReaderBehaviour` restore
+    // effect (which was clobbered by the reset effect).
+    //
+    // Intent per chapter change:
+    //   - Silent hand-off (`silentTransitionRef` true): no intent — leave
+    //     scroll alone so continuous scrolling isn't interrupted.
+    //   - First settled chapter of the session: `'restore'` when
+    //     `restore_scroll_position` is on, else `'top'`.
+    //   - Every later explicit switch: `'top'`.
+    const chapterId = currentChapter?.id ?? 0;
+    const htmlReady = isPaged ? !!html : feed.sections.some((s) => s.index === anchorIndex && !!s.html);
+    useLayoutEffect(() => {
+        const el = contentRef.current;
+        if (!el || pendingScrollRef.current == null) {
+            return undefined;
+        }
+        const apply = () => {
+            const intent = pendingScrollRef.current;
+            if (intent == null) {
+                return;
+            }
+            if (intent.kind === 'top') {
+                el.scrollTop = 0;
+                pendingScrollRef.current = null;
+                initialEntryRef.current = false;
+            } else if (intent.kind === 'restore') {
+                const saved = getScrollPosition(chapterId);
+                if (el.scrollHeight - el.clientHeight >= saved) {
+                    el.scrollTop = saved;
+                    pendingScrollRef.current = null;
+                    initialEntryRef.current = false;
+                }
+            }
+        };
+        apply();
+        // Re-apply on each height change until the intent has settled — the
+        // target HTML may still be streaming in.
+        const ro = new ResizeObserver(() => apply());
+        ro.observe(el);
+        return () => ro.disconnect();
+    }, [chapterId, htmlReady, isPaged, anchorIndex]);
+
+    // Producer: on explicit (non-silent) `currentChapter.id` change, set the
+    // scroll intent. Runs after the controller is declared so the ref is in
+    // scope. (For silent hand-offs, set no intent — leave scroll alone.)
+    useEffect(() => {
+        if (silentTransitionRef.current) {
+            pendingScrollRef.current = null;
+            return;
+        }
+        if (initialEntryRef.current && settings.restore_scroll_position) {
+            pendingScrollRef.current = { kind: 'restore' };
+        } else {
+            pendingScrollRef.current = { kind: 'top' };
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [currentChapter?.id]);
+
     // Clear the paged advance guard once the route's anchor chapter changes.
     useEffect(() => {
         if (isPaged) {
             pagedAdvancingRef.current = false;
         }
-    }, [isPaged, currentChapter?.id]);
-
-    // ── 3a: reset scroll to top on explicit chapter change (continuous mode) ──
-    // Skipped for silent scroll-driven hand-offs (see `silentTransitionRef`):
-    // the reader is already mid-scroll into that chapter, so snapping to its
-    // top would fight the very scroll that triggered the hand-off.
-    useEffect(() => {
-        if (isPaged || silentTransitionRef.current) {
-            return;
-        }
-        const el = contentRef.current;
-        if (!el) {
-            return;
-        }
-        el.scrollTop = 0;
     }, [isPaged, currentChapter?.id]);
 
     // Consumed by every effect above keyed on `currentChapter?.id` — declared
@@ -621,9 +694,8 @@ export const NovelReader = () => {
 
     const fontFamilyCss = fontFamilyCssMap[settings.font_family];
 
-    // Both modes now use vertical native scroll, so `behaviour` drives progress
-    // and screen counters in either mode. (`usePagedReader` is kept wired but
-    // dormant — see its comment block — and no longer feeds the chrome.)
+    // Both modes use vertical native scroll, so `behaviour` drives progress
+    // and screen counters in either mode.
     const { chapterProgress, bookProgress } = behaviour;
 
     const chromeCtx: HeadFootRenderCtx = {

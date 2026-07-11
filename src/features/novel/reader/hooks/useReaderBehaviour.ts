@@ -9,7 +9,6 @@
 import { useEffect, useRef, useState, type RefObject } from 'react';
 import {
     getReadingRateFor,
-    getScrollPosition,
     recordReadingRate,
     setScrollPosition,
     useNovelReaderSettings,
@@ -36,9 +35,12 @@ export interface ReaderBehaviourApi {
 /**
  * Behaviour that hangs off the scrollable content pane:
  *
- *  - **Scroll position save & restore**: when `restore_scroll_position` is on,
- *    on chapter load, snap the pane to its last saved `scrollTop`; on scroll,
- *    debounced-write back (`useScrollProgress` renamed for clarity).
+ *  - **Scroll position save**: on scroll, debounced-write back to
+ *    `setScrollPosition` (gated on `restore_scroll_position`). The actual
+ *    `scrollTop` *restore* on chapter change is owned by `NovelReader`'s
+ *    single scroll controller (see the `pendingScrollRef` block there), so
+ *    this hook no longer writes `el.scrollTop` — it only observes scroll
+ *    and persists.
  *  - **Reading rate tracking**: accumulate chars read vs. wall time and feed
  *    calibre-style per-chapter rolling averages via `recordReadingRate`, used
  *    by `time-chapter` / `time-book` head/foot sections. Miruyomi uses
@@ -68,13 +70,6 @@ export const useReaderBehaviour = (
      * the whole pane as the chapter (single-chapter pane, e.g. paged mode).
      */
     activeSectionRef?: RefObject<HTMLElement | null>,
-    /**
-     * When true at the moment `chapterId` changes, this is a silent
-     * scroll-driven hand-off to a chapter whose section is already in view
-     * (not an explicit chapter jump) — skip the scroll-to-saved-position
-     * snap so continuous scrolling isn't interrupted.
-     */
-    silentTransitionRef?: RefObject<boolean>,
 ): ReaderBehaviourApi => {
     const settings = useNovelReaderSettings();
     const [api, setApi] = useState<ReaderBehaviourApi>({
@@ -87,25 +82,20 @@ export const useReaderBehaviour = (
     const startRef = useRef<{ at: number; scrollTop: number; chars: number } | null>(null);
     const firedMarkReadRef = useRef(false);
 
-    // Restore scroll position when chapter changes and pref is on.
+    // Reset per-chapter tracking state on chapter change. The actual
+    // `scrollTop` restore/top-snap is owned by `NovelReader`'s single scroll
+    // controller (`pendingScrollRef`); this hook only seeds the reading-rate
+    // baseline from whatever `scrollTop` the controller has applied.
     useEffect(() => {
         const el = contentRef.current;
         if (!el) {
             return;
         }
         firedMarkReadRef.current = false;
-        const silent = silentTransitionRef?.current ?? false;
-        if (!silent) {
-            if (settings.restore_scroll_position) {
-                el.scrollTop = getScrollPosition(chapterId);
-            } else {
-                el.scrollTop = 0;
-            }
-        }
         const sectionEl = activeSectionRef?.current ?? el;
         startRef.current = { at: Date.now(), scrollTop: el.scrollTop, chars: sectionEl.textContent?.length ?? 0 };
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [chapterId, settings.restore_scroll_position]);
+    }, [chapterId]);
 
     useEffect(() => {
         const el = contentRef.current;

@@ -102,11 +102,19 @@ export const useContinuousChapterFeed = (
         });
     }, [chapters.length]);
 
-    const loadPrev = useCallback(() => {
+    const loadPrev = useCallback((): number | null => {
+        let newStart: number | null = null;
         setRange((prev) => {
             const start = Math.max(0, prev.start - 1);
-            return start === prev.start ? prev : { ...prev, start };
+            if (start === prev.start) {
+                return prev;
+            }
+            newStart = start;
+            return { ...prev, start };
         });
+        // `setRange`'s updater runs synchronously during this call, so
+        // `newStart` is populated by the time we return here.
+        return newStart;
     }, []);
 
     const sections: ContinuousChapterSection[] = [];
