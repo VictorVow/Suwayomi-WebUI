@@ -25,6 +25,8 @@ import { NovelReaderSearch } from '@/features/novel/reader/components/NovelReade
 import { NovelReaderChrome } from '@/features/novel/reader/components/NovelReaderChrome.tsx';
 import { NovelReaderSelectionBar } from '@/features/novel/reader/components/NovelReaderSelectionBar.tsx';
 import { useAppTitle } from '@/features/navigation-bar/hooks/useAppTitle.ts';
+import { useNavBarContext } from '@/features/navigation-bar/NavbarContext.tsx';
+import { MediaQuery } from '@/base/utils/MediaQuery.tsx';
 import {
     getScrollPosition,
     resolveColorScheme,
@@ -122,6 +124,13 @@ export const NovelReader = () => {
             ? t`Novel Reader — Novel ${mangaId} Chapter ${chapterSourceOrder}`
             : `${manga.title}: ${currentChapter.name}`,
     );
+
+    const { setOverride } = useNavBarContext();
+    const isMobileWidth = MediaQuery.useIsMobileWidth();
+    useLayoutEffect(() => {
+        setOverride({ status: true, value: null });
+        return () => setOverride({ status: false, value: null });
+    }, [setOverride]);
     // sortedChapters is sorted by descending sourceOrder (index 0 = latest chapter),
     // so moving to the next chapter (higher sourceOrder) means a lower array index.
     const hasNextChapter = currentIndex > 0;
@@ -279,14 +288,17 @@ export const NovelReader = () => {
     const [searchQuery, setSearchQuery] = useState('');
 
     // 3b: auto-open TOC when main overlay opens; auto-close when it closes.
+    // On mobile-sized screens the TOC is not auto-opened with the main overlay:
+    // the persistent drawer would cover too much of the small viewport. It can
+    // still be toggled manually via the "Contents" button or the keyboard hotkey.
     const mainOverlayOpen = topPanel?.kind === 'main';
     useEffect(() => {
         if (mainOverlayOpen) {
-            setIsTocOpen(true);
+            setIsTocOpen(!isMobileWidth);
         } else {
             setIsTocOpen(false);
         }
-    }, [mainOverlayOpen]);
+    }, [mainOverlayOpen, isMobileWidth]);
 
     // ── Reading behaviour: scroll save/restore, rate tracking, mark-read ──
     const markRead = useCallback(() => {
