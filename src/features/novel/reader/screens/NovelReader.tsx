@@ -108,8 +108,6 @@ export const NovelReader = () => {
     const mangaId = Number(paramMangaId);
     const chapterSourceOrder = Number(paramChapterSourceOrder);
 
-    useAppTitle(t`Miruyomi`);
-
     const mangaResponse = requestManager.useGetManga<GetMangaReaderQuery>(GET_MANGA_READER, mangaId);
     const chaptersResponse = requestManager.useGetMangaChapters<GetChaptersReaderQuery>(GET_CHAPTERS_READER, mangaId);
 
@@ -118,6 +116,12 @@ export const NovelReader = () => {
     const sortedChapters = useMemo(() => [...chapters].sort((a, b) => b.sourceOrder - a.sourceOrder), [chapters]);
     const currentIndex = sortedChapters.findIndex((c) => c.sourceOrder === chapterSourceOrder);
     const currentChapter = currentIndex >= 0 ? sortedChapters[currentIndex] : undefined;
+
+    useAppTitle(
+        !manga || !currentChapter
+            ? t`Novel Reader — Novel ${mangaId} Chapter ${chapterSourceOrder}`
+            : `${manga.title}: ${currentChapter.name}`,
+    );
     // sortedChapters is sorted by descending sourceOrder (index 0 = latest chapter),
     // so moving to the next chapter (higher sourceOrder) means a lower array index.
     const hasNextChapter = currentIndex > 0;

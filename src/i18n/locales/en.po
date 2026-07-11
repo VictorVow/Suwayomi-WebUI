@@ -2736,10 +2736,6 @@ msgstr "Minty Miracles"
 msgid "Minute"
 msgstr "Minute"
 
-#: src/features/novel/reader/screens/NovelReader.tsx
-msgid "Miruyomi"
-msgstr "Miruyomi"
-
 #: src/features/settings/screens/ServerSettings.tsx
 msgid "Misc"
 msgstr "Misc"
@@ -3056,6 +3052,10 @@ msgstr "Novel History"
 #: src/features/novel/screens/NovelLibrary.tsx
 msgid "Novel Library"
 msgstr "Novel Library"
+
+#: src/features/novel/reader/screens/NovelReader.tsx
+msgid "Novel Reader — Novel {mangaId} Chapter {chapterSourceOrder}"
+msgstr "Novel Reader — Novel {mangaId} Chapter {chapterSourceOrder}"
 
 #: src/features/novel/screens/NovelUpdates.tsx
 msgid "Novel Updates"
