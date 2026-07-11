@@ -249,6 +249,19 @@ export const NovelReader = () => {
     // that section grows (placeholder → sanitized HTML). Cleared once the
     // section's height has stabilized.
     const prependAnchorRef = useRef<number | null>(null);
+    // Captures `el.scrollHeight` right before a prepend commits, so the
+    // compensation effect can immediately offset the initial placeholder
+    // height (and later the placeholder→HTML growth) against this baseline.
+    const prependBaselineRef = useRef(0);
+    // Bumped each time a prepend actually happens, so the compensation
+    // layout effect re-runs only on a real prepend — not on every render
+    // (the `feed.sections` array identity changes each render even when
+    // nothing changed).
+    const [prependTrigger, setPrependTrigger] = useState(0);
+    // "Latest value" ref for feed.sections so the ResizeObserver callback
+    // can read the current loading state without re-running the effect.
+    const feedSectionsRef = useRef(feed.sections);
+    feedSectionsRef.current = feed.sections;
     const chrome = useChromeAutohide(contentRef);
     const chromeReveal = chrome.reveal;
 
@@ -419,9 +432,14 @@ export const NovelReader = () => {
                 const boundary = Math.min(SCROLL_BOUNDARY_PX, maxScroll / 3);
                 if (el.scrollTop <= boundary && feed.hasMorePrev && !feedLoadUsedRef.current) {
                     feedLoadUsedRef.current = true;
+                    // Capture scrollHeight before the prepend commits so the
+                    // compensation effect can offset the initial placeholder
+                    // height against this baseline.
+                    prependBaselineRef.current = el.scrollHeight;
                     const newStart = feed.loadPrev();
                     if (newStart != null) {
                         prependAnchorRef.current = newStart;
+                        setPrependTrigger((n) => n + 1);
                     }
                 }
                 if (el.scrollTop >= maxScroll - boundary && feed.hasMoreNext && !feedLoadUsedRef.current) {
@@ -450,11 +468,20 @@ export const NovelReader = () => {
 
     // Prepending an earlier chapter (scrolling up past the loaded range)
     // grows content above the viewport — compensate `scrollTop` by the same
-    // delta as the newly-prepended section resizes (placeholder → sanitized
-    // HTML) so the reader's current view doesn't jump. Scoped to that one
-    // section (identified by the index `loadPrev` returned) rather than a
-    // key derived from `activeIndex`, so growth deltas that land during the
-    // swap aren't lost to mid-growth teardown.
+    // delta so the reader's current view doesn't jump. Two deltas must be
+    // compensated:
+    //   1. The initial placeholder height (inserted synchronously when
+    //      `loadPrev` commits the new range).
+    //   2. The placeholder→HTML growth (when the fetch resolves and the
+    //      sanitized HTML replaces the spinner, potentially growing from
+    //      ~50px to thousands of px).
+    // The effect runs only when `prependTrigger` bumps (a real prepend),
+    // not on every render — `feed.sections` is a fresh array each render
+    // but its identity is not meaningful. A `ResizeObserver` on the
+    // prepended section node catches growth deltas; loading state is read
+    // from `feedSectionsRef` (the latest render's value) inside the
+    // callback so the observer survives the loading→loaded transition
+    // without the effect re-running and tearing it down mid-growth.
     useLayoutEffect(() => {
         if (isPaged) {
             return undefined;
@@ -471,16 +498,15 @@ export const NovelReader = () => {
         if (!node) {
             return undefined;
         }
-        // Only compensate while the prepended section is still loading —
-        // once its HTML is in and the height has stabilized, disconnect so
-        // later unrelated resizes (e.g. font-size change) don't shift the
-        // reader. The section's loading flag comes from the feed's section
-        // list; find it to check.
-        const section = feed.sections.find((s) => s.index === prependIndex);
-        if (section && !section.loading) {
-            prependAnchorRef.current = null;
-            return undefined;
+        // 1. Immediately offset the initial placeholder height against the
+        //    baseline captured before `loadPrev` committed, so the user's
+        //    view stays put before the browser paints.
+        const initialDelta = el.scrollHeight - prependBaselineRef.current;
+        if (initialDelta !== 0) {
+            el.scrollTop += initialDelta;
         }
+        // 2. Watch the prepended section for further growth (placeholder →
+        //    HTML) and compensate each delta to hold the view stable.
         let prevHeight = node.offsetHeight;
         const ro = new ResizeObserver(() => {
             const newHeight = node.offsetHeight;
@@ -490,8 +516,9 @@ export const NovelReader = () => {
                 prevHeight = newHeight;
             }
             // Once the section has finished loading and a final resize has
-            // settled, tear down so subsequent resizes don't fight the reader.
-            const current = feed.sections.find((s) => s.index === prependIndex);
+            // settled, tear down so subsequent unrelated resizes (e.g.
+            // font-size change) don't shift the reader.
+            const current = feedSectionsRef.current.find((s) => s.index === prependIndex);
             if (current && !current.loading) {
                 prependAnchorRef.current = null;
                 ro.disconnect();
@@ -499,9 +526,9 @@ export const NovelReader = () => {
         });
         ro.observe(node);
         return () => ro.disconnect();
-        // `prependAnchorRef` is a ref (not reactive); re-run when the feed's
-        // section list changes so the `loading` check stays current.
-    }, [isPaged, feed.sections]);
+        // Re-run only on a real prepend, not on every `feed.sections` change.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isPaged, prependTrigger]);
 
     // ── Paged mode: vertical native scroll with boundary chapter changes ──
     // Paged mode renders one chapter at a time as a normal vertically-scrolling
