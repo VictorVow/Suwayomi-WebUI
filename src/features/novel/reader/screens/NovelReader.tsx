@@ -51,6 +51,12 @@ const EMPTY_CHAPTERS: never[] = [];
 // prefetching it as soon as the current chapter is opened.
 const SCROLL_BOUNDARY_PX = 600;
 
+// In paged mode, a single inertial mouse-wheel/trackpad flick can fire wheel
+// events for several hundred ms. Allow at most one chapter advance per scroll
+// gesture: a gap between wheel events longer than this resets the gesture, so
+// the reader has to start a new scroll before another boundary cross can fire.
+const WHEEL_GESTURE_GAP_MS = 350;
+
 /**
  * Full-screen novel text reader — a fuller port of calibre's content-server
  * reader.
@@ -197,6 +203,12 @@ export const NovelReader = () => {
     // inertial wheel events before the route change commits and rebinds the
     // handler. Reset on chapter change (see the effect below the wheel block).
     const pagedAdvancingRef = useRef(false);
+    // Tracks whether a chapter advance has already fired in the current scroll
+    // gesture. Reset only when a quiet gap separates wheel events, so a single
+    // inertial flick can cross at most one chapter boundary — the reader must
+    // start a new scroll before another advance is possible.
+    const advanceUsedRef = useRef(false);
+    const lastWheelTsRef = useRef(0);
     const chrome = useChromeAutohide(contentRef);
     const chromeReveal = chrome.reveal;
 
@@ -438,18 +450,27 @@ export const NovelReader = () => {
             return undefined;
         }
         const onWheel = (e: WheelEvent) => {
+            const now = performance.now();
+            // A gap longer than WHEEL_GESTURE_GAP_MS means the reader started a
+            // new scroll gesture — re-arm the one-advance-per-gesture gate.
+            if (now - lastWheelTsRef.current > WHEEL_GESTURE_GAP_MS) {
+                advanceUsedRef.current = false;
+            }
+            lastWheelTsRef.current = now;
             if (pagedAdvancingRef.current) {
                 e.preventDefault();
                 return;
             }
             const atTop = el.scrollTop <= 0;
             const atBottom = el.scrollTop >= el.scrollHeight - el.clientHeight - 1;
-            if (e.deltaY < 0 && atTop && hasPrevChapter) {
+            if (e.deltaY < 0 && atTop && hasPrevChapter && !advanceUsedRef.current) {
                 e.preventDefault();
+                advanceUsedRef.current = true;
                 pagedAdvancingRef.current = true;
                 goToChapter(prevChapter?.sourceOrder);
-            } else if (e.deltaY > 0 && atBottom && hasNextChapter) {
+            } else if (e.deltaY > 0 && atBottom && hasNextChapter && !advanceUsedRef.current) {
                 e.preventDefault();
+                advanceUsedRef.current = true;
                 pagedAdvancingRef.current = true;
                 goToChapter(nextChapter?.sourceOrder);
             }
