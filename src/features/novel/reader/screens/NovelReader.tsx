@@ -25,6 +25,7 @@ import { NovelReaderSearch } from '@/features/novel/reader/components/NovelReade
 import { NovelReaderChrome } from '@/features/novel/reader/components/NovelReaderChrome.tsx';
 import { NovelReaderSelectionBar } from '@/features/novel/reader/components/NovelReaderSelectionBar.tsx';
 import { useAppTitle } from '@/features/navigation-bar/hooks/useAppTitle.ts';
+import { useBackButton } from '@/base/hooks/useBackButton.ts';
 import { useNavBarContext } from '@/features/navigation-bar/NavbarContext.tsx';
 import { MediaQuery } from '@/base/utils/MediaQuery.tsx';
 import {
@@ -102,6 +103,7 @@ const SCROLL_GESTURE_GAP_MS = 350;
 export const NovelReader = () => {
     const { t } = useLingui();
     const navigate = useNavigate();
+    const handleBack = useBackButton();
     const { mangaId: paramMangaId, chapterSourceOrder: paramChapterSourceOrder } = useParams<{
         mangaId: string;
         chapterSourceOrder: string;
@@ -867,6 +869,7 @@ export const NovelReader = () => {
                 onChromeControlClick={pushMain}
                 forceShowControl={!chrome.visible}
                 visible={chrome.visible}
+                onBack={handleBack}
             />
             <Box
                 ref={contentRef}

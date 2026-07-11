@@ -8,8 +8,10 @@
 
 import { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import ArrowBack from '@mui/icons-material/ArrowBack';
 import type { HeadFootConfig, HeadFootRegion, NovelReaderSettings } from '@/features/novel/reader/preferences.ts';
 import { regionOrder, renderSection, type HeadFootRenderCtx } from '@/features/novel/reader/settings/headFoot.ts';
 
@@ -108,6 +110,7 @@ export const NovelReaderChrome = ({
     onChromeControlClick,
     forceShowControl,
     visible,
+    onBack,
 }: {
     settings: NovelReaderSettings;
     ctx: HeadFootRenderCtx;
@@ -115,6 +118,7 @@ export const NovelReaderChrome = ({
     onChromeControlClick?: () => void;
     forceShowControl?: boolean;
     visible?: boolean;
+    onBack?: () => void;
 }) => {
     const [, setTick] = useState(0);
     const needsTick = stripNeedsTick(settings.header) || stripNeedsTick(settings.footer);
@@ -139,13 +143,22 @@ export const NovelReaderChrome = ({
             }}
         >
             <Box sx={{ position: 'absolute', top: 0, left: 0, right: 0 }}>
-                <ChromeRow
-                    config={settings.header ?? {}}
-                    ctx={ctx}
-                    color={color}
-                    onChromeControlClick={onChromeControlClick}
-                    forceShowControl={forceShowControl}
-                />
+                <Stack direction="row" sx={{ alignItems: 'center', pointerEvents: 'auto' }}>
+                    {onBack && (
+                        <IconButton aria-label="back" onClick={onBack} sx={{ color, ml: 0.5, py: 0.5 }}>
+                            <ArrowBack fontSize="small" />
+                        </IconButton>
+                    )}
+                    <Box sx={{ flex: 1, minWidth: 0 }}>
+                        <ChromeRow
+                            config={settings.header ?? {}}
+                            ctx={ctx}
+                            color={color}
+                            onChromeControlClick={onChromeControlClick}
+                            forceShowControl={forceShowControl}
+                        />
+                    </Box>
+                </Stack>
             </Box>
             <Box sx={{ position: 'absolute', bottom: 0, left: 0, right: 0 }}>
                 <ChromeRow
