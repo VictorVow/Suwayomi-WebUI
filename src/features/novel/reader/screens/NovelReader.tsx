@@ -55,7 +55,9 @@ const SCROLL_BOUNDARY_PX = 600;
 // events for several hundred ms. Allow at most one chapter advance per scroll
 // gesture: a gap between wheel events longer than this resets the gesture, so
 // the reader has to start a new scroll before another boundary cross can fire.
-const WHEEL_GESTURE_GAP_MS = 350;
+// Also used in continuous mode to prevent cascade-loading multiple chapters
+// from a single inertial scroll gesture.
+const SCROLL_GESTURE_GAP_MS = 350;
 
 /**
  * Full-screen novel text reader — a fuller port of calibre's content-server
@@ -209,6 +211,11 @@ export const NovelReader = () => {
     // start a new scroll before another advance is possible.
     const advanceUsedRef = useRef(false);
     const lastWheelTsRef = useRef(0);
+    // Continuous mode: prevent a single inertial scroll gesture from cascading
+    // multiple loadPrev/loadNext calls (each extends the window by one
+    // chapter). Same gesture-gap pattern as the paged advance guard above.
+    const feedLoadUsedRef = useRef(false);
+    const lastScrollTsRef = useRef(0);
     const chrome = useChromeAutohide(contentRef);
     const chromeReveal = chrome.reveal;
 
@@ -358,10 +365,18 @@ export const NovelReader = () => {
 
     // ── Continuous mode: lazy-load the neighbour chapter + track which
     // chapter is active ─────────────────────────────────────────────────────
-    // Fetches the next/previous chapter only once scrolling comes within
-    // SCROLL_BOUNDARY_PX of the loaded range's edge (see
+    // Fetches the next/previous chapter only once scrolling comes within a
+    // clamped boundary of the loaded range's edge (see
     // `useContinuousChapterFeed`), and tracks which loaded chapter's section
     // the reader has scrolled into so chrome/progress/mark-read/URL follow it.
+    //
+    // Two guards prevent cascade-loading (many chapters at once):
+    //   - Boundary clamp: `boundary = min(SCROLL_BOUNDARY_PX, maxScroll/3)`
+    //     so a short chapter (height < SCROLL_BOUNDARY_PX) doesn't trigger
+    //     both loadPrev and loadNext on every scroll event.
+    //   - One-load-per-gesture: a scroll-quiet gap > SCROLL_GESTURE_GAP_MS
+    //     re-arms the gate, so a single inertial flick loads at most one
+    //     neighbour per direction.
     useEffect(() => {
         if (isPaged) {
             return undefined;
@@ -371,12 +386,21 @@ export const NovelReader = () => {
             return undefined;
         }
         const onScroll = () => {
+            const now = performance.now();
+            if (now - lastScrollTsRef.current > SCROLL_GESTURE_GAP_MS) {
+                feedLoadUsedRef.current = false;
+            }
+            lastScrollTsRef.current = now;
+
             const maxScroll = el.scrollHeight - el.clientHeight;
             if (maxScroll > 0) {
-                if (el.scrollTop <= SCROLL_BOUNDARY_PX && feed.hasMorePrev) {
+                const boundary = Math.min(SCROLL_BOUNDARY_PX, maxScroll / 3);
+                if (el.scrollTop <= boundary && feed.hasMorePrev && !feedLoadUsedRef.current) {
+                    feedLoadUsedRef.current = true;
                     feed.loadPrev();
                 }
-                if (el.scrollTop >= maxScroll - SCROLL_BOUNDARY_PX && feed.hasMoreNext) {
+                if (el.scrollTop >= maxScroll - boundary && feed.hasMoreNext && !feedLoadUsedRef.current) {
+                    feedLoadUsedRef.current = true;
                     feed.loadNext();
                 }
             }
@@ -453,7 +477,7 @@ export const NovelReader = () => {
             const now = performance.now();
             // A gap longer than WHEEL_GESTURE_GAP_MS means the reader started a
             // new scroll gesture — re-arm the one-advance-per-gesture gate.
-            if (now - lastWheelTsRef.current > WHEEL_GESTURE_GAP_MS) {
+            if (now - lastWheelTsRef.current > SCROLL_GESTURE_GAP_MS) {
                 advanceUsedRef.current = false;
             }
             lastWheelTsRef.current = now;

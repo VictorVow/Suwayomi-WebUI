@@ -190,8 +190,8 @@ export const NovelReaderMainOverlay = ({
 
                 <Stack direction="row" sx={{ flexWrap: 'wrap', rowGap: 2 }}>
                     <ActionButton
-                        icon={settings.reading_mode === 'paged' ? <ViewContinuousVerticalIcon /> : <ViewPagedIcon />}
-                        label={settings.reading_mode === 'paged' ? t`Continuous` : t`Paged`}
+                        icon={settings.reading_mode === 'paged' ? <ViewPagedIcon /> : <ViewContinuousVerticalIcon />}
+                        label={settings.reading_mode === 'paged' ? t`Paged` : t`Continuous`}
                         onClick={onToggleReadingMode}
                     />
                     <ActionButton icon={<FormatSizeIcon />} label={t`Font size`} onClick={onFontSize} />
