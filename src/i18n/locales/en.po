@@ -1769,6 +1769,7 @@ msgstr "Exclude: {excludedCategoriesText}"
 msgid "Excluded"
 msgstr "Excluded"
 
+#: src/features/novel/reader/components/NovelReaderMainOverlay.tsx
 #: src/features/reader/hotkeys/settings/components/ReaderSettingHotkey.tsx
 #: src/features/reader/overlay/navigation/components/ReaderExitButton.tsx
 msgid "Exit reader"
@@ -2569,7 +2570,6 @@ msgstr ""
 #: src/features/manga/Manga.constants.ts
 #: src/features/manga/screens/Manga.tsx
 #: src/features/navigation-bar/NavigationBar.constants.ts
-#: src/features/novel/reader/components/NovelReaderMainOverlay.tsx
 #: src/features/reader/settings/behaviour/components/ReaderSettingExitMode.tsx
 #: src/features/recommended/AniList.ts
 #: src/features/tracker/Tracker.constants.ts

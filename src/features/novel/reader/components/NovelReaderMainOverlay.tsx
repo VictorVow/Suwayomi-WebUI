@@ -158,7 +158,7 @@ export const NovelReaderMainOverlay = ({
                 <Stack direction="row" sx={{ flexWrap: 'wrap', rowGap: 2 }}>
                     <ActionButton icon={<ArrowBackIcon />} label={t`Back`} onClick={onNavigateBack} />
                     <ActionButton icon={<ArrowForwardIcon />} label={t`Forward`} onClick={onNavigateForward} />
-                    <ActionButton icon={<HomeIcon />} label={t`Manga`} onClick={onGoHome} />
+                    <ActionButton icon={<HomeIcon />} label={t`Exit reader`} onClick={onGoHome} />
                     <ActionButton
                         icon={<ArrowBackIcon />}
                         label={t`Prev chapter`}
