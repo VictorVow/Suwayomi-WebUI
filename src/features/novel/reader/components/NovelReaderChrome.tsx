@@ -137,7 +137,7 @@ export const NovelReaderChrome = ({
                 position: 'absolute',
                 inset: 0,
                 pointerEvents: 'none',
-                zIndex: 0,
+                zIndex: 10,
                 opacity: visible === false ? 0 : 1,
                 transition: 'opacity 0.2s',
             }}
