@@ -7,7 +7,6 @@
  */
 
 import type { JSX } from 'react';
-import { useMemo } from 'react';
 import Stack from '@mui/material/Stack';
 import { useLingui } from '@lingui/react/macro';
 import { useAppTitle } from '@/features/navigation-bar/hooks/useAppTitle.ts';
@@ -19,6 +18,7 @@ import { useAnimeLibrary } from '@/features/anime/services/AnimeApi.ts';
 import { useNovelLibrary } from '@/features/novel/services/NovelApi.ts';
 import { AppRoutes } from '@/base/AppRoute.constants.ts';
 import { HomeLibraryRow } from '@/features/home/components/HomeLibraryRow.tsx';
+import { useHomeLibraryPreview } from '@/features/home/hooks/useHomeLibraryPreview.ts';
 
 const PREVIEW_COUNT = 12;
 
@@ -36,12 +36,9 @@ export function Home(): JSX.Element {
     const animeLibrary = useAnimeLibrary();
     const novelLibrary = useNovelLibrary();
 
-    const mangaPreview = useMemo(
-        () => (mangaLibrary.data?.mangas.nodes ?? []).slice(0, PREVIEW_COUNT),
-        [mangaLibrary.data],
-    );
-    const animePreview = useMemo(() => animeLibrary.data.slice(0, PREVIEW_COUNT), [animeLibrary.data]);
-    const novelPreview = useMemo(() => novelLibrary.data.slice(0, PREVIEW_COUNT), [novelLibrary.data]);
+    const mangaPreview = useHomeLibraryPreview(ContentType.Manga, mangaLibrary.data?.mangas.nodes ?? [], PREVIEW_COUNT);
+    const animePreview = useHomeLibraryPreview(ContentType.Anime, animeLibrary.data, PREVIEW_COUNT);
+    const novelPreview = useHomeLibraryPreview(ContentType.Novel, novelLibrary.data, PREVIEW_COUNT);
 
     return (
         <Stack sx={{ p: 2, gap: 3 }}>
