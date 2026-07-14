@@ -49,6 +49,13 @@ const fontFamilyCssMap: Record<'system' | 'serif' | 'sans', string> = {
 
 const EMPTY_CHAPTERS: never[] = [];
 
+// A left-click/tap in the upper third of the screen opens the main overlay,
+// mirroring the right-click behavior for mobile web users who have no
+// equivalent. Skipped during an active text selection so a drag that ends in
+// the upper third doesn't hijack the gesture.
+const isMenuOpenClick = (e: React.MouseEvent) =>
+    e.clientY < window.innerHeight / 3 && !window.getSelection()?.toString();
+
 // Start fetching the neighbouring chapter once the reader is within this
 // many px of the loaded range's top/bottom edge, rather than eagerly
 // prefetching it as soon as the current chapter is opened.
@@ -948,7 +955,7 @@ export const NovelReader = () => {
             <Box
                 ref={contentRef}
                 onClick={(e) => {
-                    if (e.target === e.currentTarget && panelStack.length === 0) {
+                    if (panelStack.length === 0 && (e.target === e.currentTarget || isMenuOpenClick(e))) {
                         pushMain();
                     }
                 }}
@@ -970,7 +977,11 @@ export const NovelReader = () => {
             {isPaged && !htmlLoading && html && (
                 <>
                     <Box
-                        onClick={() => {
+                        onClick={(e) => {
+                            if (panelStack.length === 0 && isMenuOpenClick(e)) {
+                                pushMain();
+                                return;
+                            }
                             const el = contentRef.current;
                             if (el) {
                                 el.scrollBy({ top: -Math.round(el.clientHeight * 0.9), behavior: 'smooth' });
@@ -987,7 +998,11 @@ export const NovelReader = () => {
                         }}
                     />
                     <Box
-                        onClick={() => {
+                        onClick={(e) => {
+                            if (panelStack.length === 0 && isMenuOpenClick(e)) {
+                                pushMain();
+                                return;
+                            }
                             const el = contentRef.current;
                             if (el) {
                                 el.scrollBy({ top: Math.round(el.clientHeight * 0.9), behavior: 'smooth' });
