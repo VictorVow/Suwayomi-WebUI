@@ -458,6 +458,10 @@ msgstr "Alpha"
 msgid "Also remove from {0}"
 msgstr "Also remove from {0}"
 
+#: src/features/global-search/screens/SearchAll.tsx
+msgid "Also search Kotatsu sources"
+msgstr "Also search Kotatsu sources"
+
 #: src/features/tracker/components/MangaRelated.tsx
 msgid "AniList - Recommendations"
 msgstr "AniList - Recommendations"
@@ -2097,6 +2101,10 @@ msgstr "Hide entries already in library"
 #: src/features/history/screens/HistorySettings.tsx
 msgid "Hide history"
 msgstr "Hide history"
+
+#: src/features/global-search/screens/SearchAll.tsx
+msgid "Hide Kotatsu sources"
+msgstr "Hide Kotatsu sources"
 
 #: src/features/settings/screens/ServerSettings.tsx
 msgid "Hikari connection pool"

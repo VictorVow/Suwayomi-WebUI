@@ -311,19 +311,32 @@ export const SearchAll = ({
     } = useMetadataServerSettings();
 
     const sourceBrowseScope = useSourceBrowseScope();
+    const mode = state?.mode ?? 'source';
+    const isMigrateMode = ['migrate.select.single', 'migrate.select.bulk'].includes(mode);
+    const [includeKotatsuSources, setIncludeKotatsuSources] = useState(false);
 
     const { data, loading, error, refetch } = requestManager.useGetSourceList({
         contentType: CONTENT_TYPE_BY_SCOPE[sourceBrowseScope],
     });
     const tmpSources = data?.sources.nodes ?? STABLE_EMPTY_ARRAY;
+    const isInDestinationScope = (source: SourceIdInfo) =>
+        !migrationDestinationSourceIds || migrationDestinationSourceIds.includes(source.id);
     const sources = useMemo(
         () =>
-            tmpSources.filter(
-                (source) =>
-                    (!migrationDestinationSourceIds || migrationDestinationSourceIds.includes(source.id)) &&
-                    (state?.mode?.startsWith('migrate') || Sources.isKotatsu(source) === !!state?.kotatsu),
-            ),
-        [tmpSources, migrationDestinationSourceIds, state?.mode, state?.kotatsu],
+            tmpSources.filter((source) => {
+                if (!isInDestinationScope(source)) {
+                    return false;
+                }
+                if (isMigrateMode) {
+                    return !Sources.isKotatsu(source) || includeKotatsuSources;
+                }
+                return Sources.isKotatsu(source) === !!state?.kotatsu;
+            }),
+        [tmpSources, migrationDestinationSourceIds, isMigrateMode, includeKotatsuSources, state?.kotatsu],
+    );
+    const hasKotatsuSources = useMemo(
+        () => tmpSources.some((source) => isInDestinationScope(source) && Sources.isKotatsu(source)),
+        [tmpSources, migrationDestinationSourceIds],
     );
 
     const [sourceToLoadingStateMap, setSourceToLoadingStateMap] = useState<SourceToLoadingStateMap>(new Map());
@@ -333,12 +346,7 @@ export const SearchAll = ({
 
     const hasPinnedSources = useMemo(() => !!Sources.filter(sources, { pinned: true }).length, [sources]);
 
-    const {
-        title = t`Global Search`,
-        shouldShowOnlyPinnedSources = hasPinnedSources,
-        mode = 'source',
-    } = state ?? STABLE_EMPTY_OBJECT;
-    const isMigrateMode = ['migrate.select.single', 'migrate.select.bulk'].includes(mode);
+    const { title = t`Global Search`, shouldShowOnlyPinnedSources = hasPinnedSources } = state ?? STABLE_EMPTY_OBJECT;
 
     const filteredSources = useMemo(
         () =>
@@ -504,6 +512,13 @@ export const SearchAll = ({
                         mangaId={mangaId ? Number(mangaId) : undefined}
                     />
                 ))}
+                {isMigrateMode && hasKotatsuSources && (
+                    <Box sx={{ display: 'flex', justifyContent: 'center', py: 2 }}>
+                        <Button variant="outlined" onClick={() => setIncludeKotatsuSources((current) => !current)}>
+                            {includeKotatsuSources ? t`Hide Kotatsu sources` : t`Also search Kotatsu sources`}
+                        </Button>
+                    </Box>
+                )}
             </Box>
         </Box>
     );
