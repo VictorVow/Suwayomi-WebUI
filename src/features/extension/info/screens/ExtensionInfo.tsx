@@ -99,7 +99,7 @@ export const ExtensionInfo = () => {
                 <ActionButton {...{ ...extension, isInstalled: true, hasUpdate: false }} />
                 {extension.hasUpdate && !extension.isObsolete && <ActionButton {...extension} />}
             </Stack>
-            <Typography variant="body1" sx={{ px: 1 }}>
+            <Typography variant="h6" sx={{ px: 1 }}>
                 <Link
                     component={RouterLink}
                     to={`${AppRoutes.library.path()}?extension=${encodeURIComponent(extension.pkgName)}`}
