@@ -140,7 +140,7 @@ function ShowSourceHomepage(): JSX.Element {
     useAppTitleAndAction(
         source?.displayName ?? t`Source`,
         <>
-            <AppbarSearch />
+            <AppbarSearch liveSearch={false} />
             <CustomTooltip title={t`Open in WebView`} disabled={!source?.baseUrl}>
                 <IconButton
                     disabled={!source?.baseUrl}

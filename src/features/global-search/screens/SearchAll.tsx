@@ -400,7 +400,7 @@ export const SearchAll = ({
     useAppTitleAndAction(
         title,
         <>
-            <AppbarSearch isClosable={false} />
+            <AppbarSearch isClosable={false} liveSearch={false} />
             <SourceLanguageSelect
                 selectedLanguages={shownLangs}
                 setSelectedLanguages={setShownLangs}

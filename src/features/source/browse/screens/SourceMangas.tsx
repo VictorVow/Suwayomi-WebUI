@@ -444,7 +444,7 @@ export function SourceMangas() {
     useAppTitleAndAction(
         source?.displayName ?? t`Source`,
         <>
-            <AppbarSearch />
+            <AppbarSearch liveSearch={false} />
             <SourceGridLayout />
             <CustomTooltip title={t`Open in WebView`} disabled={!source?.baseUrl}>
                 <IconButton

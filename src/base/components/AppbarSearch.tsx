@@ -6,7 +6,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import SearchIcon from '@mui/icons-material/Search';
 import IconButton from '@mui/material/IconButton';
 import { useQueryParam, StringParam } from 'use-query-params';
@@ -17,13 +17,15 @@ import { useLingui } from '@lingui/react/macro';
 import { CustomTooltip } from '@/base/components/CustomTooltip.tsx';
 import { SearchTextField } from '@/base/components/inputs/SearchTextField.tsx';
 import { SearchParam } from '@/base/Base.types.ts';
+import { useDebounce } from '@/base/hooks/useDebounce.ts';
 
 interface IProps {
     isClosable?: boolean;
+    liveSearch?: boolean;
 }
 
 export const AppbarSearch: React.FunctionComponent<IProps> = (props) => {
-    const { isClosable = true } = props;
+    const { isClosable = true, liveSearch = true } = props;
 
     const theme = useTheme();
     const { t } = useLingui();
@@ -36,6 +38,13 @@ export const AppbarSearch: React.FunctionComponent<IProps> = (props) => {
     const inputRef = React.useRef<HTMLInputElement>(undefined);
 
     const [searchString, setSearchString] = useState(query ?? '');
+    const debouncedSearchString = useDebounce(searchString, 300);
+
+    useEffect(() => {
+        if (liveSearch && isSearchOpen && debouncedSearchString !== (query ?? '')) {
+            setQuery(debouncedSearchString || undefined, 'replaceIn');
+        }
+    }, [debouncedSearchString]);
 
     if (prevLocationKey !== location.key) {
         setPrevLocationKey(location.key);
