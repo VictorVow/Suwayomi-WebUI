@@ -289,6 +289,10 @@ msgstr "{currentAutoUpdateIntervalHours}h"
 msgid "{currentDownloadAheadLimit, plural, one {# Chapter} other {# Chapters}}"
 msgstr "{currentDownloadAheadLimit, plural, one {# Chapter} other {# Chapters}}"
 
+#: src/features/extension/info/screens/ExtensionInfo.tsx
+msgid "{libraryCount} in Library"
+msgstr "{libraryCount} in Library"
+
 #: src/features/chapter/components/ChapterList.tsx
 #: src/features/chapter/components/MissingChaptersInfoSeparator.tsx
 msgid "{missingChapterCount, plural, one {Missing # chapter} other {Missing # chapters}}"

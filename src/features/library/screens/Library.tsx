@@ -36,6 +36,8 @@ import { defaultPromiseErrorHandler } from '@/lib/DefaultPromiseErrorHandler.ts'
 import type {
     GetCategoriesLibraryQuery,
     GetCategoriesLibraryQueryVariables,
+    GetMangasLibraryQuery,
+    GetMangasLibraryQueryVariables,
     GetLibraryMangaCountQuery,
     GetLibraryMangaCountQueryVariables,
     MangaChapterStatFieldsFragment,
@@ -44,7 +46,7 @@ import { GET_CATEGORIES_LIBRARY } from '@/lib/graphql/category/CategoryQuery.ts'
 import { Mangas } from '@/features/manga/services/Mangas.ts';
 import { MANGA_CHAPTER_STAT_FIELDS } from '@/lib/graphql/manga/MangaFragments.ts';
 import { useMetadataServerSettings } from '@/features/settings/services/ServerSettingsMetadata.ts';
-import { GET_LIBRARY_MANGA_COUNT } from '@/lib/graphql/manga/MangaQuery.ts';
+import { GET_LIBRARY_MANGA_COUNT, GET_MANGAS_LIBRARY } from '@/lib/graphql/manga/MangaQuery.ts';
 import { useAppTitle } from '@/features/navigation-bar/hooks/useAppTitle.ts';
 import { useAppAction } from '@/features/navigation-bar/hooks/useAppAction.ts';
 import { AppRoutes } from '@/base/AppRoute.constants.ts';
@@ -111,6 +113,9 @@ export function Library({
 
     const [tabSearchParam, setTabSearchParam] = useQueryParam(SearchParam.TAB, NumberParam);
     const [query] = useQueryParam(SearchParam.QUERY, StringParam);
+    // ?extension=<pkgName> — linked from an extension's info page; shows only
+    // the library items sourced from that extension, bypassing category tabs.
+    const [extensionFilter] = useQueryParam('extension', StringParam);
 
     const activeTab: (typeof tabs)[number] | undefined = tabs.find((tab) => tab.id === tabSearchParam) ?? tabs[0];
 
@@ -119,8 +124,27 @@ export function Library({
         error: mangaError,
         loading: mangaLoading,
         refetch: refetchCategoryMangas,
-    } = requestManager.useGetCategoryMangas(activeTab?.id, { skip: !activeTab }, contentType);
-    const categoryMangas = categoryMangaResponse?.mangas.nodes ?? STABLE_EMPTY_ARRAY;
+    } = requestManager.useGetCategoryMangas(activeTab?.id, { skip: !activeTab || !!extensionFilter }, contentType);
+
+    const extensionSourcesResponse = requestManager.useGetSourceList(undefined, { skip: !extensionFilter });
+    const extensionSourceIds = useMemo(
+        () =>
+            (extensionSourcesResponse.data?.sources.nodes ?? [])
+                .filter((source) => source.extension.pkgName === extensionFilter)
+                .map((source) => source.id),
+        [extensionSourcesResponse.data, extensionFilter],
+    );
+    const extensionMangaResponse = requestManager.useGetMangas<GetMangasLibraryQuery, GetMangasLibraryQueryVariables>(
+        GET_MANGAS_LIBRARY,
+        {
+            condition: { inLibrary: true, contentType },
+            filter: { sourceId: { in: extensionSourceIds } },
+        },
+        { skip: !extensionFilter || !extensionSourceIds.length },
+    );
+    const categoryMangas = extensionFilter
+        ? (extensionMangaResponse.data?.mangas.nodes ?? STABLE_EMPTY_ARRAY)
+        : (categoryMangaResponse?.mangas.nodes ?? STABLE_EMPTY_ARRAY);
     const {
         visibleMangas: mangas,
         showFilteredOutMessage,
@@ -131,6 +155,12 @@ export function Library({
         () => refetchCategoryMangas().catch(defaultPromiseErrorHandler('Library::refetchCategoryMangas')),
         [refetchCategoryMangas, activeTab],
     );
+
+    const effMangaError = extensionFilter ? extensionMangaResponse.error : mangaError;
+    const effMangaLoading = extensionFilter ? extensionMangaResponse.loading : mangaLoading;
+    const effRetry = extensionFilter
+        ? () => extensionMangaResponse.refetch().catch(defaultPromiseErrorHandler('Library::refetchExtensionMangas'))
+        : retryFetchCategoryMangas;
 
     const mangaIds = useMemo(() => mangas.map((manga) => manga.id), [mangas]);
 
@@ -282,11 +312,11 @@ export function Library({
         return <LoadingPlaceholder />;
     }
 
-    if (tabs.length === 0) {
+    if (!extensionFilter && tabs.length === 0) {
         return <EmptyViewAbsoluteCentered message={emptyLibraryMessage ?? t`Your library is empty`} />;
     }
 
-    if (tabs.length === 1) {
+    if (extensionFilter || tabs.length === 1) {
         return (
             <>
                 {triggerGlobalSearchButton}
@@ -295,17 +325,17 @@ export function Library({
                     key={filterKey}
                     mangas={mangas}
                     message={
-                        mangaError
+                        effMangaError
                             ? (failedToLoadMessage ?? t`Could not load manga`)
                             : (emptyLibraryMessage ?? t`Your library is empty`)
                     }
-                    messageExtra={mangaError?.message}
-                    isLoading={mangaLoading}
+                    messageExtra={effMangaError?.message}
+                    isLoading={effMangaLoading}
                     selectedMangaIds={selectedItemIds}
                     isSelectModeActive={isSelectModeActive}
                     handleSelection={handleSelect}
-                    showFilteredOutMessage={!mangaError && showFilteredOutMessage}
-                    retry={mangaError && retryFetchCategoryMangas}
+                    showFilteredOutMessage={!effMangaError && showFilteredOutMessage}
+                    retry={effMangaError && effRetry}
                 />
                 {selectionFab}
             </>

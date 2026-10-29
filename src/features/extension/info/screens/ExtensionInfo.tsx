@@ -7,8 +7,10 @@
  */
 
 import Box from '@mui/material/Box';
+import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
-import { useParams } from 'react-router-dom';
+import Typography from '@mui/material/Typography';
+import { useParams, Link as RouterLink } from 'react-router-dom';
 import { useMemo } from 'react';
 import { useLingui } from '@lingui/react/macro';
 import { useAppTitle } from '@/features/navigation-bar/hooks/useAppTitle.ts';
@@ -20,6 +22,9 @@ import { LoadingPlaceholder } from '@/base/components/feedback/LoadingPlaceholde
 import { languageSortComparator } from '@/base/utils/Languages.ts';
 import { assertIsDefined } from '@/base/Asserts.ts';
 import { Sources } from '@/features/source/services/Sources.ts';
+import { AppRoutes } from '@/base/AppRoute.constants.ts';
+import { GET_MANGAS_LIBRARY } from '@/lib/graphql/manga/MangaQuery.ts';
+import type { GetMangasLibraryQuery, GetMangasLibraryQueryVariables } from '@/lib/graphql/generated/graphql.ts';
 import { Header } from '@/features/extension/info/components/Header.tsx';
 import { Meta } from '@/features/extension/info/components/Meta.tsx';
 import { ActionButton } from '@/features/extension/info/components/ActionButton.tsx';
@@ -45,6 +50,17 @@ export const ExtensionInfo = () => {
             .filter((source) => source.extension.pkgName === extension?.pkgName)
             .sort((a, b) => languageSortComparator(Sources.getLanguage(a), Sources.getLanguage(b)));
     }, [extension?.pkgName, sourcesResponse.data]);
+
+    const sourceIds = useMemo(() => sources.map((s) => s.id), [sources]);
+    const libraryCountResponse = requestManager.useGetMangas<GetMangasLibraryQuery, GetMangasLibraryQueryVariables>(
+        GET_MANGAS_LIBRARY,
+        {
+            condition: { inLibrary: true },
+            filter: { sourceId: { in: sourceIds } },
+            first: 0,
+        },
+    );
+    const libraryCount = libraryCountResponse.data?.mangas.totalCount ?? 0;
 
     const isLoading = extensionResponse.loading || sourcesResponse.loading;
     const error = extensionResponse.error || sourcesResponse.error;
@@ -83,6 +99,14 @@ export const ExtensionInfo = () => {
                 <ActionButton {...{ ...extension, isInstalled: true, hasUpdate: false }} />
                 {extension.hasUpdate && !extension.isObsolete && <ActionButton {...extension} />}
             </Stack>
+            <Typography variant="body2" sx={{ px: 1 }}>
+                <Link
+                    component={RouterLink}
+                    to={`${AppRoutes.library.path()}?extension=${encodeURIComponent(extension.pkgName)}`}
+                >
+                    {t`${libraryCount} in Library`}
+                </Link>
+            </Typography>
             <Box sx={{ px: 1 }}>
                 {sources.map((source) => (
                     <SourceCard key={source.id} {...source} />
