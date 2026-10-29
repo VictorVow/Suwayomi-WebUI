@@ -58,9 +58,11 @@ export const toUniqueLanguageCodes = (codes: string[]): string[] => {
     const languages = codes.map((code) => getLanguage(code));
     const languagesByIsoCode = Object.groupBy(languages, (language) => language.isoCode);
 
+    // Normalize to the ISO code (e.g. "en-US" -> "en") so the stored/selected
+    // values compare equal to source `lang` codes, which are always bare ISO.
     return Object.entries(languagesByIsoCode)
         .filter(([, languagesOfIsoCode]) => !!languagesOfIsoCode?.length)
-        .map(([, languagesOfIsoCode]) => languagesOfIsoCode![0].orgCode);
+        .map(([isoCode]) => isoCode);
 };
 
 export const toComparableLanguage = (code: string): string => getLanguage(code).isoCode;
