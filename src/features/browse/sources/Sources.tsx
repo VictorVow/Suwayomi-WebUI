@@ -10,6 +10,7 @@ import { useCallback, useMemo } from 'react';
 import IconButton from '@mui/material/IconButton';
 import TravelExploreIcon from '@mui/icons-material/TravelExplore';
 import { useNavigate } from 'react-router-dom';
+import { StringParam, useQueryParam } from 'use-query-params';
 import Typography from '@mui/material/Typography';
 import { useLingui } from '@lingui/react/macro';
 import { CustomTooltip } from '@/base/components/CustomTooltip.tsx';
@@ -32,9 +33,14 @@ import { StyledGroupItemWrapper } from '@/base/components/virtuoso/StyledGroupIt
 import { SourceLanguageSelect } from '@/features/source/components/SourceLanguageSelect.tsx';
 import { STABLE_EMPTY_ARRAY } from '@/base/Base.constants.ts';
 import { ContentType } from '@/lib/graphql/generated/graphql-base.types.ts';
+import { AppbarSearch } from '@/base/components/AppbarSearch.tsx';
+import { SearchParam } from '@/base/Base.types.ts';
+import { enhancedCleanup } from '@/base/utils/Strings.ts';
 
 export function Sources({ tabsMenuHeight, kotatsu = false }: { tabsMenuHeight: number; kotatsu?: boolean }) {
     const { t } = useLingui();
+
+    const [query] = useQueryParam(SearchParam.QUERY, StringParam);
 
     const { languages: shownLangs, setLanguages: setShownLangs } = SourceService.useLanguages();
     const {
@@ -61,8 +67,8 @@ export function Sources({ tabsMenuHeight, kotatsu = false }: { tabsMenuHeight: n
                 languages: shownLangs,
                 keepLocalSource: true,
                 enabled: true,
-            }),
-        [sources, shownLangs],
+            }).filter((source) => query == null || enhancedCleanup(source.name).includes(enhancedCleanup(query))),
+        [sources, shownLangs, query],
     );
     const sourcesForLanguageFilter = useMemo(
         () =>
@@ -118,6 +124,7 @@ export function Sources({ tabsMenuHeight, kotatsu = false }: { tabsMenuHeight: n
 
     useAppAction(
         <>
+            <AppbarSearch />
             <CustomTooltip title={t`Global Search`}>
                 <IconButton
                     onClick={() =>
