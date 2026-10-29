@@ -120,6 +120,7 @@ const compareSourcesBySearchResult = (
     return 0;
 };
 const TRIGGER_SEARCH_THRESHOLD = d(1).seconds.inWholeMilliseconds;
+const KOTATSU_SEARCH_BATCH_SIZE = 50;
 
 const NO_RESULTS_MESSAGE_BY_SCOPE: Record<SourceBrowseScope, MacroMessageDescriptor> = {
     manga: msg`No manga found`,
@@ -313,7 +314,7 @@ export const SearchAll = ({
     const sourceBrowseScope = useSourceBrowseScope();
     const mode = state?.mode ?? 'source';
     const isMigrateMode = ['migrate.select.single', 'migrate.select.bulk'].includes(mode);
-    const [includeKotatsuSources, setIncludeKotatsuSources] = useState(false);
+    const [kotatsuSourceLimit, setKotatsuSourceLimit] = useState(0);
 
     const { data, loading, error, refetch } = requestManager.useGetSourceList({
         contentType: CONTENT_TYPE_BY_SCOPE[sourceBrowseScope],
@@ -321,21 +322,24 @@ export const SearchAll = ({
     const tmpSources = data?.sources.nodes ?? STABLE_EMPTY_ARRAY;
     const isInDestinationScope = (source: SourceIdInfo) =>
         !migrationDestinationSourceIds || migrationDestinationSourceIds.includes(source.id);
-    const sources = useMemo(
-        () =>
-            tmpSources.filter((source) => {
-                if (!isInDestinationScope(source)) {
-                    return false;
+    const sources = useMemo(() => {
+        let kotatsuSeen = 0;
+        return tmpSources.filter((source) => {
+            if (!isInDestinationScope(source)) {
+                return false;
+            }
+            if (isMigrateMode) {
+                if (Sources.isKotatsu(source)) {
+                    kotatsuSeen += 1;
+                    return kotatsuSeen <= kotatsuSourceLimit;
                 }
-                if (isMigrateMode) {
-                    return !Sources.isKotatsu(source) || includeKotatsuSources;
-                }
-                return Sources.isKotatsu(source) === !!state?.kotatsu;
-            }),
-        [tmpSources, migrationDestinationSourceIds, isMigrateMode, includeKotatsuSources, state?.kotatsu],
-    );
-    const hasKotatsuSources = useMemo(
-        () => tmpSources.some((source) => isInDestinationScope(source) && Sources.isKotatsu(source)),
+                return true;
+            }
+            return Sources.isKotatsu(source) === !!state?.kotatsu;
+        });
+    }, [tmpSources, migrationDestinationSourceIds, isMigrateMode, kotatsuSourceLimit, state?.kotatsu]);
+    const totalKotatsuSourceCount = useMemo(
+        () => tmpSources.filter((source) => isInDestinationScope(source) && Sources.isKotatsu(source)).length,
         [tmpSources, migrationDestinationSourceIds],
     );
 
@@ -512,13 +516,26 @@ export const SearchAll = ({
                         mangaId={mangaId ? Number(mangaId) : undefined}
                     />
                 ))}
-                {isMigrateMode && hasKotatsuSources && (
-                    <Box sx={{ display: 'flex', justifyContent: 'center', py: 2 }}>
-                        <Button variant="outlined" onClick={() => setIncludeKotatsuSources((current) => !current)}>
-                            {includeKotatsuSources ? t`Hide Kotatsu sources` : t`Also search Kotatsu sources`}
-                        </Button>
-                    </Box>
-                )}
+                {isMigrateMode &&
+                    kotatsuSourceLimit < totalKotatsuSourceCount &&
+                    (() => {
+                        const nextBatchSize = Math.min(
+                            KOTATSU_SEARCH_BATCH_SIZE,
+                            totalKotatsuSourceCount - kotatsuSourceLimit,
+                        );
+                        return (
+                            <Box sx={{ display: 'flex', justifyContent: 'center', py: 2 }}>
+                                <Button
+                                    variant="outlined"
+                                    onClick={() => setKotatsuSourceLimit((current) => current + nextBatchSize)}
+                                >
+                                    {kotatsuSourceLimit === 0
+                                        ? t`Also search Kotatsu sources`
+                                        : t`Search ${nextBatchSize} more Kotatsu sources`}
+                                </Button>
+                            </Box>
+                        );
+                    })()}
             </Box>
         </Box>
     );

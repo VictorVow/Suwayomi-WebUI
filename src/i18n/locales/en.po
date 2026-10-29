@@ -2102,10 +2102,6 @@ msgstr "Hide entries already in library"
 msgid "Hide history"
 msgstr "Hide history"
 
-#: src/features/global-search/screens/SearchAll.tsx
-msgid "Hide Kotatsu sources"
-msgstr "Hide Kotatsu sources"
-
 #: src/features/settings/screens/ServerSettings.tsx
 msgid "Hikari connection pool"
 msgstr "Hikari connection pool"
@@ -3701,6 +3697,10 @@ msgstr "Scroll notches to advance"
 #: src/features/novel/reader/components/NovelReaderSelectionBar.tsx
 msgid "Search"
 msgstr "Search"
+
+#: src/features/global-search/screens/SearchAll.tsx
+msgid "Search {nextBatchSize} more Kotatsu sources"
+msgstr "Search {nextBatchSize} more Kotatsu sources"
 
 #: src/features/migration/components/migration-entry/MigrationDestinationEntry.tsx
 #: src/features/migration/Migration.constants.ts
