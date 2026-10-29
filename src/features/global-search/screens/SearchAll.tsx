@@ -322,6 +322,9 @@ export const SearchAll = ({
     const tmpSources = data?.sources.nodes ?? STABLE_EMPTY_ARRAY;
     const isInDestinationScope = (source: SourceIdInfo) =>
         !migrationDestinationSourceIds || migrationDestinationSourceIds.includes(source.id);
+    const isKotatsuBrowseMode = !isMigrateMode && !!state?.kotatsu;
+    const isBatchedKotatsu = isMigrateMode || isKotatsuBrowseMode;
+    const effectiveKotatsuLimit = kotatsuSourceLimit + (isKotatsuBrowseMode ? KOTATSU_SEARCH_BATCH_SIZE : 0);
     const sources = useMemo(() => {
         let kotatsuSeen = 0;
         return tmpSources.filter((source) => {
@@ -331,13 +334,20 @@ export const SearchAll = ({
             if (isMigrateMode) {
                 if (Sources.isKotatsu(source)) {
                     kotatsuSeen += 1;
-                    return kotatsuSeen <= kotatsuSourceLimit;
+                    return kotatsuSeen <= effectiveKotatsuLimit;
                 }
                 return true;
             }
-            return Sources.isKotatsu(source) === !!state?.kotatsu;
+            if (Sources.isKotatsu(source)) {
+                if (!state?.kotatsu) {
+                    return false;
+                }
+                kotatsuSeen += 1;
+                return kotatsuSeen <= effectiveKotatsuLimit;
+            }
+            return !state?.kotatsu;
         });
-    }, [tmpSources, migrationDestinationSourceIds, isMigrateMode, kotatsuSourceLimit, state?.kotatsu]);
+    }, [tmpSources, migrationDestinationSourceIds, isMigrateMode, effectiveKotatsuLimit, state?.kotatsu]);
     const totalKotatsuSourceCount = useMemo(
         () => tmpSources.filter((source) => isInDestinationScope(source) && Sources.isKotatsu(source)).length,
         [tmpSources, migrationDestinationSourceIds],
@@ -516,12 +526,12 @@ export const SearchAll = ({
                         mangaId={mangaId ? Number(mangaId) : undefined}
                     />
                 ))}
-                {isMigrateMode &&
-                    kotatsuSourceLimit < totalKotatsuSourceCount &&
+                {isBatchedKotatsu &&
+                    effectiveKotatsuLimit < totalKotatsuSourceCount &&
                     (() => {
                         const nextBatchSize = Math.min(
                             KOTATSU_SEARCH_BATCH_SIZE,
-                            totalKotatsuSourceCount - kotatsuSourceLimit,
+                            totalKotatsuSourceCount - effectiveKotatsuLimit,
                         );
                         return (
                             <Box sx={{ display: 'flex', justifyContent: 'center', py: 2 }}>
@@ -529,7 +539,7 @@ export const SearchAll = ({
                                     variant="outlined"
                                     onClick={() => setKotatsuSourceLimit((current) => current + nextBatchSize)}
                                 >
-                                    {kotatsuSourceLimit === 0
+                                    {effectiveKotatsuLimit === 0
                                         ? t`Also search Kotatsu sources`
                                         : t`Search ${nextBatchSize} more Kotatsu sources`}
                                 </Button>
