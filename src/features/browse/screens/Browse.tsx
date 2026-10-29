@@ -51,6 +51,7 @@ export function Browse() {
             >
                 <Tab value={BrowseTab.SOURCES} sx={{ textTransform: 'none' }} label={t`Source`} />
                 <Tab value={BrowseTab.EXTENSIONS} sx={{ textTransform: 'none' }} label={t`Extension`} />
+                <Tab value={BrowseTab.KOTATSU} sx={{ textTransform: 'none' }} label={t`Kotatsu`} />
                 <Tab value={BrowseTab.MIGRATE} sx={{ textTransform: 'none' }} label={t`Migrate`} />
             </TabsMenu>
             <TabPanel index={BrowseTab.SOURCE_DEPRECATED} currentIndex={tabName}>
@@ -61,6 +62,9 @@ export function Browse() {
             </TabPanel>
             <TabPanel index={BrowseTab.EXTENSIONS} currentIndex={tabName}>
                 <Extensions tabsMenuHeight={tabsMenuHeight} />
+            </TabPanel>
+            <TabPanel index={BrowseTab.KOTATSU} currentIndex={tabName}>
+                <Sources tabsMenuHeight={tabsMenuHeight} kotatsu />
             </TabPanel>
             <TabPanel index={BrowseTab.MIGRATE} currentIndex={tabName}>
                 <Migration tabsMenuHeight={tabsMenuHeight} />

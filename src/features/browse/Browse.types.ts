@@ -21,5 +21,6 @@ export enum BrowseTab {
     SOURCE_DEPRECATED = 'source',
     SOURCES = 'sources',
     EXTENSIONS = 'extensions',
+    KOTATSU = 'kotatsu',
     MIGRATE = 'migrate',
 }

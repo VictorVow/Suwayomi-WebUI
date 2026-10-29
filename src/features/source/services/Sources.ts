@@ -38,6 +38,8 @@ import { SOURCE_BASE_FIELDS } from '@/lib/graphql/source/SourceFragments.ts';
 export class Sources {
     static readonly LOCAL_SOURCE_ID = '0';
 
+    static readonly KOTATSU_PKG_NAME = 'kotatsu';
+
     static getIds(sources: SourceIdInfo[]): SourceIdInfo['id'][] {
         return sources.map((source) => source.id);
     }
@@ -59,6 +61,10 @@ export class Sources {
 
     static isLocalSource(source: SourceIdInfo): boolean {
         return source.id === Sources.LOCAL_SOURCE_ID;
+    }
+
+    static isKotatsu(source: { extension?: { pkgName: string } | null }): boolean {
+        return source.extension?.pkgName === Sources.KOTATSU_PKG_NAME;
     }
 
     static getLanguage(source: SourceIdInfo & SourceLanguageInfo): string {

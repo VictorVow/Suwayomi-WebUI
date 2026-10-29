@@ -33,7 +33,7 @@ import { SourceLanguageSelect } from '@/features/source/components/SourceLanguag
 import { STABLE_EMPTY_ARRAY } from '@/base/Base.constants.ts';
 import { ContentType } from '@/lib/graphql/generated/graphql-base.types.ts';
 
-export function Sources({ tabsMenuHeight }: { tabsMenuHeight: number }) {
+export function Sources({ tabsMenuHeight, kotatsu = false }: { tabsMenuHeight: number; kotatsu?: boolean }) {
     const { t } = useLingui();
 
     const { languages: shownLangs, setLanguages: setShownLangs } = SourceService.useLanguages();
@@ -49,7 +49,11 @@ export function Sources({ tabsMenuHeight }: { tabsMenuHeight: number }) {
     } = requestManager.useGetSourceList({
         contentType: ContentType.Manga,
     });
-    const sources = data?.sources.nodes ?? STABLE_EMPTY_ARRAY;
+    const allSources = data?.sources.nodes ?? STABLE_EMPTY_ARRAY;
+    const sources = useMemo(
+        () => allSources.filter((source) => SourceService.isKotatsu(source) === kotatsu),
+        [allSources, kotatsu],
+    );
     const filteredSources = useMemo(
         () =>
             SourceService.filter(sources, {
@@ -115,7 +119,17 @@ export function Sources({ tabsMenuHeight }: { tabsMenuHeight: number }) {
     useAppAction(
         <>
             <CustomTooltip title={t`Global Search`}>
-                <IconButton onClick={() => navigate(AppRoutes.sources.children.searchAll.path())} color="inherit">
+                <IconButton
+                    onClick={() =>
+                        navigate(AppRoutes.sources.children.searchAll.path(), {
+                            state: AppRoutes.sources.children.searchAll.state({
+                                kotatsu,
+                                title: kotatsu ? t`Kotatsu Global Search` : undefined,
+                            }),
+                        })
+                    }
+                    color="inherit"
+                >
                     <TravelExploreIcon />
                 </IconButton>
             </CustomTooltip>
@@ -126,7 +140,7 @@ export function Sources({ tabsMenuHeight }: { tabsMenuHeight: number }) {
                 sources={sourcesForLanguageFilter}
             />
         </>,
-        [t, shownLangs, sourceLanguages, sourcesForLanguageFilter],
+        [t, kotatsu, shownLangs, sourceLanguages, sourcesForLanguageFilter],
     );
 
     if (isLoading) {

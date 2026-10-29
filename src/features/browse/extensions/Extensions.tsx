@@ -51,6 +51,7 @@ import type { MetadataBrowseSettings } from '@/features/browse/Browse.types.ts';
 import { useAppAction } from '@/features/navigation-bar/hooks/useAppAction.ts';
 import { SearchParam } from '@/base/Base.types.ts';
 import { i18n } from '@/i18n';
+import { Sources } from '@/features/source/services/Sources.ts';
 
 const LANGUAGE = 0;
 const EXTENSIONS = 1;
@@ -147,7 +148,9 @@ export function Extensions({ tabsMenuHeight }: { tabsMenuHeight: number }) {
     const allExtensions = useMemo(
         () =>
             (data?.fetchExtensions?.extensions ?? STABLE_EMPTY_ARRAY).filter(
-                (extension) => extensionContentKindOf(extension.kind, extension.pkgName) === 'MANGA',
+                (extension) =>
+                    extensionContentKindOf(extension.kind, extension.pkgName) === 'MANGA' &&
+                    extension.pkgName !== Sources.KOTATSU_PKG_NAME,
             ),
         [data],
     );

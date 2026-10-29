@@ -2363,6 +2363,14 @@ msgstr "Korea"
 msgid "KOReader Sync"
 msgstr "KOReader Sync"
 
+#: src/features/browse/screens/Browse.tsx
+msgid "Kotatsu"
+msgstr "Kotatsu"
+
+#: src/features/browse/sources/Sources.tsx
+msgid "Kotatsu Global Search"
+msgstr "Kotatsu Global Search"
+
 #: src/features/reader/settings/layout/components/ReaderSettingTapZoneLayout.tsx
 msgid "L-Shape"
 msgstr "L-Shape"

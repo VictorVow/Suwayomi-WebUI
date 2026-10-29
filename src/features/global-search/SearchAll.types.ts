@@ -12,4 +12,6 @@ export interface RouteStateSourcesSearchAll {
     title?: string;
     shouldShowOnlyPinnedSources?: boolean;
     mode?: MangaCardMode;
+    /** source mode only: search the built-in Kotatsu sources instead of the extension sources */
+    kotatsu?: boolean;
 }

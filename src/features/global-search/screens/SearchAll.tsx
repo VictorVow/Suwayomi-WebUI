@@ -319,9 +319,11 @@ export const SearchAll = ({
     const sources = useMemo(
         () =>
             tmpSources.filter(
-                (source) => !migrationDestinationSourceIds || migrationDestinationSourceIds.includes(source.id),
+                (source) =>
+                    (!migrationDestinationSourceIds || migrationDestinationSourceIds.includes(source.id)) &&
+                    (state?.mode?.startsWith('migrate') || Sources.isKotatsu(source) === !!state?.kotatsu),
             ),
-        [tmpSources, migrationDestinationSourceIds],
+        [tmpSources, migrationDestinationSourceIds, state?.mode, state?.kotatsu],
     );
 
     const [sourceToLoadingStateMap, setSourceToLoadingStateMap] = useState<SourceToLoadingStateMap>(new Map());
