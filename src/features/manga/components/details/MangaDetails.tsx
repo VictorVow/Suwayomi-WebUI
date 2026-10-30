@@ -11,6 +11,7 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import { styled } from '@mui/material/styles';
 import type { ComponentProps, ReactNode } from 'react';
 import { useEffect } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
@@ -29,7 +30,7 @@ import { RelatedMangaButton } from '@/features/manga/components/RelatedMangaButt
 import { useManageMangaLibraryState } from '@/features/manga/hooks/useManageMangaLibraryState.tsx';
 import { Metadata as BaseMetadata } from '@/base/components/texts/Metadata.tsx';
 import { defaultPromiseErrorHandler } from '@/lib/DefaultPromiseErrorHandler.ts';
-import type { MangaType, SourceType } from '@/lib/graphql/generated/graphql-base.types.ts';
+import type { ExtensionType, MangaType, SourceType } from '@/lib/graphql/generated/graphql-base.types.ts';
 import { useMetadataServerSettings } from '@/features/settings/services/ServerSettingsMetadata.ts';
 import { MANGA_STATUS_TO_TRANSLATION } from '@/features/manga/Manga.constants.ts';
 import type {
@@ -57,6 +58,7 @@ import { requestManager } from '@/lib/requests/RequestManager.ts';
 import { IconBrowser } from '@/assets/icons/IconBrowser.tsx';
 import { IconWebView } from '@/assets/icons/IconWebView.tsx';
 import { MediaQuery } from '@/base/utils/MediaQuery.tsx';
+import { AppRoutes } from '@/base/AppRoute.constants.ts';
 
 const DetailsWrapper = styled('div')(({ theme }) => ({
     display: 'flex',
@@ -182,17 +184,33 @@ const OpenSourceButton = ({ url }: { url?: string | null }) => {
     );
 };
 
-function getSourceName(source?: Pick<SourceType, 'id' | 'displayName'> | null): string {
-    if (!source) {
-        return translate`Unknown`;
+const SourceNameLink = ({
+    source,
+}: {
+    source?: Pick<SourceType, 'id' | 'displayName'> & {
+        extension?: Pick<ExtensionType, 'pkgName'> | null;
+    } | null;
+}) => {
+    let sourceName: string = translate`Unknown`;
+    if (source) {
+        sourceName = Sources.isLocalSource(source) ? translate`Local source` : (source.displayName ?? source.id);
     }
 
-    if (Sources.isLocalSource(source)) {
-        return translate`Local source`;
+    const pkgName = source?.extension?.pkgName;
+    if (!pkgName) {
+        return sourceName;
     }
 
-    return source.displayName ?? source.id;
-}
+    return (
+        <Link
+            component={RouterLink}
+            to={AppRoutes.extension.children.info.path(pkgName)}
+            sx={{ textDecoration: 'none', color: 'inherit' }}
+        >
+            {sourceName}
+        </Link>
+    );
+};
 
 const valuesToJoinedSearchLinks = (
     values: string[] | undefined,
@@ -223,7 +241,9 @@ export const MangaDetails = ({
         MangaThumbnailInfo &
         MangaSourceIdInfo &
         MangaTrackRecordInfo & {
-            source?: Pick<SourceType, 'id' | 'displayName'> | null;
+            source?: (Pick<SourceType, 'id' | 'displayName'> & {
+                extension?: Pick<ExtensionType, 'pkgName'> | null;
+            }) | null;
         };
     mode: MangaLocationState['mode'];
 }) => {
@@ -281,7 +301,7 @@ export const MangaDetails = ({
                             />
                         )}
                         <Metadata title={t`Status`} value={t(MANGA_STATUS_TO_TRANSLATION[manga.status])} />
-                        <Metadata title={t`Source`} value={getSourceName(manga.source)} />
+                        <Metadata title={t`Source`} value={<SourceNameLink source={manga.source} />} />
                     </MetadataContainer>
                 </ThumbnailMetadataWrapper>
                 <MangaButtonsContainer>

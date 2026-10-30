@@ -1750,6 +1750,7 @@ export type MangaScreenFieldsFragment = {
         lang: string;
         iconUrl: string;
         kind: Types.SourceKind;
+        extension: { __typename: 'ExtensionType'; pkgName: string };
     } | null;
     trackRecords: {
         __typename: 'TrackRecordNodeList';

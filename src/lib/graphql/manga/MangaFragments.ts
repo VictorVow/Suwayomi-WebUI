@@ -191,6 +191,9 @@ export const MANGA_SCREEN_FIELDS = gql`
             id
             name
             displayName
+            extension {
+                pkgName
+            }
         }
 
         trackRecords {
