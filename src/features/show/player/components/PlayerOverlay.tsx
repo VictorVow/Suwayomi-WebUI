@@ -7,6 +7,7 @@
  */
 
 import { useEffect, useRef, useState } from 'react';
+import CircularProgress from '@mui/material/CircularProgress';
 import IconButton from '@mui/material/IconButton';
 import Slider from '@mui/material/Slider';
 import Stack from '@mui/material/Stack';
@@ -197,114 +198,145 @@ export const PlayerOverlay = ({
                 position: 'absolute',
                 inset: 0,
                 color: 'common.white',
-                opacity: visible ? 1 : 0,
-                transition: 'opacity 0.2s',
-                pointerEvents: visible ? 'auto' : 'none',
-                background: visible
-                    ? 'linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 25%, rgba(0,0,0,0) 75%, rgba(0,0,0,0.6) 100%)'
-                    : 'none',
+                // Always receive mouse events so the overlay can be re-shown —
+                // with pointerEvents:none the hidden overlay can never see a
+                // mousemove and stays gone for good.
                 zIndex: 1,
             }}
         >
-            {/* Top bar */}
-            <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between', p: 1, gap: 1 }}>
-                <Box sx={{ minWidth: 0 }}>
-                    {title && (
-                        <Typography variant="subtitle1" noWrap sx={{ fontWeight: 'bold' }}>
-                            {title}
-                        </Typography>
-                    )}
-                    {episodeName && (
-                        <Typography variant="caption" noWrap sx={{ opacity: 0.8 }}>
-                            {episodeName}
-                        </Typography>
-                    )}
-                </Box>
-                <Stack direction="row" sx={{ alignItems: 'center', gap: 0.5 }}>
-                    {hasPrevEpisode && (
-                        <IconButton color="inherit" onClick={onPrevEpisode} aria-label={t`Previous episode`}>
-                            <SkipPreviousIcon />
-                        </IconButton>
-                    )}
-                    {hasNextEpisode && (
-                        <IconButton color="inherit" onClick={onNextEpisode} aria-label={t`Next episode`}>
-                            <SkipNextIcon />
-                        </IconButton>
-                    )}
-                    <IconButton color="inherit" aria-label={t`Settings`}>
-                        <SettingsIcon onClick={(e) => setSettingsAnchor(e.currentTarget as unknown as HTMLElement)} />
-                    </IconButton>
-                </Stack>
-            </Stack>
-
-            {/* Center controls */}
-            <Stack
-                direction="row"
+            {/* Visible chrome: fades out, but its interactive children keep
+                pointer-events only while shown so hidden buttons can't be
+                clicked. */}
+            <Box
                 sx={{
                     position: 'absolute',
-                    top: '50%',
-                    left: '50%',
-                    transform: 'translate(-50%, -50%)',
-                    alignItems: 'center',
-                    gap: 2,
+                    inset: 0,
+                    opacity: visible ? 1 : 0,
+                    transition: 'opacity 0.2s',
+                    pointerEvents: 'none',
+                    background: visible
+                        ? 'linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 25%, rgba(0,0,0,0) 75%, rgba(0,0,0,0.6) 100%)'
+                        : 'none',
+                    '& > *': { pointerEvents: visible ? 'auto' : 'none' },
                 }}
             >
-                <IconButton color="inherit" onClick={() => controller.seekBy(-10)} aria-label={t`Rewind 10 seconds`}>
-                    <Replay10Icon fontSize="large" />
-                </IconButton>
-                <IconButton color="inherit" onClick={controller.togglePlay} aria-label={t`Play/Pause`}>
-                    {controller.isPlaying ? (
-                        <PauseIcon sx={{ fontSize: 48 }} />
-                    ) : (
-                        <PlayArrowIcon sx={{ fontSize: 48 }} />
-                    )}
-                </IconButton>
-                <IconButton color="inherit" onClick={() => controller.seekBy(10)} aria-label={t`Forward 10 seconds`}>
-                    <Forward10Icon fontSize="large" />
-                </IconButton>
-            </Stack>
+                {/* Top bar */}
+                <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between', p: 1, gap: 1 }}>
+                    <Box sx={{ minWidth: 0 }}>
+                        {title && (
+                            <Typography variant="subtitle1" noWrap sx={{ fontWeight: 'bold' }}>
+                                {title}
+                            </Typography>
+                        )}
+                        {episodeName && (
+                            <Typography variant="caption" noWrap sx={{ opacity: 0.8 }}>
+                                {episodeName}
+                            </Typography>
+                        )}
+                    </Box>
+                    <Stack direction="row" sx={{ alignItems: 'center', gap: 0.5 }}>
+                        {hasPrevEpisode && (
+                            <IconButton color="inherit" onClick={onPrevEpisode} aria-label={t`Previous episode`}>
+                                <SkipPreviousIcon />
+                            </IconButton>
+                        )}
+                        {hasNextEpisode && (
+                            <IconButton color="inherit" onClick={onNextEpisode} aria-label={t`Next episode`}>
+                                <SkipNextIcon />
+                            </IconButton>
+                        )}
+                        <IconButton color="inherit" aria-label={t`Settings`}>
+                            <SettingsIcon
+                                onClick={(e) => setSettingsAnchor(e.currentTarget as unknown as HTMLElement)}
+                            />
+                        </IconButton>
+                    </Stack>
+                </Stack>
 
-            {/* Bottom bar: progress + time + volume + fullscreen */}
-            <Stack
-                direction="row"
-                sx={{ alignItems: 'center', gap: 1, p: 1, position: 'absolute', bottom: 0, left: 0, right: 0 }}
-            >
-                <Typography variant="caption" sx={{ fontVariantNumeric: 'tabular-nums', minWidth: 40 }}>
-                    {formatTime(controller.currentTime)}
-                </Typography>
-                <Slider
-                    value={controller.currentTime}
-                    min={0}
-                    max={controller.duration || 0}
-                    step={1}
-                    onChange={(_, v) => controller.seek(Number(v))}
-                    size="small"
-                    sx={{ color: 'common.white', flexGrow: 1 }}
-                />
-                <Typography variant="caption" sx={{ fontVariantNumeric: 'tabular-nums', minWidth: 40 }}>
-                    {formatTime(controller.duration)}
-                </Typography>
-                <IconButton color="inherit" onClick={controller.toggleMute} aria-label={t`Mute`}>
-                    {controller.isMuted || controller.volume === 0 ? <VolumeOffIcon /> : <VolumeUpIcon />}
-                </IconButton>
-                <Slider
-                    value={controller.isMuted ? 0 : controller.volume * 100}
-                    min={0}
-                    max={100}
-                    step={1}
-                    onChange={(_, v) => controller.setVolume(Number(v) / 100)}
-                    size="small"
-                    sx={{ color: 'common.white', width: 80 }}
-                />
-                {qualityLabel && (
-                    <Typography variant="caption" sx={{ opacity: 0.8, ml: 1 }}>
-                        {qualityLabel}
+                {/* Center controls */}
+                <Stack
+                    direction="row"
+                    sx={{
+                        position: 'absolute',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        alignItems: 'center',
+                        gap: 2,
+                    }}
+                >
+                    {controller.isBuffering && (
+                        <CircularProgress
+                            color="inherit"
+                            size={56}
+                            sx={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)' }}
+                        />
+                    )}
+                    <IconButton
+                        color="inherit"
+                        onClick={() => controller.seekBy(-10)}
+                        aria-label={t`Rewind 10 seconds`}
+                    >
+                        <Replay10Icon fontSize="large" />
+                    </IconButton>
+                    <IconButton color="inherit" onClick={controller.togglePlay} aria-label={t`Play/Pause`}>
+                        {controller.isPlaying ? (
+                            <PauseIcon sx={{ fontSize: 48 }} />
+                        ) : (
+                            <PlayArrowIcon sx={{ fontSize: 48 }} />
+                        )}
+                    </IconButton>
+                    <IconButton
+                        color="inherit"
+                        onClick={() => controller.seekBy(10)}
+                        aria-label={t`Forward 10 seconds`}
+                    >
+                        <Forward10Icon fontSize="large" />
+                    </IconButton>
+                </Stack>
+
+                {/* Bottom bar: progress + time + volume + fullscreen */}
+                <Stack
+                    direction="row"
+                    sx={{ alignItems: 'center', gap: 1, p: 1, position: 'absolute', bottom: 0, left: 0, right: 0 }}
+                >
+                    <Typography variant="caption" sx={{ fontVariantNumeric: 'tabular-nums', minWidth: 40 }}>
+                        {formatTime(controller.currentTime)}
                     </Typography>
-                )}
-                <IconButton color="inherit" onClick={controller.toggleFullscreen} aria-label={t`Fullscreen`}>
-                    {isFullscreen ? <FullscreenExitIcon /> : <FullscreenIcon />}
-                </IconButton>
-            </Stack>
+                    <Slider
+                        value={controller.currentTime}
+                        min={0}
+                        max={controller.duration || 0}
+                        step={1}
+                        onChange={(_, v) => controller.seek(Number(v))}
+                        size="small"
+                        sx={{ color: 'common.white', flexGrow: 1 }}
+                    />
+                    <Typography variant="caption" sx={{ fontVariantNumeric: 'tabular-nums', minWidth: 40 }}>
+                        {formatTime(controller.duration)}
+                    </Typography>
+                    <IconButton color="inherit" onClick={controller.toggleMute} aria-label={t`Mute`}>
+                        {controller.isMuted || controller.volume === 0 ? <VolumeOffIcon /> : <VolumeUpIcon />}
+                    </IconButton>
+                    <Slider
+                        value={controller.isMuted ? 0 : controller.volume * 100}
+                        min={0}
+                        max={100}
+                        step={1}
+                        onChange={(_, v) => controller.setVolume(Number(v) / 100)}
+                        size="small"
+                        sx={{ color: 'common.white', width: 80 }}
+                    />
+                    {qualityLabel && (
+                        <Typography variant="caption" sx={{ opacity: 0.8, ml: 1 }}>
+                            {qualityLabel}
+                        </Typography>
+                    )}
+                    <IconButton color="inherit" onClick={controller.toggleFullscreen} aria-label={t`Fullscreen`}>
+                        {isFullscreen ? <FullscreenExitIcon /> : <FullscreenIcon />}
+                    </IconButton>
+                </Stack>
+            </Box>
 
             {/* Settings menu */}
             <Menu anchorEl={settingsAnchor} open={!!settingsAnchor} onClose={() => setSettingsAnchor(null)}>

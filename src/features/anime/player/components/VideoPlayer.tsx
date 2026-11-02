@@ -169,6 +169,13 @@ export const useVideoPlayer = ({ chapterId, videos, onQualityChange, qualityInde
 
             player.addEventListener('error', (event) => {
                 const { detail } = event as unknown as { detail?: shaka.util.Error };
+                // Shaka fires 'error' for RECOVERABLE failures too (a retried
+                // segment, a transient upstream hiccup) and keeps playing on
+                // its own; surfacing those as a fatal error unmounts the
+                // overlay and strands the user on a black screen.
+                if (detail?.severity === shaka.util.Error.Severity.RECOVERABLE) {
+                    return;
+                }
                 setErrorMessage(detail ? shakaErrorMessage(detail) : 'Playback error');
             });
             player.addEventListener('buffering', (event) => {
@@ -220,10 +227,17 @@ export const useVideoPlayer = ({ chapterId, videos, onQualityChange, qualityInde
                 }
                 // Shaka can't play progressive (non-fragmented) MP4 via
                 // MediaSource — it only handles HLS/DASH/fMP4 manifests.
-                // Fall back to native <video src> playback so direct video
-                // streams (common for sources like haho.moe) still play. The
-                // overlay's basic controls already drive the native element;
-                // only ABR/track-selection is unavailable in this mode.
+                // Fall back to native <video src> playback for direct video
+                // streams (common for sources like haho.moe), but only when
+                // the resolved stream isn't itself a playlist: a native
+                // <video> can't play .m3u8 on Chrome/Firefox, so falling back
+                // for HLS produces a black 0:00 player instead of the real
+                // error.
+                const isHlsStream = /\.m3u8(\?|$)/i.test(videos[qualityIndex]?.videoUrl ?? '');
+                if (isHlsStream) {
+                    setErrorMessage(shakaErrorMessage(e));
+                    return;
+                }
                 try {
                     await player.destroy();
                 } catch {
