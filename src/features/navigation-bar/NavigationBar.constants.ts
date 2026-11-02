@@ -39,10 +39,45 @@ import { AppRoutes } from '@/base/AppRoute.constants.ts';
 import { requestManager } from '@/lib/requests/RequestManager.ts';
 import { STABLE_EMPTY_ARRAY } from '@/base/Base.constants.ts';
 import { DownloaderState } from '@/lib/graphql/generated/graphql-base.types.ts';
+import type { ContentKind } from '@/lib/source/contentKind.ts';
 import { extensionContentKindOf } from '@/lib/source/contentKind.ts';
 import { Sources } from '@/features/source/services/Sources.ts';
 
 type RestrictedNavBarItem<Show extends NavbarItem['show']> = Omit<NavbarItem, 'show'> & { show: Show };
+
+/**
+ * Badge counting pending extension updates for one content kind. Each
+ * Browse>Extensions page only lists its own kind (lnreader:* novel plugins are
+ * NOVEL, Aniyomi is ANIME, Cloudstream is SHOW), so counting all rows would
+ * badge updates the page can never show.
+ */
+const useExtensionUpdateBadge = (kind: ContentKind) => {
+    const { data } = requestManager.useGetExtensionList({ fetchPolicy: 'cache-only' });
+
+    const extensions = data?.extensions.nodes ?? STABLE_EMPTY_ARRAY;
+    const availableUpdates = extensions.filter(
+        (extension) =>
+            extension.hasUpdate &&
+            !extension.isObsolete &&
+            extensionContentKindOf(extension.kind, extension.pkgName) === kind &&
+            extension.pkgName !== Sources.KOTATSU_PKG_NAME,
+    ).length;
+
+    if (!availableUpdates) {
+        return {
+            count: availableUpdates,
+            title: '',
+        };
+    }
+
+    return {
+        count: availableUpdates,
+        title: plural(availableUpdates, {
+            one: '# update available',
+            other: '# updates available',
+        }),
+    };
+};
 
 const NAVIGATION_BAR_BASE_ITEMS = [
     {
@@ -84,33 +119,7 @@ const NAVIGATION_BAR_BASE_ITEMS = [
         IconComponent: ExploreOutlinedIcon,
         show: 'both',
         moreGroup: NavBarItemMoreGroup.GENERAL,
-        useBadge: () => {
-            const { data } = requestManager.useGetExtensionList({ fetchPolicy: 'cache-only' });
-
-            const extensions = data?.extensions.nodes ?? STABLE_EMPTY_ARRAY;
-            const availableUpdates = extensions.filter(
-                (extension) =>
-                    extension.hasUpdate &&
-                    !extension.isObsolete &&
-                    extensionContentKindOf(extension.kind, extension.pkgName) === 'MANGA' &&
-                    extension.pkgName !== Sources.KOTATSU_PKG_NAME,
-            ).length;
-
-            if (!availableUpdates) {
-                return {
-                    count: availableUpdates,
-                    title: '',
-                };
-            }
-
-            return {
-                count: availableUpdates,
-                title: plural(availableUpdates, {
-                    one: '# update available',
-                    other: '# updates available',
-                }),
-            };
-        },
+        useBadge: () => useExtensionUpdateBadge('MANGA'),
     },
 ] as const satisfies RestrictedNavBarItem<'both'>[];
 
@@ -211,6 +220,7 @@ export const NAVIGATION_BAR_NOVEL_ITEMS = [
         IconComponent: ExploreOutlinedIcon,
         show: 'desktop',
         moreGroup: NavBarItemMoreGroup.HIDDEN_ITEM,
+        useBadge: () => useExtensionUpdateBadge('NOVEL'),
     },
     {
         path: AppRoutes.novel.children.downloads.path,
@@ -260,6 +270,7 @@ export const NAVIGATION_BAR_ANIME_ITEMS = [
         IconComponent: ExploreOutlinedIcon,
         show: 'desktop',
         moreGroup: NavBarItemMoreGroup.HIDDEN_ITEM,
+        useBadge: () => useExtensionUpdateBadge('ANIME'),
     },
     {
         path: AppRoutes.animeDownloads.path,
@@ -309,6 +320,7 @@ export const NAVIGATION_BAR_SHOW_ITEMS = [
         IconComponent: ExploreOutlinedIcon,
         show: 'desktop',
         moreGroup: NavBarItemMoreGroup.HIDDEN_ITEM,
+        useBadge: () => useExtensionUpdateBadge('SHOW'),
     },
     {
         path: AppRoutes.showDownloads.path,
