@@ -39,6 +39,8 @@ import { AppRoutes } from '@/base/AppRoute.constants.ts';
 import { requestManager } from '@/lib/requests/RequestManager.ts';
 import { STABLE_EMPTY_ARRAY } from '@/base/Base.constants.ts';
 import { DownloaderState } from '@/lib/graphql/generated/graphql-base.types.ts';
+import { extensionContentKindOf } from '@/lib/source/contentKind.ts';
+import { Sources } from '@/features/source/services/Sources.ts';
 
 type RestrictedNavBarItem<Show extends NavbarItem['show']> = Omit<NavbarItem, 'show'> & { show: Show };
 
@@ -87,7 +89,11 @@ const NAVIGATION_BAR_BASE_ITEMS = [
 
             const extensions = data?.extensions.nodes ?? STABLE_EMPTY_ARRAY;
             const availableUpdates = extensions.filter(
-                (extension) => extension.hasUpdate && !extension.isObsolete,
+                (extension) =>
+                    extension.hasUpdate &&
+                    !extension.isObsolete &&
+                    extensionContentKindOf(extension.kind, extension.pkgName) === 'MANGA' &&
+                    extension.pkgName !== Sources.KOTATSU_PKG_NAME,
             ).length;
 
             if (!availableUpdates) {
