@@ -16,38 +16,46 @@ import { useLingui } from '@lingui/react/macro';
 import { CustomTooltip } from '@/base/components/CustomTooltip.tsx';
 import { AppbarSearch } from '@/base/components/AppbarSearch.tsx';
 import { LoadingPlaceholder } from '@/base/components/feedback/LoadingPlaceholder.tsx';
+import { LanguageSelect } from '@/base/components/inputs/LanguageSelect.tsx';
 import { AppRoutes } from '@/base/AppRoute.constants.ts';
 import { SearchParam } from '@/base/Base.types.ts';
 import { useAppAction } from '@/features/navigation-bar/hooks/useAppAction.ts';
 import { useAnimeExtensionList } from '@/features/anime/services/AnimeApi.ts';
 import { AnimeUnavailableView } from '@/features/anime/components/AnimeUnavailableView.tsx';
 import { ExtensionCard } from '@/features/browse/extensions/components/ExtensionCard.tsx';
+import { filterExtensions, getLanguagesFromExtensions } from '@/features/extension/Extensions.utils.ts';
+import { useMetadataServerSettings } from '@/features/settings/services/ServerSettingsMetadata.ts';
+import { Sources } from '@/features/source/services/Sources.ts';
 
 export const AnimeExtensionsTab = () => {
     const { t } = useLingui();
     const { data: extensions, loading, available, refetch } = useAnimeExtensionList();
 
+    const { languages: shownLangs, setLanguages: setShownLangs } = Sources.useLanguages();
+    const {
+        settings: { showNsfw },
+    } = useMetadataServerSettings();
+
     const [query] = useQueryParam(SearchParam.QUERY, StringParam);
 
-    const filteredExtensions = useMemo(() => {
-        if (!query) {
-            return extensions;
-        }
+    const allLangs = useMemo(() => getLanguagesFromExtensions(extensions), [extensions]);
 
-        const normalizedQuery = query.toLowerCase();
-        return extensions.filter((extension) => extension.name.toLowerCase().includes(normalizedQuery));
-    }, [extensions, query]);
+    const filteredExtensions = useMemo(
+        () => filterExtensions(extensions, { selectedLanguages: shownLangs, showNsfw, query }),
+        [extensions, shownLangs, showNsfw, query],
+    );
 
     useAppAction(
         <>
             <AppbarSearch />
+            <LanguageSelect selectedLanguages={shownLangs} setSelectedLanguages={setShownLangs} languages={allLangs} />
             <CustomTooltip title={t`Settings`}>
                 <IconButton component={Link} to={AppRoutes.settings.children.browse.path} color="inherit">
                     <SettingsIcon />
                 </IconButton>
             </CustomTooltip>
         </>,
-        [t],
+        [t, shownLangs, allLangs],
     );
 
     if (loading) {
