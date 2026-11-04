@@ -12,7 +12,7 @@ import { STABLE_EMPTY_ARRAY } from '@/base/Base.constants.ts';
 import { GET_MANGAS_LIBRARY } from '@/lib/graphql/manga/MangaQuery.ts';
 import { Mangas } from '@/features/manga/services/Mangas.ts';
 import type { GetMangasLibraryQuery, GetMangasLibraryQueryVariables } from '@/lib/graphql/generated/graphql.ts';
-import type { ShowDownloadRow, ShowEpisodeRow, ShowExtension, ShowSource } from '@/features/show/Show.types.ts';
+import type { ShowDownloadRow, ShowEpisodeRow } from '@/features/show/Show.types.ts';
 import { SourceKind, ContentType } from '@/lib/graphql/generated/graphql-base.types.ts';
 
 /*
@@ -84,49 +84,6 @@ const useShowSourceIdSet = (): { ids: Set<string>; loading: boolean; error?: Err
     }, [data]);
 
     return { ids, loading, error, refetch: () => refetch?.() };
-};
-
-/** List show sources (installed Cloudstream extensions), filtered out of the shared source list. */
-export const useShowSourceList = (): ShowQueryResult<ShowSource[]> => {
-    const { data, loading, error, refetch } = requestManager.useGetSourceList(undefined, {
-        notifyOnNetworkStatusChange: true,
-    });
-
-    const sources: ShowSource[] = (data?.sources.nodes ?? STABLE_EMPTY_ARRAY)
-        .filter((source) => source.kind === SourceKind.Show)
-        .map((source) => ({
-            id: source.id,
-            name: source.name,
-            lang: source.lang,
-            iconUrl: source.iconUrl,
-            isNsfw: source.isNsfw,
-            extPkgName: source.extension?.pkgName,
-        }));
-
-    return { data: sources, loading, error, available: !error, refetch: () => refetch?.() };
-};
-
-/** List show (Cloudstream) extensions, filtered out of the shared extension list. */
-export const useShowExtensionList = (): ShowQueryResult<ShowExtension[]> => {
-    const { data, loading, error, refetch } = requestManager.useGetExtensionList();
-
-    const extensions: ShowExtension[] = (data?.extensions.nodes ?? STABLE_EMPTY_ARRAY)
-        .filter((extension) => extension.kind === SourceKind.Show)
-        .map((extension) => ({
-            pkgName: extension.pkgName,
-            name: extension.name,
-            lang: extension.lang,
-            versionName: extension.versionName,
-            versionCode: extension.versionCode,
-            iconUrl: extension.iconUrl,
-            isInstalled: extension.isInstalled,
-            isObsolete: extension.isObsolete,
-            hasUpdate: extension.hasUpdate,
-            isNsfw: extension.isNsfw,
-            repo: extension.repo,
-        }));
-
-    return { data: extensions, loading, error, available: !error, refetch: () => refetch?.() };
 };
 
 /*

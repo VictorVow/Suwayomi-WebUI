@@ -42,7 +42,6 @@ import { EXTENSION_ACTION_TO_FAILURE_TRANSLATION_MAP } from '@/features/extensio
 import { AppRoutes } from '@/base/AppRoute.constants.ts';
 import { getErrorMessage } from '@/lib/HelperFunctions.ts';
 import { STABLE_EMPTY_ARRAY } from '@/base/Base.constants.ts';
-import { extensionContentKindOf } from '@/lib/source/contentKind.ts';
 import {
     createUpdateMetadataServerSettings,
     useMetadataServerSettings,
@@ -52,9 +51,18 @@ import { useAppAction } from '@/features/navigation-bar/hooks/useAppAction.ts';
 import { SearchParam } from '@/base/Base.types.ts';
 import { i18n } from '@/i18n';
 import { Sources } from '@/features/source/services/Sources.ts';
+import { extensionContentKindOf, type ContentKind } from '@/lib/source/contentKind.ts';
+import type { SourceBrowseScope } from '@/features/source/browse/useSourceBrowseScope.ts';
 
 const LANGUAGE = 0;
 const EXTENSIONS = 1;
+
+const CONTENT_KIND_BY_SCOPE: Record<SourceBrowseScope, ContentKind> = {
+    manga: 'MANGA',
+    anime: 'ANIME',
+    novel: 'NOVEL',
+    show: 'SHOW',
+};
 
 const GroupHeader = ({
     groupName,
@@ -115,7 +123,7 @@ const GroupHeader = ({
     );
 };
 
-export function Extensions({ tabsMenuHeight }: { tabsMenuHeight: number }) {
+export function Extensions({ tabsMenuHeight, scope = 'manga' }: { tabsMenuHeight: number; scope?: SourceBrowseScope }) {
     const { t } = useLingui();
 
     const {
@@ -145,14 +153,15 @@ export function Extensions({ tabsMenuHeight }: { tabsMenuHeight: number }) {
     const areReposDefined = !!serverSettingsData?.settings.extensionRepos.length;
     const areMultipleReposInUse = (serverSettingsData?.settings.extensionRepos.length ?? 0) > 1;
 
+    const contentKind = CONTENT_KIND_BY_SCOPE[scope];
     const allExtensions = useMemo(
         () =>
             (data?.fetchExtensions?.extensions ?? STABLE_EMPTY_ARRAY).filter(
                 (extension) =>
-                    extensionContentKindOf(extension.kind, extension.pkgName) === 'MANGA' &&
+                    extensionContentKindOf(extension.kind, extension.pkgName) === contentKind &&
                     extension.pkgName !== Sources.KOTATSU_PKG_NAME,
             ),
-        [data],
+        [data, contentKind],
     );
     const allLangs = useMemo(() => getLanguagesFromExtensions(allExtensions), [allExtensions]);
 

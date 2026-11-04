@@ -2022,11 +2022,8 @@ msgstr "GitHub Server"
 msgid "GitHub WebUI"
 msgstr "GitHub WebUI"
 
-#: src/features/anime/components/AnimeSourcesTab.tsx
 #: src/features/browse/sources/Sources.tsx
 #: src/features/global-search/screens/SearchAll.tsx
-#: src/features/novel/components/NovelSourcesTab.tsx
-#: src/features/show/components/ShowSourcesTab.tsx
 msgid "Global Search"
 msgstr "Global Search"
 
@@ -2877,10 +2874,6 @@ msgstr "Next:"
 msgid "No anime downloads"
 msgstr "No anime downloads"
 
-#: src/features/anime/components/AnimeExtensionsTab.tsx
-msgid "No anime extensions"
-msgstr "No anime extensions"
-
 #: src/features/global-search/screens/SearchAll.tsx
 #: src/features/source/browse/screens/SourceMangas.tsx
 msgid "No anime found"
@@ -2889,10 +2882,6 @@ msgstr "No anime found"
 #: src/features/source/browse/screens/SourceMangas.tsx
 msgid "No anime matches this filter"
 msgstr "No anime matches this filter"
-
-#: src/features/anime/components/AnimeSourcesTab.tsx
-msgid "No anime sources"
-msgstr "No anime sources"
 
 #: src/features/anime/screens/AnimeUpdates.tsx
 msgid "No anime updates"
@@ -2923,12 +2912,6 @@ msgstr "No downloadable video for this episode"
 msgid "No downloads"
 msgstr "No downloads"
 
-#: src/features/anime/components/AnimeExtensionsTab.tsx
-#: src/features/novel/components/NovelExtensionsTab.tsx
-#: src/features/show/components/ShowExtensionsTab.tsx
-msgid "No extensions found"
-msgstr "No extensions found"
-
 #: src/features/novel/components/NovelUnavailableView.tsx
 msgid "No light novels yet"
 msgstr "No light novels yet"
@@ -2953,17 +2936,9 @@ msgstr "No match found"
 msgid "No novel downloads"
 msgstr "No novel downloads"
 
-#: src/features/novel/components/NovelExtensionsTab.tsx
-msgid "No novel extensions"
-msgstr "No novel extensions"
-
 #: src/features/novel/screens/NovelHistory.tsx
 msgid "No novel reading history"
 msgstr "No novel reading history"
-
-#: src/features/novel/components/NovelSourcesTab.tsx
-msgid "No novel sources"
-msgstr "No novel sources"
 
 #: src/features/novel/screens/NovelUpdates.tsx
 msgid "No novel updates"
@@ -2985,14 +2960,6 @@ msgstr "No pages found"
 #: src/features/show/screens/ShowDownloads.tsx
 msgid "No show downloads"
 msgstr "No show downloads"
-
-#: src/features/show/components/ShowExtensionsTab.tsx
-msgid "No show extensions"
-msgstr "No show extensions"
-
-#: src/features/show/components/ShowSourcesTab.tsx
-msgid "No show sources"
-msgstr "No show sources"
 
 #: src/features/show/screens/ShowUpdates.tsx
 msgid "No show updates"
@@ -3019,12 +2986,6 @@ msgstr "No shows yet"
 #: src/features/migration/components/MigrationDestinationSourceList.tsx
 msgid "No sources available to migrate to"
 msgstr "No sources available to migrate to"
-
-#: src/features/anime/components/AnimeSourcesTab.tsx
-#: src/features/novel/components/NovelSourcesTab.tsx
-#: src/features/show/components/ShowSourcesTab.tsx
-msgid "No sources found"
-msgstr "No sources found"
 
 #: src/features/browse/sources/Sources.tsx
 msgid "No sources found. Install Some extensions first."
@@ -3888,7 +3849,6 @@ msgid "Setting can not be changed while the reader is opened"
 msgstr "Setting can not be changed while the reader is opened"
 
 #: src/base/components/inputs/LanguageSelect.tsx
-#: src/features/anime/components/AnimeExtensionsTab.tsx
 #: src/features/anime/player/components/PlayerOverlay.tsx
 #: src/features/backup/Backup.constants.ts
 #: src/features/browse/extensions/components/ExtensionCard.tsx
@@ -3896,11 +3856,9 @@ msgstr "Setting can not be changed while the reader is opened"
 #: src/features/extension/info/components/SourceCard.tsx
 #: src/features/library/components/LibraryToolbarMenu.tsx
 #: src/features/navigation-bar/NavigationBar.constants.ts
-#: src/features/novel/components/NovelExtensionsTab.tsx
 #: src/features/reader/overlay/navigation/desktop/quick-settings/ReaderNavBarDesktopQuickSettings.tsx
 #: src/features/reader/overlay/navigation/mobile/ReaderBottomBarMobile.tsx
 #: src/features/settings/screens/Settings.tsx
-#: src/features/show/components/ShowExtensionsTab.tsx
 #: src/features/show/player/components/PlayerOverlay.tsx
 #: src/features/show/screens/ShowSourceHomepage.tsx
 #: src/features/source/browse/screens/SourceMangas.tsx
@@ -4486,7 +4444,6 @@ msgstr "UI Login"
 msgid "Unable to load chapter text"
 msgstr "Unable to load chapter text"
 
-#: src/features/anime/components/AnimeSourcesTab.tsx
 #: src/features/backup/screens/Backup.tsx
 #: src/features/browse/extensions/Extensions.tsx
 #: src/features/browse/screens/BrowseSettings.tsx
@@ -4505,7 +4462,6 @@ msgstr "Unable to load chapter text"
 #: src/features/manga/hooks/useManageMangaLibraryState.tsx
 #: src/features/migration/screens/MigrationSelectMangas.tsx
 #: src/features/migration/screens/MigrationSelectSource.tsx
-#: src/features/novel/components/NovelSourcesTab.tsx
 #: src/features/novel/reader/screens/NovelReader.tsx
 #: src/features/reader/screens/Reader.tsx
 #: src/features/reader/settings/screens/GlobalReaderSettings.tsx
@@ -4516,7 +4472,6 @@ msgstr "Unable to load chapter text"
 #: src/features/settings/screens/ImageProcessingSetting.tsx
 #: src/features/settings/screens/ServerSettings.tsx
 #: src/features/settings/screens/WebUISettings.tsx
-#: src/features/show/components/ShowSourcesTab.tsx
 #: src/features/show/screens/ShowSourceHomepage.tsx
 #: src/features/source/browse/screens/SourceMangas.tsx
 #: src/features/source/configuration/screens/SourceConfigure.tsx

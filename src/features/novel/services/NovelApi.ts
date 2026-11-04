@@ -11,8 +11,8 @@ import { STABLE_EMPTY_ARRAY } from '@/base/Base.constants.ts';
 import { GET_MANGAS_LIBRARY } from '@/lib/graphql/manga/MangaQuery.ts';
 import { Mangas } from '@/features/manga/services/Mangas.ts';
 import type { GetMangasLibraryQuery, GetMangasLibraryQueryVariables } from '@/lib/graphql/generated/graphql.ts';
-import type { NovelChapterRow, NovelDownloadRow, NovelExtension, NovelSource } from '@/features/novel/Novel.types.ts';
-import { isNovelSourceId, isNovelExtensionPkg } from '@/lib/source/contentKind.ts';
+import type { NovelChapterRow, NovelDownloadRow } from '@/features/novel/Novel.types.ts';
+import { isNovelSourceId } from '@/lib/source/contentKind.ts';
 import { ContentType } from '@/lib/graphql/generated/graphql-base.types.ts';
 
 /*
@@ -55,49 +55,6 @@ interface NovelQueryResult<TData> {
     available: boolean;
     refetch: () => void;
 }
-
-/** List novel sources (installed LNReader plugins), filtered out of the shared source list. */
-export const useNovelSourceList = (): NovelQueryResult<NovelSource[]> => {
-    const { data, loading, error, refetch } = requestManager.useGetSourceList(undefined, {
-        notifyOnNetworkStatusChange: true,
-    });
-
-    const sources: NovelSource[] = (data?.sources.nodes ?? STABLE_EMPTY_ARRAY)
-        .filter((source) => isNovelSourceId(source.id))
-        .map((source) => ({
-            id: source.id,
-            name: source.name,
-            lang: source.lang,
-            iconUrl: source.iconUrl,
-            isNsfw: source.isNsfw,
-            extPkgName: source.extension?.pkgName,
-        }));
-
-    return { data: sources, loading, error, available: !error, refetch: () => refetch?.() };
-};
-
-/** List novel (LNReader) extensions, filtered out of the shared extension list. */
-export const useNovelExtensionList = (): NovelQueryResult<NovelExtension[]> => {
-    const { data, loading, error, refetch } = requestManager.useGetExtensionList();
-
-    const extensions: NovelExtension[] = (data?.extensions.nodes ?? STABLE_EMPTY_ARRAY)
-        .filter((extension) => isNovelExtensionPkg(extension.pkgName))
-        .map((extension) => ({
-            pkgName: extension.pkgName,
-            name: extension.name,
-            lang: extension.lang,
-            versionName: extension.versionName,
-            versionCode: extension.versionCode,
-            iconUrl: extension.iconUrl,
-            isInstalled: extension.isInstalled,
-            isObsolete: extension.isObsolete,
-            hasUpdate: extension.hasUpdate,
-            isNsfw: extension.isNsfw,
-            repo: extension.repo,
-        }));
-
-    return { data: extensions, loading, error, available: !error, refetch: () => refetch?.() };
-};
 
 /*
  * The library / history / downloads views are novel-scoped slices of the

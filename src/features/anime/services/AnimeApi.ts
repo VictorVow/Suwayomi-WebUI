@@ -12,7 +12,7 @@ import { STABLE_EMPTY_ARRAY } from '@/base/Base.constants.ts';
 import { GET_MANGAS_LIBRARY } from '@/lib/graphql/manga/MangaQuery.ts';
 import { Mangas } from '@/features/manga/services/Mangas.ts';
 import type { GetMangasLibraryQuery, GetMangasLibraryQueryVariables } from '@/lib/graphql/generated/graphql.ts';
-import type { AnimeDownloadRow, AnimeEpisodeRow, AnimeExtension, AnimeSource } from '@/features/anime/Anime.types.ts';
+import type { AnimeDownloadRow, AnimeEpisodeRow } from '@/features/anime/Anime.types.ts';
 import { SourceKind, ContentType } from '@/lib/graphql/generated/graphql-base.types.ts';
 
 /*
@@ -84,49 +84,6 @@ const useAnimeSourceIdSet = (): { ids: Set<string>; loading: boolean; error?: Er
     }, [data]);
 
     return { ids, loading, error, refetch: () => refetch?.() };
-};
-
-/** List anime sources (installed Aniyomi extensions), filtered out of the shared source list. */
-export const useAnimeSourceList = (): AnimeQueryResult<AnimeSource[]> => {
-    const { data, loading, error, refetch } = requestManager.useGetSourceList(undefined, {
-        notifyOnNetworkStatusChange: true,
-    });
-
-    const sources: AnimeSource[] = (data?.sources.nodes ?? STABLE_EMPTY_ARRAY)
-        .filter((source) => source.kind === SourceKind.Anime)
-        .map((source) => ({
-            id: source.id,
-            name: source.name,
-            lang: source.lang,
-            iconUrl: source.iconUrl,
-            isNsfw: source.isNsfw,
-            extPkgName: source.extension?.pkgName,
-        }));
-
-    return { data: sources, loading, error, available: !error, refetch: () => refetch?.() };
-};
-
-/** List anime (Aniyomi) extensions, filtered out of the shared extension list. */
-export const useAnimeExtensionList = (): AnimeQueryResult<AnimeExtension[]> => {
-    const { data, loading, error, refetch } = requestManager.useGetExtensionList();
-
-    const extensions: AnimeExtension[] = (data?.extensions.nodes ?? STABLE_EMPTY_ARRAY)
-        .filter((extension) => extension.kind === SourceKind.Anime)
-        .map((extension) => ({
-            pkgName: extension.pkgName,
-            name: extension.name,
-            lang: extension.lang,
-            versionName: extension.versionName,
-            versionCode: extension.versionCode,
-            iconUrl: extension.iconUrl,
-            isInstalled: extension.isInstalled,
-            isObsolete: extension.isObsolete,
-            hasUpdate: extension.hasUpdate,
-            isNsfw: extension.isNsfw,
-            repo: extension.repo,
-        }));
-
-    return { data: extensions, loading, error, available: !error, refetch: () => refetch?.() };
 };
 
 /*

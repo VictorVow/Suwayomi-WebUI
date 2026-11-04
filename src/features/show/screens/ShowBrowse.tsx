@@ -6,22 +6,31 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
+import { useCallback, useRef, useState } from 'react';
 import Tab from '@mui/material/Tab';
 import { StringParam, useQueryParam } from 'use-query-params';
 import { useLingui } from '@lingui/react/macro';
 import { TabPanel } from '@/base/components/tabs/TabPanel.tsx';
 import { TabsWrapper } from '@/base/components/tabs/TabsWrapper.tsx';
 import { TabsMenu } from '@/base/components/tabs/TabsMenu.tsx';
+import { useResizeObserver } from '@/base/hooks/useResizeObserver.tsx';
 import { useAppTitle } from '@/features/navigation-bar/hooks/useAppTitle.ts';
 import { SearchParam } from '@/base/Base.types.ts';
 import { GROUPED_VIRTUOSO_Z_INDEX } from '@/lib/virtuoso/Virtuoso.constants.ts';
 import { ShowBrowseTab } from '@/features/show/Show.types.ts';
-import { ShowSourcesTab } from '@/features/show/components/ShowSourcesTab.tsx';
-import { ShowExtensionsTab } from '@/features/show/components/ShowExtensionsTab.tsx';
+import { Sources } from '@/features/browse/sources/Sources.tsx';
+import { Extensions } from '@/features/browse/extensions/Extensions.tsx';
 
 export function ShowBrowse() {
     const { t } = useLingui();
     useAppTitle(t`Browse shows`);
+
+    const tabsMenuRef = useRef<HTMLDivElement | null>(null);
+    const [tabsMenuHeight, setTabsMenuHeight] = useState(0);
+    useResizeObserver(
+        tabsMenuRef,
+        useCallback(() => setTabsMenuHeight(tabsMenuRef.current!.offsetHeight), [tabsMenuRef.current]),
+    );
 
     const [tabSearchParam, setTabSearchParam] = useQueryParam(SearchParam.TAB, StringParam, {});
     const tabName = (tabSearchParam as ShowBrowseTab) ?? ShowBrowseTab.SOURCES;
@@ -33,6 +42,7 @@ export function ShowBrowse() {
     return (
         <TabsWrapper>
             <TabsMenu
+                ref={tabsMenuRef}
                 sx={{ zIndex: GROUPED_VIRTUOSO_Z_INDEX }}
                 variant="fullWidth"
                 value={tabName}
@@ -42,10 +52,10 @@ export function ShowBrowse() {
                 <Tab value={ShowBrowseTab.EXTENSIONS} sx={{ textTransform: 'none' }} label={t`Extension`} />
             </TabsMenu>
             <TabPanel index={ShowBrowseTab.SOURCES} currentIndex={tabName}>
-                <ShowSourcesTab />
+                <Sources tabsMenuHeight={tabsMenuHeight} scope="show" />
             </TabPanel>
             <TabPanel index={ShowBrowseTab.EXTENSIONS} currentIndex={tabName}>
-                <ShowExtensionsTab />
+                <Extensions tabsMenuHeight={tabsMenuHeight} scope="show" />
             </TabPanel>
         </TabsWrapper>
     );

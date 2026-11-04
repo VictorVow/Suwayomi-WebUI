@@ -23,32 +23,6 @@ export enum AnimeBrowseTab {
     EXTENSIONS = 'extensions',
 }
 
-/** An anime source exposed by an installed anime (Aniyomi) extension. */
-export interface AnimeSource {
-    id: string;
-    name: string;
-    lang: string;
-    iconUrl: string;
-    isNsfw: boolean;
-    /** Package name of the extension providing this source. */
-    extPkgName?: string;
-}
-
-/** An installable/installed anime (Aniyomi) extension. */
-export interface AnimeExtension {
-    pkgName: string;
-    name: string;
-    lang: string;
-    versionName: string;
-    versionCode: number;
-    iconUrl: string;
-    isInstalled: boolean;
-    isObsolete: boolean;
-    hasUpdate: boolean;
-    isNsfw: boolean;
-    repo?: string | null;
-}
-
 /** An episode row for the anime Updates / History feeds. */
 export interface AnimeEpisodeRow {
     chapterId: number;

@@ -21,7 +21,6 @@ import { SourceCard } from '@/features/browse/sources/components/SourceCard.tsx'
 import { EmptyViewAbsoluteCentered } from '@/base/components/feedback/EmptyViewAbsoluteCentered.tsx';
 import { defaultPromiseErrorHandler } from '@/lib/DefaultPromiseErrorHandler.ts';
 import { isPinnedOrLastUsedSource, translateExtensionLanguage } from '@/features/extension/Extensions.utils.ts';
-import { AppRoutes } from '@/base/AppRoute.constants.ts';
 import { getErrorMessage } from '@/lib/HelperFunctions.ts';
 import { Sources as SourceService } from '@/features/source/services/Sources.ts';
 import { useMetadataServerSettings } from '@/features/settings/services/ServerSettingsMetadata.ts';
@@ -36,8 +35,25 @@ import { ContentType } from '@/lib/graphql/generated/graphql-base.types.ts';
 import { AppbarSearch } from '@/base/components/AppbarSearch.tsx';
 import { SearchParam } from '@/base/Base.types.ts';
 import { enhancedCleanup } from '@/base/utils/Strings.ts';
+import { sourceRoutesForScope } from '@/features/source/browse/sourceRoutes.ts';
+import type { SourceBrowseScope } from '@/features/source/browse/useSourceBrowseScope.ts';
 
-export function Sources({ tabsMenuHeight, kotatsu = false }: { tabsMenuHeight: number; kotatsu?: boolean }) {
+const CONTENT_TYPE_BY_SCOPE: Record<SourceBrowseScope, ContentType> = {
+    manga: ContentType.Manga,
+    anime: ContentType.Anime,
+    novel: ContentType.Novel,
+    show: ContentType.Show,
+};
+
+export function Sources({
+    tabsMenuHeight,
+    kotatsu = false,
+    scope = 'manga',
+}: {
+    tabsMenuHeight: number;
+    kotatsu?: boolean;
+    scope?: SourceBrowseScope;
+}) {
     const { t } = useLingui();
 
     const [query] = useQueryParam(SearchParam.QUERY, StringParam);
@@ -53,7 +69,7 @@ export function Sources({ tabsMenuHeight, kotatsu = false }: { tabsMenuHeight: n
         error,
         refetch,
     } = requestManager.useGetSourceList({
-        contentType: ContentType.Manga,
+        contentType: CONTENT_TYPE_BY_SCOPE[scope],
     });
     const allSources = data?.sources.nodes ?? STABLE_EMPTY_ARRAY;
     const sources = useMemo(
@@ -121,6 +137,7 @@ export function Sources({ tabsMenuHeight, kotatsu = false }: { tabsMenuHeight: n
     );
 
     const navigate = useNavigate();
+    const sourceRoutes = sourceRoutesForScope(scope);
 
     useAppAction(
         <>
@@ -128,8 +145,8 @@ export function Sources({ tabsMenuHeight, kotatsu = false }: { tabsMenuHeight: n
             <CustomTooltip title={t`Global Search`}>
                 <IconButton
                     onClick={() =>
-                        navigate(AppRoutes.sources.children.searchAll.path(), {
-                            state: AppRoutes.sources.children.searchAll.state({
+                        navigate(sourceRoutes.searchAll.path(), {
+                            state: sourceRoutes.searchAll.state({
                                 kotatsu,
                                 title: kotatsu ? t`Kotatsu Global Search` : undefined,
                             }),
@@ -147,7 +164,7 @@ export function Sources({ tabsMenuHeight, kotatsu = false }: { tabsMenuHeight: n
                 sources={sourcesForLanguageFilter}
             />
         </>,
-        [t, kotatsu, shownLangs, sourceLanguages, sourcesForLanguageFilter],
+        [t, kotatsu, shownLangs, sourceLanguages, sourcesForLanguageFilter, sourceRoutes],
     );
 
     if (isLoading) {
@@ -196,6 +213,7 @@ export function Sources({ tabsMenuHeight, kotatsu = false }: { tabsMenuHeight: n
                             source={source}
                             showSourceRepo={areSourcesFromDifferentRepos}
                             showLanguage={isPinnedOrLastUsedSource(language)}
+                            scope={scope}
                         />
                     </StyledGroupItemWrapper>
                 );

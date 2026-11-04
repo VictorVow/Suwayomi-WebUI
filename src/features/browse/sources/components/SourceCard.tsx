@@ -19,7 +19,6 @@ import IconButton from '@mui/material/IconButton';
 import { useLingui } from '@lingui/react/macro';
 import { requestManager } from '@/lib/requests/RequestManager.ts';
 import type { GetSourcesListQuery } from '@/lib/graphql/generated/graphql.ts';
-import { AppRoutes } from '@/base/AppRoute.constants.ts';
 import { MUIUtil } from '@/lib/mui/MUI.util.ts';
 import { Sources } from '@/features/source/services/Sources.ts';
 import { ListCardAvatar } from '@/base/components/lists/cards/ListCardAvatar.tsx';
@@ -31,16 +30,21 @@ import { getErrorMessage } from '@/lib/HelperFunctions.ts';
 import { languageCodeToName } from '@/base/utils/Languages.ts';
 import { SourceContentType } from '@/features/source/Source.types.ts';
 
+import { sourceRoutesForScope } from '@/features/source/browse/sourceRoutes.ts';
+import type { SourceBrowseScope } from '@/features/source/browse/useSourceBrowseScope.ts';
+
 interface IProps {
     source: GetSourcesListQuery['sources']['nodes'][number];
     showSourceRepo: boolean;
     showLanguage: boolean;
+    scope?: SourceBrowseScope;
 }
 
 export const SourceCard: React.FC<IProps> = (props: IProps) => {
     const { t } = useLingui();
 
-    const { source, showSourceRepo, showLanguage } = props;
+    const { source, showSourceRepo, showLanguage, scope = 'manga' } = props;
+    const sourceRoutes = sourceRoutesForScope(scope);
     const {
         id,
         name,
@@ -63,8 +67,8 @@ export const SourceCard: React.FC<IProps> = (props: IProps) => {
         <Card>
             <CardActionArea
                 component={Link}
-                to={AppRoutes.sources.children.browse.path(id)}
-                state={AppRoutes.sources.children.browse.state({
+                to={sourceRoutes.browse.path(id)}
+                state={sourceRoutes.browse.state({
                     contentType: SourceContentType.POPULAR,
                     clearCache: true,
                 })}
@@ -105,8 +109,8 @@ export const SourceCard: React.FC<IProps> = (props: IProps) => {
                             {...MUIUtil.preventRippleProp()}
                             variant="outlined"
                             component={Link}
-                            to={AppRoutes.sources.children.browse.path(id)}
-                            state={AppRoutes.sources.children.browse.state({
+                            to={sourceRoutes.browse.path(id)}
+                            state={sourceRoutes.browse.state({
                                 contentType: SourceContentType.LATEST,
                                 clearCache: true,
                             })}

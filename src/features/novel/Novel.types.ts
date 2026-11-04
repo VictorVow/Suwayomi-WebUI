@@ -20,32 +20,6 @@ export enum NovelBrowseTab {
     EXTENSIONS = 'extensions',
 }
 
-/** A light-novel source exposed by an installed novel extension. */
-export interface NovelSource {
-    id: string;
-    name: string;
-    lang: string;
-    iconUrl: string;
-    isNsfw: boolean;
-    /** Package name of the extension providing this source. */
-    extPkgName?: string;
-}
-
-/** An installable/installed novel (LNReader) extension. */
-export interface NovelExtension {
-    pkgName: string;
-    name: string;
-    lang: string;
-    versionName: string;
-    versionCode: number;
-    iconUrl: string;
-    isInstalled: boolean;
-    isObsolete: boolean;
-    hasUpdate: boolean;
-    isNsfw: boolean;
-    repo?: string | null;
-}
-
 /** A chapter row for the novel Updates / History feeds. */
 export interface NovelChapterRow {
     chapterId: number;
