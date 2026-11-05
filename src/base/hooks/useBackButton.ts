@@ -10,10 +10,18 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useCallback } from 'react';
 import { AppRoutes } from '@/base/AppRoute.constants.ts';
 import { useAppPageHistoryContext } from '@/base/contexts/AppPageHistoryContext.tsx';
+import { SearchParam } from '@/base/Base.types.ts';
+import { ShowBrowseTab } from '@/features/show/Show.types.ts';
+import { AnimeBrowseTab } from '@/features/anime/Anime.types.ts';
+import { NovelBrowseTab } from '@/features/novel/Novel.types.ts';
+import { BrowseTab } from '@/features/browse/Browse.types.ts';
+import { UrlUtil } from '@/lib/UrlUtil.ts';
 
 const READER_REGEX = /\/manga\/[0-9]+\/chapter\/[0-9]+/g;
 const NOVEL_READER_REGEX = /\/novel\/[0-9]+\/chapter\/[0-9]+/g;
 const PAGES_TO_IGNORE: readonly RegExp[] = [READER_REGEX, NOVEL_READER_REGEX];
+
+const browseTab = (path: string, tab: string) => UrlUtil.addParams(path, { [SearchParam.TAB]: tab });
 
 export const useBackButton = () => {
     const navigate = useNavigate();
@@ -55,9 +63,30 @@ export const useBackButton = () => {
 
         const canNavigateBack = backDelta < 0;
         if (!canNavigateBack) {
-            const fallback = location.pathname.startsWith('/novel/')
-                ? AppRoutes.novel.children.library.path
-                : AppRoutes.library.path();
+            const fallback = (() => {
+                if (location.pathname.startsWith('/novel/sources')) {
+                    return browseTab(AppRoutes.novel.children.browse.path, NovelBrowseTab.SOURCES);
+                }
+                if (location.pathname.startsWith('/novel/')) {
+                    return AppRoutes.novel.children.library.path;
+                }
+                if (location.pathname.startsWith('/anime/sources')) {
+                    return browseTab(AppRoutes.animeBrowse.path, AnimeBrowseTab.SOURCES);
+                }
+                if (location.pathname.startsWith('/anime/')) {
+                    return AppRoutes.animeLibrary.path;
+                }
+                if (location.pathname.startsWith('/show/sources')) {
+                    return browseTab(AppRoutes.showBrowse.path, ShowBrowseTab.SOURCES);
+                }
+                if (location.pathname.startsWith('/show/')) {
+                    return AppRoutes.showLibrary.path;
+                }
+                if (location.pathname.startsWith('/sources')) {
+                    return AppRoutes.browse.path(BrowseTab.SOURCES);
+                }
+                return AppRoutes.library.path();
+            })();
             navigate(fallback);
             return;
         }
