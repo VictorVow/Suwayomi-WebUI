@@ -100,13 +100,24 @@ const HorizontalGrid = ({
     selectedMangaIds,
     handleSelection,
     mode,
+    hasNextPage,
+    loadMore,
     ref,
     onMigrateSelect,
-}: DefaultGridProps) => (
+}: DefaultGridProps & {
+    hasNextPage: boolean;
+    loadMore: () => void;
+}) => (
     <Grid
         ref={ref}
         container
         spacing={1}
+        onScroll={(e) => {
+            const el = e.currentTarget;
+            if (!isLoading && hasNextPage && el.scrollLeft + el.clientWidth >= el.scrollWidth - 200) {
+                loadMore();
+            }
+        }}
         sx={{
             width: '100%',
             overflowX: 'auto',
@@ -114,24 +125,21 @@ const HorizontalGrid = ({
             flexWrap: 'nowrap',
         }}
     >
-        {isLoading ? (
-            <LoadingPlaceholder />
-        ) : (
-            mangas.map((manga) => (
-                <GridItemContainer key={manga.id}>
-                    {createMangaCard(
-                        manga,
-                        gridLayout,
-                        inLibraryIndicator,
-                        isSelectModeActive,
-                        selectedMangaIds,
-                        handleSelection,
-                        mode,
-                        onMigrateSelect,
-                    )}
-                </GridItemContainer>
-            ))
-        )}
+        {mangas.map((manga) => (
+            <GridItemContainer key={manga.id}>
+                {createMangaCard(
+                    manga,
+                    gridLayout,
+                    inLibraryIndicator,
+                    isSelectModeActive,
+                    selectedMangaIds,
+                    handleSelection,
+                    mode,
+                    onMigrateSelect,
+                )}
+            </GridItemContainer>
+        ))}
+        {isLoading && <LoadingPlaceholder />}
     </Grid>
 );
 
@@ -301,6 +309,14 @@ export const MangaGrid: React.FC<IMangaGridProps> = ({
         gridRef,
         useCallback(
             (entries, resizeObserver) => {
+                // Horizontal rows page on horizontal scroll instead; their
+                // height never grows, so this "fetch until a scrollbar
+                // appears" loop would page forever (and flash).
+                if (horizontal) {
+                    resizeObserver.disconnect();
+                    return;
+                }
+
                 const gridHeight = entries[0].target.clientHeight;
                 const isScrollbarVisible = gridHeight > document.documentElement.clientHeight;
 
@@ -320,7 +336,7 @@ export const MangaGrid: React.FC<IMangaGridProps> = ({
                 loadMore();
                 resizeObserver.disconnect();
             },
-            [gridRef, loadMore, isLoading],
+            [gridRef, loadMore, isLoading, horizontal],
         ),
     );
 
@@ -343,6 +359,8 @@ export const MangaGrid: React.FC<IMangaGridProps> = ({
                     ref={gridRef}
                     isLoading={isLoading}
                     mangas={mangas}
+                    hasNextPage={hasNextPage}
+                    loadMore={loadMore}
                     inLibraryIndicator={inLibraryIndicator}
                     GridItemContainer={GridItemContainer}
                     gridLayout={gridLayout}
