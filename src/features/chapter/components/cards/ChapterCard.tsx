@@ -22,6 +22,7 @@ import { useLingui } from '@lingui/react/macro';
 import { CustomTooltip } from '@/base/components/CustomTooltip.tsx';
 import { getDateString } from '@/base/utils/DateHelper.ts';
 import { DownloadStateIndicator } from '@/base/components/downloads/DownloadStateIndicator.tsx';
+import { ChapterDownloadedButton } from '@/features/chapter/components/buttons/ChapterDownloadedButton.tsx';
 import { ChapterActionMenuItems } from '@/features/chapter/components/actions/ChapterActionMenuItems.tsx';
 import { useChapterRoute } from '@/features/chapter/components/ChapterRouteContext.ts';
 import { Menu } from '@/base/components/menu/Menu.tsx';
@@ -39,6 +40,7 @@ import type {
     ChapterNumberInfo,
     ChapterReadInfo,
     ChapterScanlatorInfo,
+    ChapterSizeInfo,
     ChapterSourceOrderInfo,
 } from '@/features/chapter/Chapter.types.ts';
 import { MediaQuery } from '@/base/utils/MediaQuery.tsx';
@@ -50,6 +52,7 @@ type TChapter = ChapterIdInfo &
     ChapterDownloadInfo &
     ChapterReadInfo &
     ChapterBookmarkInfo &
+    ChapterSizeInfo &
     ChapterNumberInfo &
     ChapterScanlatorInfo &
     ChapterNameInfo &
@@ -147,9 +150,7 @@ export const ChapterCard = memo((props: IProps) => {
                                 <ChapterCardMetadata
                                     title={showChapterNumber ? `${t`Chapter`} ${chapter.chapterNumber}` : chapter.name}
                                     secondaryText={chapter.scanlator}
-                                    ternaryText={`${getDateString(Number(chapter.uploadDate ?? 0), true)}${
-                                        isDownloaded ? ` • ${t`Downloaded`}` : ''
-                                    }`}
+                                    ternaryText={getDateString(Number(chapter.uploadDate ?? 0), true)}
                                     infoIcons={
                                         chapter.isBookmarked && (
                                             <BookmarkIcon
@@ -176,6 +177,8 @@ export const ChapterCard = memo((props: IProps) => {
                                         },
                                     }}
                                 />
+
+                                {isDownloaded && <ChapterDownloadedButton chapter={chapter} />}
 
                                 <DownloadStateIndicator
                                     chapterId={chapter.id}

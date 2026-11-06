@@ -7,9 +7,13 @@ export type Scalars = {
     Boolean: { input: boolean; output: boolean };
     Int: { input: number; output: number };
     Float: { input: number; output: number };
+    /** A location in a connection that can be used for resuming pagination. */
     Cursor: { input: string; output: string };
+    /** An ISO-8601 encoded duration string */
     Duration: { input: string; output: string };
+    /** A 64-bit signed integer as a String */
     LongString: { input: string; output: string };
+    /** A file part in a multipart request */
     Upload: { input: unknown; output: unknown };
 };
 
@@ -282,6 +286,8 @@ export type ChapterType = {
     pageCount: Scalars['Int']['output'];
     realUrl?: Maybe<Scalars['String']['output']>;
     scanlator?: Maybe<Scalars['String']['output']>;
+    /** Miruyomi extension: bytes the downloaded chapter file occupies on disk; null when the chapter is not downloaded or the file is missing. */
+    size?: Maybe<Scalars['LongString']['output']>;
     sourceOrder: Scalars['Int']['output'];
     uploadDate: Scalars['LongString']['output'];
     url: Scalars['String']['output'];
@@ -353,7 +359,7 @@ export type ConnectKoSyncAccountInput = {
  *   * `MANGA` - Tachiyomi manga sources (`source.kind = MANGA`, positive source id)
  *   * `NOVEL` - LNReader light-novel plugins (negative source id)
  *   * `ANIME` - Aniyomi anime sources (`source.kind = ANIME`)
- *   * `SHOW` - Cloudstream show sources (`source.kind = SHOW`)
+ *   * `SHOW`  - Cloudstream show sources (`source.kind = SHOW`, positive source id)
  */
 export enum ContentType {
     Anime = 'ANIME',
@@ -866,28 +872,6 @@ export type FetchMangaPayload = {
     manga: MangaType;
 };
 
-export type FetchSourceMangaInput = {
-    clientMutationId?: InputMaybe<Scalars['String']['input']>;
-    filters?: InputMaybe<Array<FilterChangeInput>>;
-    page: Scalars['Int']['input'];
-    query?: InputMaybe<Scalars['String']['input']>;
-    source: Scalars['LongString']['input'];
-    type: FetchSourceMangaType;
-};
-
-export type FetchSourceMangaPayload = {
-    __typename?: 'FetchSourceMangaPayload';
-    clientMutationId?: Maybe<Scalars['String']['output']>;
-    hasNextPage: Scalars['Boolean']['output'];
-    mangas: Array<MangaType>;
-};
-
-export enum FetchSourceMangaType {
-    Latest = 'LATEST',
-    Popular = 'POPULAR',
-    Search = 'SEARCH',
-}
-
 export type FetchShowHomepageInput = {
     clientMutationId?: InputMaybe<Scalars['String']['input']>;
     page: Scalars['Int']['input'];
@@ -915,19 +899,27 @@ export type FetchShowHomepageRowPayload = {
     row?: Maybe<ShowHomePageRowType>;
 };
 
-export type ShowHomePageRowType = {
-    __typename?: 'ShowHomePageRowType';
-    hasNextPage: Scalars['Boolean']['output'];
-    items: Array<MangaType>;
-    name: Scalars['String']['output'];
+export type FetchSourceMangaInput = {
+    clientMutationId?: InputMaybe<Scalars['String']['input']>;
+    filters?: InputMaybe<Array<FilterChangeInput>>;
+    page: Scalars['Int']['input'];
+    query?: InputMaybe<Scalars['String']['input']>;
+    source: Scalars['LongString']['input'];
+    type: FetchSourceMangaType;
 };
 
-export type ShowMainPageDataType = {
-    __typename?: 'ShowMainPageDataType';
-    data: Scalars['String']['output'];
-    horizontalImages: Scalars['Boolean']['output'];
-    name: Scalars['String']['output'];
+export type FetchSourceMangaPayload = {
+    __typename?: 'FetchSourceMangaPayload';
+    clientMutationId?: Maybe<Scalars['String']['output']>;
+    hasNextPage: Scalars['Boolean']['output'];
+    mangas: Array<MangaType>;
 };
+
+export enum FetchSourceMangaType {
+    Latest = 'LATEST',
+    Popular = 'POPULAR',
+    Search = 'SEARCH',
+}
 
 export type FetchTrackInput = {
     clientMutationId?: InputMaybe<Scalars['String']['input']>;
@@ -2718,6 +2710,20 @@ export type SettingsType = Settings & {
     webUIFlavor: WebUiFlavor;
     webUIInterface: WebUiInterface;
     webUIUpdateCheckInterval: Scalars['Float']['output'];
+};
+
+export type ShowHomePageRowType = {
+    __typename?: 'ShowHomePageRowType';
+    hasNextPage: Scalars['Boolean']['output'];
+    items: Array<MangaType>;
+    name: Scalars['String']['output'];
+};
+
+export type ShowMainPageDataType = {
+    __typename?: 'ShowMainPageDataType';
+    data: Scalars['String']['output'];
+    horizontalImages: Scalars['Boolean']['output'];
+    name: Scalars['String']['output'];
 };
 
 export type SortFilter = {

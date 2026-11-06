@@ -447,6 +447,7 @@ export type ChapterListFieldsFragment = {
     fetchedAt: string;
     uploadDate: string;
     lastReadAt: string;
+    size: string | null;
     id: number;
     name: string;
     mangaId: number;
@@ -464,6 +465,7 @@ export type ChapterUpdateListFieldsFragment = {
     fetchedAt: string;
     uploadDate: string;
     lastReadAt: string;
+    size: string | null;
     id: number;
     name: string;
     mangaId: number;
@@ -491,6 +493,7 @@ export type ChapterHistoryListFieldsFragment = {
     fetchedAt: string;
     uploadDate: string;
     lastReadAt: string;
+    size: string | null;
     id: number;
     name: string;
     mangaId: number;
@@ -545,6 +548,7 @@ export type GetMangaChaptersFetchMutation = {
             fetchedAt: string;
             uploadDate: string;
             lastReadAt: string;
+            size: string | null;
             id: number;
             name: string;
             mangaId: number;
@@ -813,6 +817,7 @@ export type GetChaptersMangaQuery = {
             fetchedAt: string;
             uploadDate: string;
             lastReadAt: string;
+            size: string | null;
             id: number;
             name: string;
             mangaId: number;
@@ -856,6 +861,7 @@ export type GetChaptersUpdatesQuery = {
             fetchedAt: string;
             uploadDate: string;
             lastReadAt: string;
+            size: string | null;
             id: number;
             name: string;
             mangaId: number;
@@ -908,6 +914,7 @@ export type GetChaptersHistoryQuery = {
             fetchedAt: string;
             uploadDate: string;
             lastReadAt: string;
+            size: string | null;
             id: number;
             name: string;
             mangaId: number;
@@ -1830,6 +1837,7 @@ export type GetMangaFetchMutation = {
                 lang: string;
                 iconUrl: string;
                 kind: Types.SourceKind;
+                extension: { __typename: 'ExtensionType'; pkgName: string };
             } | null;
             trackRecords: {
                 __typename: 'TrackRecordNodeList';
@@ -1874,6 +1882,7 @@ export type RefreshMangaMutation = {
             fetchedAt: string;
             uploadDate: string;
             lastReadAt: string;
+            size: string | null;
             id: number;
             name: string;
             mangaId: number;
@@ -1918,6 +1927,7 @@ export type RefreshMangaMutation = {
                 lang: string;
                 iconUrl: string;
                 kind: Types.SourceKind;
+                extension: { __typename: 'ExtensionType'; pkgName: string };
             } | null;
             trackRecords: {
                 __typename: 'TrackRecordNodeList';
@@ -2188,6 +2198,7 @@ export type GetMangaScreenQuery = {
             lang: string;
             iconUrl: string;
             kind: Types.SourceKind;
+            extension: { __typename: 'ExtensionType'; pkgName: string };
         } | null;
         trackRecords: {
             __typename: 'TrackRecordNodeList';
@@ -3372,12 +3383,7 @@ export type FetchShowHomepageMutation = {
                 sourceId: string;
             }>;
         }>;
-        mainPage: Array<{
-            __typename: 'ShowMainPageDataType';
-            name: string;
-            data: string;
-            horizontalImages: boolean;
-        }>;
+        mainPage: Array<{ __typename: 'ShowMainPageDataType'; name: string; data: string; horizontalImages: boolean }>;
     } | null;
 };
 

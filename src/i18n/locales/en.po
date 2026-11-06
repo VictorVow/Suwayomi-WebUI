@@ -1642,11 +1642,15 @@ msgstr "Download queue"
 msgid "Download selected"
 msgstr "Download selected"
 
-#: src/features/chapter/components/cards/ChapterCard.tsx
+#: src/features/chapter/components/buttons/ChapterDownloadedButton.tsx
 #: src/features/chapter/components/ChapterOptions.tsx
 #: src/features/library/components/LibraryOptionsPanel.tsx
 msgid "Downloaded"
 msgstr "Downloaded"
+
+#: src/features/chapter/components/buttons/ChapterDownloadedButton.tsx
+msgid "Downloaded ({size})"
+msgstr "Downloaded ({size})"
 
 #: src/base/components/downloads/DownloadStateIndicator.tsx
 msgid "Downloading"

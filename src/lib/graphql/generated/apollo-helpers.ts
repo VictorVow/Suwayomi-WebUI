@@ -85,7 +85,7 @@ export type ChapterNodeListFieldPolicy = {
 	pageInfo?: FieldPolicy<any> | FieldReadFunction<any>,
 	totalCount?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type ChapterTypeKeySpecifier = ('chapterNumber' | 'fetchedAt' | 'id' | 'isBookmarked' | 'isDownloaded' | 'isRead' | 'lastPageRead' | 'lastReadAt' | 'manga' | 'mangaId' | 'meta' | 'name' | 'pageCount' | 'realUrl' | 'scanlator' | 'sourceOrder' | 'uploadDate' | 'url' | ChapterTypeKeySpecifier)[];
+export type ChapterTypeKeySpecifier = ('chapterNumber' | 'fetchedAt' | 'id' | 'isBookmarked' | 'isDownloaded' | 'isRead' | 'lastPageRead' | 'lastReadAt' | 'manga' | 'mangaId' | 'meta' | 'name' | 'pageCount' | 'realUrl' | 'scanlator' | 'size' | 'sourceOrder' | 'uploadDate' | 'url' | ChapterTypeKeySpecifier)[];
 export type ChapterTypeFieldPolicy = {
 	chapterNumber?: FieldPolicy<any> | FieldReadFunction<any>,
 	fetchedAt?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -102,6 +102,7 @@ export type ChapterTypeFieldPolicy = {
 	pageCount?: FieldPolicy<any> | FieldReadFunction<any>,
 	realUrl?: FieldPolicy<any> | FieldReadFunction<any>,
 	scanlator?: FieldPolicy<any> | FieldReadFunction<any>,
+	size?: FieldPolicy<any> | FieldReadFunction<any>,
 	sourceOrder?: FieldPolicy<any> | FieldReadFunction<any>,
 	uploadDate?: FieldPolicy<any> | FieldReadFunction<any>,
 	url?: FieldPolicy<any> | FieldReadFunction<any>
@@ -350,6 +351,18 @@ export type FetchMangaPayloadFieldPolicy = {
 	clientMutationId?: FieldPolicy<any> | FieldReadFunction<any>,
 	manga?: FieldPolicy<any> | FieldReadFunction<any>
 };
+export type FetchShowHomepagePayloadKeySpecifier = ('clientMutationId' | 'hasNextPage' | 'mainPage' | 'rows' | FetchShowHomepagePayloadKeySpecifier)[];
+export type FetchShowHomepagePayloadFieldPolicy = {
+	clientMutationId?: FieldPolicy<any> | FieldReadFunction<any>,
+	hasNextPage?: FieldPolicy<any> | FieldReadFunction<any>,
+	mainPage?: FieldPolicy<any> | FieldReadFunction<any>,
+	rows?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type FetchShowHomepageRowPayloadKeySpecifier = ('clientMutationId' | 'row' | FetchShowHomepageRowPayloadKeySpecifier)[];
+export type FetchShowHomepageRowPayloadFieldPolicy = {
+	clientMutationId?: FieldPolicy<any> | FieldReadFunction<any>,
+	row?: FieldPolicy<any> | FieldReadFunction<any>
+};
 export type FetchSourceMangaPayloadKeySpecifier = ('clientMutationId' | 'hasNextPage' | 'mangas' | FetchSourceMangaPayloadKeySpecifier)[];
 export type FetchSourceMangaPayloadFieldPolicy = {
 	clientMutationId?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -543,7 +556,7 @@ export type MultiSelectListPreferenceFieldPolicy = {
 	title?: FieldPolicy<any> | FieldReadFunction<any>,
 	visible?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type MutationKeySpecifier = ('bindTrack' | 'clearCachedImages' | 'clearDownloader' | 'connectKoSyncAccount' | 'createBackup' | 'createCategory' | 'deleteCategory' | 'deleteCategoryMeta' | 'deleteCategoryMetas' | 'deleteChapterMeta' | 'deleteChapterMetas' | 'deleteDownloadedChapter' | 'deleteDownloadedChapters' | 'deleteGlobalMeta' | 'deleteGlobalMetas' | 'deleteMangaMeta' | 'deleteMangaMetas' | 'deleteSourceMeta' | 'deleteSourceMetas' | 'dequeueChapterDownload' | 'dequeueChapterDownloads' | 'enqueueChapterDownload' | 'enqueueChapterDownloads' | 'fetchChapterPages' | 'fetchChapters' | 'fetchExtensions' | 'fetchManga' | 'fetchSourceManga' | 'fetchTrack' | 'installExternalExtension' | 'login' | 'loginTrackerCredentials' | 'loginTrackerOAuth' | 'logoutKoSyncAccount' | 'logoutTracker' | 'pullKoSyncProgress' | 'pushKoSyncProgress' | 'refreshToken' | 'reorderChapterDownload' | 'resetSettings' | 'resetWebUIUpdateStatus' | 'restoreBackup' | 'setCategoryMeta' | 'setCategoryMetas' | 'setChapterMeta' | 'setChapterMetas' | 'setGlobalMeta' | 'setGlobalMetas' | 'setMangaMeta' | 'setMangaMetas' | 'setSettings' | 'setSourceMeta' | 'setSourceMetas' | 'startDownloader' | 'startSync' | 'stopDownloader' | 'trackProgress' | 'unbindTrack' | 'updateCategories' | 'updateCategory' | 'updateCategoryManga' | 'updateCategoryOrder' | 'updateChapter' | 'updateChapters' | 'updateExtension' | 'updateExtensions' | 'updateLibrary' | 'updateLibraryManga' | 'updateManga' | 'updateMangaCategories' | 'updateMangas' | 'updateMangasCategories' | 'updateSourcePreference' | 'updateStop' | 'updateTrack' | 'updateWebUI' | MutationKeySpecifier)[];
+export type MutationKeySpecifier = ('bindTrack' | 'clearCachedImages' | 'clearDownloader' | 'connectKoSyncAccount' | 'createBackup' | 'createCategory' | 'deleteCategory' | 'deleteCategoryMeta' | 'deleteCategoryMetas' | 'deleteChapterMeta' | 'deleteChapterMetas' | 'deleteDownloadedChapter' | 'deleteDownloadedChapters' | 'deleteGlobalMeta' | 'deleteGlobalMetas' | 'deleteMangaMeta' | 'deleteMangaMetas' | 'deleteSourceMeta' | 'deleteSourceMetas' | 'dequeueChapterDownload' | 'dequeueChapterDownloads' | 'enqueueChapterDownload' | 'enqueueChapterDownloads' | 'fetchChapterPages' | 'fetchChapters' | 'fetchExtensions' | 'fetchManga' | 'fetchShowHomepage' | 'fetchShowHomepageRow' | 'fetchSourceManga' | 'fetchTrack' | 'installExternalExtension' | 'login' | 'loginTrackerCredentials' | 'loginTrackerOAuth' | 'logoutKoSyncAccount' | 'logoutTracker' | 'pullKoSyncProgress' | 'pushKoSyncProgress' | 'refreshToken' | 'reorderChapterDownload' | 'resetSettings' | 'resetWebUIUpdateStatus' | 'restoreBackup' | 'setCategoryMeta' | 'setCategoryMetas' | 'setChapterMeta' | 'setChapterMetas' | 'setGlobalMeta' | 'setGlobalMetas' | 'setMangaMeta' | 'setMangaMetas' | 'setSettings' | 'setSourceMeta' | 'setSourceMetas' | 'startDownloader' | 'startSync' | 'stopDownloader' | 'trackProgress' | 'unbindTrack' | 'updateCategories' | 'updateCategory' | 'updateCategoryManga' | 'updateCategoryOrder' | 'updateChapter' | 'updateChapters' | 'updateExtension' | 'updateExtensions' | 'updateLibrary' | 'updateLibraryManga' | 'updateManga' | 'updateMangaCategories' | 'updateMangas' | 'updateMangasCategories' | 'updateSourcePreference' | 'updateStop' | 'updateTrack' | 'updateWebUI' | MutationKeySpecifier)[];
 export type MutationFieldPolicy = {
 	bindTrack?: FieldPolicy<any> | FieldReadFunction<any>,
 	clearCachedImages?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -572,6 +585,8 @@ export type MutationFieldPolicy = {
 	fetchChapters?: FieldPolicy<any> | FieldReadFunction<any>,
 	fetchExtensions?: FieldPolicy<any> | FieldReadFunction<any>,
 	fetchManga?: FieldPolicy<any> | FieldReadFunction<any>,
+	fetchShowHomepage?: FieldPolicy<any> | FieldReadFunction<any>,
+	fetchShowHomepageRow?: FieldPolicy<any> | FieldReadFunction<any>,
 	fetchSourceManga?: FieldPolicy<any> | FieldReadFunction<any>,
 	fetchTrack?: FieldPolicy<any> | FieldReadFunction<any>,
 	installExternalExtension?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -1101,6 +1116,18 @@ export type SettingsTypeFieldPolicy = {
 	webUIFlavor?: FieldPolicy<any> | FieldReadFunction<any>,
 	webUIInterface?: FieldPolicy<any> | FieldReadFunction<any>,
 	webUIUpdateCheckInterval?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type ShowHomePageRowTypeKeySpecifier = ('hasNextPage' | 'items' | 'name' | ShowHomePageRowTypeKeySpecifier)[];
+export type ShowHomePageRowTypeFieldPolicy = {
+	hasNextPage?: FieldPolicy<any> | FieldReadFunction<any>,
+	items?: FieldPolicy<any> | FieldReadFunction<any>,
+	name?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type ShowMainPageDataTypeKeySpecifier = ('data' | 'horizontalImages' | 'name' | ShowMainPageDataTypeKeySpecifier)[];
+export type ShowMainPageDataTypeFieldPolicy = {
+	data?: FieldPolicy<any> | FieldReadFunction<any>,
+	horizontalImages?: FieldPolicy<any> | FieldReadFunction<any>,
+	name?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type SortFilterKeySpecifier = ('default' | 'name' | 'values' | SortFilterKeySpecifier)[];
 export type SortFilterFieldPolicy = {
@@ -1677,6 +1704,14 @@ export type StrictTypedTypePolicies = {
 		keyFields?: false | FetchMangaPayloadKeySpecifier | (() => undefined | FetchMangaPayloadKeySpecifier),
 		fields?: FetchMangaPayloadFieldPolicy,
 	},
+	FetchShowHomepagePayload?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | FetchShowHomepagePayloadKeySpecifier | (() => undefined | FetchShowHomepagePayloadKeySpecifier),
+		fields?: FetchShowHomepagePayloadFieldPolicy,
+	},
+	FetchShowHomepageRowPayload?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | FetchShowHomepageRowPayloadKeySpecifier | (() => undefined | FetchShowHomepageRowPayloadKeySpecifier),
+		fields?: FetchShowHomepageRowPayloadFieldPolicy,
+	},
 	FetchSourceMangaPayload?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | FetchSourceMangaPayloadKeySpecifier | (() => undefined | FetchSourceMangaPayloadKeySpecifier),
 		fields?: FetchSourceMangaPayloadFieldPolicy,
@@ -1904,6 +1939,14 @@ export type StrictTypedTypePolicies = {
 	SettingsType?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | SettingsTypeKeySpecifier | (() => undefined | SettingsTypeKeySpecifier),
 		fields?: SettingsTypeFieldPolicy,
+	},
+	ShowHomePageRowType?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | ShowHomePageRowTypeKeySpecifier | (() => undefined | ShowHomePageRowTypeKeySpecifier),
+		fields?: ShowHomePageRowTypeFieldPolicy,
+	},
+	ShowMainPageDataType?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | ShowMainPageDataTypeKeySpecifier | (() => undefined | ShowMainPageDataTypeKeySpecifier),
+		fields?: ShowMainPageDataTypeFieldPolicy,
 	},
 	SortFilter?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | SortFilterKeySpecifier | (() => undefined | SortFilterKeySpecifier),

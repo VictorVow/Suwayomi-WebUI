@@ -41,6 +41,8 @@ export type ChapterMangaInfo = Pick<ChapterType, 'mangaId'>;
 
 export type ChapterDownloadInfo = Pick<ChapterType, 'isDownloaded'>;
 
+export type ChapterSizeInfo = Pick<ChapterType, 'size'>;
+
 export type ChapterBookmarkInfo = Pick<ChapterType, 'isBookmarked'>;
 
 export type ChapterReadInfo = Pick<ChapterType, 'isRead'>;
